@@ -4,117 +4,258 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User & Service Details</title>
-    <!-- Bootstrap 5 -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* Define Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Base Styles */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', 'Arial', sans-serif;
             background: #f8f9fa;
             color: #333;
+            overflow-x: hidden;
         }
+
+        /* Sidebar */
         .sidebar {
             width: 250px;
             height: 100vh;
             position: fixed;
-            background: rgba(44, 62, 80, 1);
+            top: 0;
+            left: 0;
+            background: #2c3e50;
             color: white;
             padding: 20px;
             transition: all 0.3s ease-in-out;
-            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
         }
+
+        .sidebar .logo {
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .sidebar .logo h3 {
+            font-weight: 500;
+        }
+
+        .sidebar nav {
+            flex-grow: 1;
+        }
+        
         .sidebar nav a {
             display: block;
             color: #bdc3c7;
-            padding: 12px;
+            padding: 12px 15px;
+            margin: 5px 0;
             text-decoration: none;
-            transition: background 0.3s, transform 0.2s;
-            border-radius: 5px;
-        }
-        .sidebar nav a:hover {
-            background: #3498db;
-            transform: scale(1.05);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 30px;
-        }
-        .ma {
-            padding: 25px;
-            margin-bottom: 20px;
-            background: #34495e;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            transition: transform 0.3s;
-        }
-        .ma:hover {
-            transform: translateY(-3px);
-        }
-        .profile-image-section {
-            margin-top: 40px;
-            width: 160px;
-            height: 200px;
-            border: 3px solid #3498db;
+            transition: all 0.3s ease;
             border-radius: 8px;
-            overflow: hidden;
+            font-weight: 500;
+        }
+
+        .sidebar nav a i {
+            margin-right: 12px;
+            width: 20px; /* Aligns text */
+        }
+
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background: #3498db;
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .sidebar .logout-link {
+            margin-top: auto; 
+        }
+        .sidebar .logout-link a {
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+        }
+        .sidebar .logout-link a:hover {
+            background: #c0392b;
+            transform: scale(1.03);
+            box-shadow: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 25px;
+            min-height: 100vh;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* Header */
+        .main-content header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .main-content header h2 {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            padding: 8px 15px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .admin-profile span {
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        /* New Booking Card */
+        .booking-card {
+            background: #ffffff;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap; /* For responsive */
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s, box-shadow 0.3s;
+            /* Animation */
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        .booking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .user-column, .provider-column {
+            flex: 1;
+            min-width: 300px; /* Prevents squishing */
+            padding: 10px;
+        }
+        
+        .user-column {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .connector-column {
+            flex-basis: 50px;
+            text-align: center;
+            color: #bdc3c7;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #3498db;
             flex-shrink: 0;
         }
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .info-block {
-            display: flex;
-            gap: 30px;
-            width: 100%;
-            margin-left: 30px;
-        }
-        .user-info, .provider-info {
-            flex: 1;
-        }
+
         .section-title {
-            color: #1abc9c;
+            color: #2c3e50;
             font-weight: 600;
             font-size: 1.5rem;
             margin-bottom: 15px;
         }
         .detail-item {
             display: flex;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
         }
         .detail-label {
-            color: #bdc3c7;
-            width: 130px;
-            font-weight: 600;
+            color: #7f8c8d;
+            width: 110px;
+            font-weight: 500;
+            flex-shrink: 0;
         }
         .detail-value {
-            color: white;
-            font-size: 1.1rem;
+            color: #34495e;
+            font-weight: 500;
+            word-break: break-word;
         }
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        
+        /* Status Badge */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
-        a {
-            text-decoration: none;
+        .status-badge.paid {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
         }
+        .status-badge.not-paid {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo mb-4">
-            <h3 style="font-weight: 400;">CustomerService</h3>
+           <h4><i class="fas fa-headset" ></i> CustomerService</h4>
         </div>
         <nav>
+            <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <a href="/aadmin"><i class="fa fa-home"></i> Home</a>
+            <a href="/servicebooked" class="active"><i class="fas fa-calendar-check"></i> Service Booked</a>
             <a href="/addemp"><i class="fas fa-user-plus"></i> Add Employee</a>
+            <a href="/employeeinfo"><i class="fas fa-user-tie"></i> Employee List</a> 
             <a href="/userinfo"><i class="fas fa-users"></i> Customer List</a>
-            <a href="/ticketraised"><i class="fa fa-ticket"></i> Tickets Raised</a>
+            <a href="/ticketraised"><i class="fa fa-ticket-alt"></i> Tickets Raised</a>
         </nav>
+        <div class="logout-link">
+             <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
     </div>
 
     <div class="main-content">
@@ -122,33 +263,18 @@
             <h2>Service Booked</h2>
             <div class="admin-profile">
                 <span>Admin</span>
-                <i class="fas fa-user-circle fa-2x"></i>
+                <i class="fas fa-user-circle fa-2x text-primary"></i>
             </div>
         </header>
 
-        <div class="employee-list">
+        <div class="booking-list">
             {% for item in combined_list reversed %}
-            <div class="ma">
-                <!-- User Profile Image -->
-                <div class="profile-image-section">
+            <div class="booking-card">
+                
+                <div class="user-column">
                     <img src="{{ item.user.profile_image }}" class="profile-image" alt="User Photo">
-                </div>
-
-                <!-- User & Service Provider Info -->
-                <div class="info-block">
-
-                    <!-- Left: User Info -->
-                    <div class="user-info">
-                        <div class="section-title">User Info</div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <span class="icon" style="display: inline;">{% if item.advance %}✅{% else %}❌{% endif %}</span> Advance paid
-                            </span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Name:</span>
-                            <span class="detail-value">{{ item.user.name }}</span>
-                        </div>
+                    <div>
+                        <h4 class="section-title">{{ item.user.name }}</h4>
                         <div class="detail-item">
                             <span class="detail-label">Phone:</span>
                             <span class="detail-value">{{ item.user.phone }}</span>
@@ -158,47 +284,68 @@
                             <span class="detail-value">{{ item.user.mail }}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Gender:</span>
-                            <span class="detail-value">{{ item.user.gender }}</span>
-                        </div>
-                        <div class="detail-item">
                             <span class="detail-label">Address:</span>
                             <span class="detail-value">{{ item.user.address }}</span>
                         </div>
-                    </div>
-
-                    <!-- Right: Service Provider Info -->
-                    <div class="provider-info">
-                        <div class="section-title">Service Provider</div>
-                        <div class="detail-item">
-                            <span class="detail-label">Name:</span>
-                            <span class="detail-value">{{ item.service.name }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Service:</span>
-                            <span class="detail-value">{{ item.service.service_provided }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Phone:</span>
-                            <span class="detail-value">{{ item.service.phone }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value">{{ item.service.email }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Experience:</span>
-                            <span class="detail-value">{{ item.service.experience }} years</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Specialization:</span>
-                            <span class="detail-value">{{ item.service.specialization }}</span>
+                        <div class="detail-item mt-2">
+                            {% if item.advance %}
+                                <span class="status-badge paid"><i class="fas fa-check-circle me-1"></i> Advance Paid</span>
+                            {% else %}
+                                <span class="status-badge not-paid"><i class="fas fa-times-circle me-1"></i> Not Paid</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
+
+                <div class="connector-column">
+                    <i class="fas fa-arrow-right fa-2x"></i>
+                </div>
+
+                <div class="provider-column">
+                    <h4 class="section-title">{{ item.service.name }}</h4>
+                    <div class="detail-item">
+                        <span class="detail-label">Service:</span>
+                        <span class="detail-value">{{ item.service.service_provided }}</span>
+                    </div>
+                     <div class="detail-item">
+                        <span class="detail-label">Specialization:</span>
+                        <span class="detail-value">{{ item.service.specialization }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone:</span>
+                        <span class="detail-value">{{ item.service.phone }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">{{ item.service.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Experience:</span>
+                        <span class="detail-value">{{ item.service.experience }} years</span>
+                    </div>
+                </div>
+
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Booked Services</h4>
+                <p class="text-muted">There are currently no services booked by users.</p>
             </div>
             {% endfor %}
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll('.booking-card');
+            cards.forEach((card, index) => {
+                // Set animation delay for each card
+                card.style.animationDelay = `${index * 0.07}s`;
+            });
+        });
+    </script>
 </body>
 </html>

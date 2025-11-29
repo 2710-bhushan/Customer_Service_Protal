@@ -4,317 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service History - Customer Service</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-        .service-card {
-            background-color: white;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 15px;
-        }
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-        }
-        .service-img {
-            width: 100px;
-            height: 125px;
-            border-radius: 50%;
-            background: #ddd;
-            object-fit: cover;
-        }
-        .service-details {
-            padding-left: 15px;
-        }
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17763815137"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-17763815137');
+    </script>
+
+    <!-- ADSENSE SCRIPT -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456"
+     crossorigin="anonymous"></script>
+
+    <style>
         :root { 
-            --primary-color: #4a90e2; 
-            --secondary-color: #6c5ce7; 
-            --accent-color: #00b894; 
+            --primary-dark: #2c3e50;
+            --primary-light: #3498db;
+            --bg-color: #f8f9fa;
         }
 
         body { 
-            background: #f8f9fa; 
+            background: var(--bg-color); 
             min-height: 100vh; 
             margin: 0;
+            font-family: 'Poppins', 'Arial', sans-serif;
         }
 
-        /* Mobile Menu Toggle */
-        .menu-toggle {
-            position: fixed;
-            top: 10px;
-            left: 15px;
-            z-index: 1001;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .menu-toggle i {
-            font-size: 1.5rem;
-            vertical-align: middle;
-        }
-
-        /* Sidebar */
+        /* Sidebar Styles (Same as BookService for consistency) */
         .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--primary-dark);
             color: white;
-            padding: 1rem;
-            position: fixed;
-            top: 0;
-            left: -100%;
-            height: 100vh;
-            width: 280px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            overflow-y: auto;
+            padding: 1.5rem 1rem;
+            position: fixed; top: 0; left: -100%; height: 100vh; width: 280px;
+            z-index: 1000; transition: all 0.3s ease; overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+        
+        .profile-card img {
+            width: 150px; height: 150px; object-fit: cover; border-radius: 50%;
+            border: 4px solid var(--primary-light);
+        }
+        .sidebar .nav-link {
+            color: #bdc3c7; font-weight: 500; padding: 10px 15px; margin: 2px 0;
+            border-radius: 8px; transition: all 0.3s ease;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: var(--primary-light); color: white;
         }
 
-        .sidebar.active {
-            left: 0;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
-        }
-
-        /* Backdrop */
-        .sidebar-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
-
-        /* Header */
+        /* Layout */
+        .main-content { padding: 1.5rem; padding-top: 90px; }
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
+            position: fixed; top: 0; left: 0; right: 0; height: 70px;
+            background: #fff; border-bottom: 1px solid #eee; display: flex;
+            justify-content: space-between; align-items: center; padding: 0 1.5rem;
             z-index: 990;
         }
-
-        /* Main Content */
-        .main-content {
-            padding: 1rem;
-            padding-top: 80px;
+        
+        .menu-toggle {
+            position: fixed; top: 10px; left: 15px; z-index: 1001;
+            background: var(--primary-light); color: white; border: none;
+            border-radius: 8px; width: 45px; height: 45px; display: none;
         }
 
-        /* Responsive Layout */
         @media (min-width: 768px) {
-            .sidebar {
-                left: 0;
-            }
-            
-            .header {
-                left: 280px;
-            }
-            
-            .main-content {
-                margin-left: 280px;
-            }
-            
-            .menu-toggle {
-                display: none;
-            }
+            .sidebar { left: 0; }
+            .header { left: 280px; }
+            .main-content { margin-left: 280px; }
+            .menu-toggle { display: none; }
         }
-
         @media (max-width: 767px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .header {
-                padding-left: 70px;
-            }
-            
-            .sidebar.active + .sidebar-backdrop {
-                display: block;
-            }
+            .menu-toggle { display: block; }
+            .header { padding-left: 75px; }
         }
 
-        .portal-card { 
-            background: #DBF3FA; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            padding: 1.5rem;
+        /* History Card */
+        .history-card {
+            background: #fff; border-radius: 12px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
+            border-left: 5px solid var(--primary-light);
         }
+        .history-header { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .status-badge { background: #d4edda; color: #155724; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
 
-        .service-card { 
-            background-color: white; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            transition: all 0.3s; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            position: relative; 
-            margin-bottom: 1rem;
-        }
-
-        .service-image { 
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .service-details { 
-            padding: 1rem; 
-            background: white; 
-        }
-
-        .favorite-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ff0000;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .search-container {
-            max-width: 100%;
-            margin: 1rem 0;
-        }
-
-        .btn-portal { 
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); 
-            color: white; 
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .service-image {
-                height: 250px;
-            }
+        /* Ad Styling */
+        .ad-banner-bottom {
+            margin-top: 30px;
+            text-align: center;
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
     </style>
 </head>
 <body>
-    <button class="menu-toggle d-md-none">
-        <i class="fas fa-bars"></i>
-    </button>
-    <!-- Sidebar -->
+
+    <button class="menu-toggle d-md-none"><i class="fas fa-bars"></i></button>
+
     <div class="sidebar">
         <div class="profile-card mb-4 text-center">
-            <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
-                 class="rounded-circle mb-3" style="width: 225px; height: 275px;object-fit: cover;" alt="User_Photo">
-            <h5 class="mb-1">
-                {% if request.COOKIES.user_name %}
-                    {{ request.COOKIES.user_name }}
-                {% else %}
-                    {{ user_name }}
-                {% endif %}
-            </h5>
-            <p class="text-muted mb-0">
-                {% if request.COOKIES.user_email %}
-                    {{ request.COOKIES.user_email }}
-                {% else %}
-                    {{ user_email }}
-                {% endif %}
-            </p>
+             <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
+                 class="rounded-circle mb-3" alt="User">
+             <h5 class="mb-1">{{ user_name }}</h5>
         </div>
         <nav class="nav flex-column">
-            <a class="nav-link text-white" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
-            <a class="nav-link text-white" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
-            <a class="nav-link text-white active" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
-            <a class="nav-link text-white" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
+            <a class="nav-link" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
+            <a class="nav-link" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
+            <a class="nav-link active" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
+            <a class="nav-link" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
         </nav>
     </div>
 
-    <!-- Header -->
     <div class="header">
-        <h4 class="fw-bold text-primary mb-0">CustomerService</h4>
-        <div class="dropdown">
-            <button class="btn btn-portal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user me-2"></i>Profile
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
-        </div>
+        <h4 class="mb-0" style="color: var(--primary-dark); font-weight: 600;">Service History</h4>
+        <a href="/logout" class="btn btn-outline-danger btn-sm">Logout</a>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <div class="portal-card p-4">
-            <h3 class="mb-4"><i class="fas fa-history me-2"></i>Your Service History</h3>
-            <div class="row g-4">
-                {% for service in services %}
-                <a href="{% url 'usercommon' service.unique %}" class="stretched-link text-decoration-none text-dark">
+        
+        <!-- Logic: If user just paid, show a success message -->
+        {% if request.GET.payment == 'success' %}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-check-circle me-2"></i> <strong>Payment Successful!</strong> Your service has been booked.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
 
-                <div class="col-md-6 col-lg-4">
-                    <div class="service-card d-flex align-items-center">
-                        <img src="{{ service.profile_image }}" alt="Service" class="service-img">
-                        <div class="service-details">
-                            <h5 class="fw-bold mb-2">{{ service.service_type }}</h5>
-                            <div class="mb-1"><i class="fas fa-user me-2 text-success"></i>NAME: {{ service.name }}</div>
-                            <div class="mb-1"><i class="fas fa-envelope me-2 text-info"></i>EMAIL: {{ service.email }}</div>
-                            <div class="mb-1"><i class="fas fa-phone me-2 text-danger"></i>MOBILE NO: {{ service.phone }}</div>
-                       
+        <div class="row">
+            <div class="col-lg-8">
+                <h5 class="mb-4 text-muted">Your Past Bookings</h5>
+                {% for service in services %}
+                <div class="history-card">
+                    <div class="history-header">
+                        <h5 class="mb-0 fw-bold">{{ service.service_provided }}</h5>
+                        <span class="status-badge">Paid & Booked</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted d-block">Provider</small>
+                            <strong>{{ service.name }}</strong>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted d-block">Contact</small>
+                            {{ service.email }}
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='/raiseticket'">
+                                <i class="fas fa-headset me-1"></i> Report Issue
+                            </button>
                         </div>
                     </div>
-                </div></a>
+                </div>
                 {% empty %}
-                <p>No services found in your history.</p>
-            
+                <div class="text-center py-5">
+                    <p class="text-muted">No service history found.</p>
+                    <a href="/bookservice" class="btn btn-primary">Book a Service</a>
+                </div>
                 {% endfor %}
             </div>
+
+            
+            <!-- AD LOGIC: Bottom Banner for Mobile -->
+           
+
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Mobile Menu Handling
+        // Sidebar Toggle Script
         const menuToggle = document.querySelector('.menu-toggle');
         const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.querySelector('.sidebar-backdrop');
-
-        // Toggle menu
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
+        
+        menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
-            backdrop.style.display = 'block';
-        });
-
-        // Close menu on backdrop click
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            backdrop.style.display = 'none';
-        });
-
-        // Close menu on window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                sidebar.classList.remove('active');
-                backdrop.style.display = 'none';
-            }
-        });
-
-        // Active link handling
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href').endsWith(currentPage)) {
-                    link.classList.add('active');
-                }
-            });
         });
     </script>
 </body>

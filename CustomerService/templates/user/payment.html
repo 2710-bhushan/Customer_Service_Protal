@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - CustomerService</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        .payment-container { max-width: 900px; margin: 40px auto; display: flex; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden; background: white; min-height: 500px; }
+        .sidebar { background: #f8f9fa; width: 35%; padding: 30px; border-right: 1px solid #eee; display: flex; flex-direction: column; }
+        .main-content { width: 65%; padding: 40px; position: relative; }
+        
+        .nav-link { color: #555; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-weight: 500; display: flex; align-items: center; transition: all 0.2s; }
+        .nav-link:hover, .nav-link.active { background: #e3f2fd; color: #0d47a1; }
+        .nav-link i { width: 30px; font-size: 1.1rem; }
+        
+        .amount-box { margin-bottom: 30px; }
+        .amount-label { font-size: 0.9rem; color: #777; }
+        .amount-value { font-size: 2.2rem; font-weight: 700; color: #2c3e50; }
+        
+        .verified-badge { margin-top: auto; text-align: center; border: 1px solid #c3e6cb; background: #d4edda; color: #155724; padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+        
+        /* Netbanking Overlay */
+        .bank-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 50; display: none; flex-direction: column; }
+        .bank-header { padding: 15px 30px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .bank-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .bank-login-box { width: 100%; max-width: 350px; }
+        .secure-icon { color: #27ae60; font-size: 3rem; margin-bottom: 15px; }
+
+        .btn-pay { width: 100%; padding: 14px; font-weight: 600; font-size: 1.1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="payment-container">
+        
+        <div class="sidebar">
+            <h5 class="mb-4">Payment Methods</h5>
+            <div class="nav flex-column nav-pills" role="tablist">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#upi">
+                    <i class="fas fa-mobile-alt"></i> UPI
+                </button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#card">
+                    <i class="far fa-credit-card"></i> Card
+                </button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#netbanking">
+                    <i class="fas fa-university"></i> NetBanking
+                </button>
+            </div>
+            
+            <div class="verified-badge">
+                <i class="fas fa-shield-alt me-1"></i> NPCI Verified Secure Payment
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div id="bank-overlay" class="bank-overlay">
+                <div class="bank-header">
+                    <span class="h5 mb-0" id="overlay-bank-name"><i class="fas fa-university text-primary me-2"></i>Bank</span>
+                    <button type="button" class="btn-close" onclick="closeBank()"></button>
+                </div>
+                <div class="bank-body">
+                    <div class="bank-login-box text-center">
+                        <i class="fas fa-lock secure-icon"></i>
+                        <h5 class="mb-3">Secure Login</h5>
+                        <p class="text-muted small mb-4">Merchant: <strong>CustomerService</strong><br>Amount: <strong>₹99.00</strong></p>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="bankUser" placeholder="User ID">
+                            <label for="bankUser">Customer ID / User ID</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" id="bankPass" placeholder="Password">
+                            <label for="bankPass">Password / IPIN</label>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="submitNetbanking()">
+                            Login & Pay ₹99
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="amount-box">
+                    <div class="amount-label">Total Payable</div>
+                    <div class="amount-value">₹99.00</div>
+                </div>
+                <img src="{{ service.profile_image }}" class="rounded-circle shadow-sm" width="60" height="60" style="object-fit:cover;">
+            </div>
+
+            <div class="tab-content">
+                
+                <div class="tab-pane fade show active" id="upi">
+                    <h6 class="mb-3 text-muted">Pay using UPI App</h6>
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="p-2 border rounded text-center" style="width:80px"><i class="fab fa-google-pay fa-2x text-primary"></i><br><small>GPay</small></div>
+                        <div class="p-2 border rounded text-center" style="width:80px"><i class="fas fa-phone-alt fa-2x text-primary"></i><br><small>PhonePe</small></div>
+                        <div class="p-2 border rounded text-center" style="width:80px"><i class="fab fa-whatsapp fa-2x text-success"></i><br><small>Paytm</small></div>
+                    </div>
+                    <form action="{% url 'process_payment' %}" method="POST" id="form-upi">
+                        {% csrf_token %}
+                        <input type="hidden" name="service_id" value="{{ service.unique }}">
+                        <input type="hidden" name="payment_method" value="UPI">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Enter UPI ID (e.g. 9876543210@ybl)">
+                            <button class="btn btn-outline-secondary" type="button">Verify</button>
+                        </div>
+                        <button class="btn btn-success btn-pay text-white" onclick="submitForm('form-upi')">Pay ₹99</button>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="card">
+                    <form action="{% url 'process_payment' %}" method="POST" id="form-card">
+                        {% csrf_token %}
+                        <input type="hidden" name="service_id" value="{{ service.unique }}">
+                        <input type="hidden" name="payment_method" value="Card">
+                        <input type="text" class="form-control mb-3 p-3" placeholder="Card Number" maxlength="16">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6"><input type="text" class="form-control p-3" placeholder="MM / YY"></div>
+                            <div class="col-6"><input type="password" class="form-control p-3" placeholder="CVV"></div>
+                        </div>
+                        <input type="text" class="form-control mb-4 p-3" placeholder="Cardholder Name">
+                        <button class="btn btn-primary btn-pay" onclick="submitForm('form-card')">Pay ₹99</button>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="netbanking">
+                    <form action="{% url 'process_payment' %}" method="POST" id="form-net">
+                        {% csrf_token %}
+                        <input type="hidden" name="service_id" value="{{ service.unique }}">
+                        <input type="hidden" name="payment_method" value="Netbanking">
+                        <label class="form-label text-muted">Select Your Bank</label>
+                        <select class="form-select form-select-lg mb-4" id="bank-select">
+                            <option value="" selected disabled>-- Choose Bank --</option>
+                            <option value="HDFC Bank">HDFC Bank</option>
+                            <option value="SBI Bank">State Bank of India</option>
+                            <option value="ICICI Bank">ICICI Bank</option>
+                            <option value="Axis Bank">Axis Bank</option>
+                        </select>
+                        <button type="button" class="btn btn-warning btn-pay text-white" onclick="openBank()">Proceed to Pay</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function submitForm(formId) {
+        event.preventDefault();
+        const btn = document.querySelector(`#${formId} .btn-pay`);
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+        btn.disabled = true;
+        setTimeout(() => document.getElementById(formId).submit(), 2000);
+    }
+
+    function openBank() {
+        const bank = document.getElementById('bank-select').value;
+        if(!bank) { alert("Please select a bank"); return; }
+        document.getElementById('overlay-bank-name').innerHTML = `<i class="fas fa-university text-primary me-2"></i>${bank}`;
+        document.getElementById('bank-overlay').style.display = 'flex';
+    }
+
+    function closeBank() {
+        document.getElementById('bank-overlay').style.display = 'none';
+    }
+
+    function submitNetbanking() {
+        const user = document.getElementById('bankUser').value;
+        const pass = document.getElementById('bankPass').value;
+        if(!user || !pass) { alert("Please enter credentials"); return; }
+
+        const btn = document.querySelector('#bank-overlay button');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Authenticating...';
+        btn.disabled = true;
+        
+        setTimeout(() => document.getElementById('form-net').submit(), 2000);
+    }
+</script>
+</body>
+</html>

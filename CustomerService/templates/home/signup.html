@@ -3,182 +3,159 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Sign-up</title>
+    <title>Sign-up - CustomerService</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
 
-    <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
 
-    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"> 
 
-    <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
     <link href="/static/home/lib/animate/animate.min.css" rel="stylesheet">
     <link href="/static/home/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="/static/home/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
 
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="/static/home/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Template Stylesheet -->
     <link href="/static/home/css/style.css" rel="stylesheet">
-
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          font-family: 'Poppins', sans-serif;
+        :root {
+            /* NEW: Professional Color Palette */
+            --primary: #0d6efd;
+            --secondary: #00BFA5; /* NEW: Vibrant Teal for accents */
+            --dark: #2c3e50;      /* NEW: Rich Navy instead of pure black */
         }
-       body{
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-color: black;
-        background-color: #edf1fc;
+        
+        /* NEW: Applying new fonts */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fa; /* Consistent light background */
+        }
 
+        h1, h2, h3, h4, h5, h6, .navbar-brand h1, .nav-bar .nav-link, .fw-bold {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        
+        /* NEW: Applying new color overrides */
+        .text-primary, .btn-primary {
+            color: var(--primary) !important;
+        }
+        .bg-primary, .btn-primary {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+        .btn-primary {
+             color: #fff !important;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7 !important;
+            border-color: #0a58ca !important;
+        }
+        
+        .text-secondary {
+            color: var(--secondary) !important;
+        }
+        .bg-secondary {
+            background-color: var(--secondary) !important;
+        }
+        
+        .footer.bg-dark {
+            background-color: var(--dark) !important;
+        }
+        
+        /* === NEW: ANIMATIONS === */
+        
+        /* 1. Pulse animation for call icons */
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.7); } /* --secondary color */
+            70% { box-shadow: 0 0 0 15px rgba(0, 191, 165, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 191, 165, 0); }
+        }
+        
+        .cta-icon-box {
+            border-radius: 50%;
+            animation: pulse-animation 2s infinite;
+        }
+        
+        /* 2. Hover animation for social icons */
+        .top-bar .btn-sm-square,
+        .footer .btn-social {
+            transition: all 0.3s ease;
+        }
+        .top-bar .btn-sm-square:hover,
+        .footer .btn-social:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 3. Hover animation for footer links */
+        .footer .btn-link {
+            transition: all 0.3s ease;
+        }
+        .footer .btn-link:hover {
+            transform: translateX(5px);
+            color: var(--secondary) !important;
+        }
+        
+        /* 4. Modern Floating Label Form */
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label {
+            color: var(--primary);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .signup-form {
+            background: #FFFFFF;
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        
+        /* 5. Modern Radio/Gender Buttons */
+        .btn-check:checked + .btn-outline-primary {
+            background-color: var(--primary);
+            color: #fff;
+        }
+        .form-label-group {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
 
-       }
-        #container {
-            margin-bottom: 35px;
-          max-width: 700px;
-          width: 100%;
-          background-color: #fff;
-          padding: 25px 30px;
-          border-radius: 5px;
-          border: #5c5c5c 3px solid;
-          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
-        }
-        #title {
-          
-          font-size: 25px;
-          font-weight: 900;
-          position: relative;
-          margin-bottom: 10px
-        }
-       
-        #user-details {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          margin: 20px 0 12px 0;
-        }
-        .input-box {
-          margin-bottom: 15px;
-          width: calc(100% / 2 - 20px);
-        }
-        .details {
-          display: block;
-          font-weight: 500;
-          margin-bottom: 5px;
-        }
-        .input-box input {
-          height: 45px;
-          width: 100%;
-          outline: none;
-          font-size: 16px;
-          border-radius: 5px;
-          padding-left: 15px;
-          border: 1px solid #ccc;
-          border-bottom-width: 2px;
-          transition: all 0.3s ease;
-        }
-        .input-bo input {
-          height: 45px;
-          width: 600px;
-          outline: none;
-          font-size: 16px;
-          border-radius: 5px;
-          padding-left: 10px;
-          border: 1px solid #ccc;
-          border-bottom-width: 2px;
-          transition: all 0.3s ease;
-        }
-        .textarea {
-            margin-top: -5px;
-          height: 50px;
-          width: 560px;
-          outline: none;
-          font-size: 16px;
-          border-radius: 5px;
-          border: 1px solid #ccc;
-          border-bottom-width: 2px;
-          transition: all 0.3s ease;
-        }
-        .input-box input:focus,
-        .input-box input:valid {
-          border-color: #9b59b6;
-        }
-        #button {
-          height: 45px;
-          margin: 5px 0;
-        }
-        #button input {
-          height: 100%;
-          width: 100%;
-          border-radius: 5px;
-          border: none;
-          color: #fff;
-          font-size: 18px;
-          font-weight: 500;
-          letter-spacing: 1px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          background: linear-gradient(135deg, #1e60aa,rgb(114, 179, 254));
-        }
-        #button input:hover {
-          background: linear-gradient(-135deg, #1e60aa, rgb(114, 179, 254));
-        }
-        .gender-title{
-            font-weight: 500;        }
-        @media(max-width: 584px) {
-          #container {
-            max-width: 100%;
-          }
-          .input-box {
-            width: 100%;
-          }
-        }
-      </style>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </style>
 </head>
 
 <body>
-    <!-- Spinner Start -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
             <span class="sr-only">Loading...</span>
         </div>
     </div>
-    <!-- Spinner End -->
-
-
-    <!-- Topbar Start -->
     <div class="container-fluid bg-light d-none d-lg-block">
         <div class="row align-items-center top-bar">
             <div class="col-lg-3 col-md-12 text-center text-lg-start">
                 <a href="" class="navbar-brand m-0 p-0">
-                    <h1 class="text-primary m-0">CustomerService</h1>
+                  <h1 class="text-primary m-0" style="font-size: 1.75rem;">CustomerService</h1>
+  
                 </a>
             </div>
             <div class="col-lg-9 col-md-12 text-end">
                 <div class="h-100 d-inline-flex align-items-center me-4">
                     <i class="fa fa-map-marker-alt text-primary me-2"></i>
-                    <p class="m-0">Ramanand Nagar Road , Jalgaon</p>
-                </div>
+                    <p class="m-0">Developed, Government College of Engineering,Jalgaon</p> </div>
                 <div class="h-100 d-inline-flex align-items-center me-4">
                     <i class="far fa-envelope-open text-primary me-2"></i>
-                    <p class="m-0">customerservice@gmail.com</p>
+                    <p class="m-0">customer.services@gcoej.ac.in</p>
                 </div>
                 <div class="h-100 d-inline-flex align-items-center">
                     <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-facebook-f"></i></a>
@@ -189,14 +166,10 @@
             </div>
         </div>
     </div>
-    <!-- Topbar End -->
-
-
-    <!-- Navbar Start -->
     <div class="container-fluid nav-bar bg-light">
         <nav class="navbar navbar-expand-lg navbar-light bg-white p-3 py-lg-0 px-lg-4">
             <a href="" class="navbar-brand d-flex align-items-center m-0 p-0 d-lg-none">
-                <h1 class="text-primary m-0">Plumberz</h1>
+                <h1 class="text-primary m-0">CustomerService</h1>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
@@ -204,14 +177,21 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav me-auto">
                     <a href="/" class="nav-item nav-link">Home</a>
-                    <a href="/about" class="nav-item nav-link">About</a>    
+                    <a href="/about" class="nav-item nav-link">About</a>
                     <a href="/contact" class="nav-item nav-link">Contact</a>
                 </div>
-
-                <a href="#">
+                
+                <a href="/signup">
+                    <div style="margin-right: 10px; ">
+                        <button class="btn btn-primary w-100 py-3" type="submit" style="margin-bottom: 5px;">  Sign Up  </button>
+                    </div></a>
+                <a href="/signin">
+                    <div style="margin-right: 10px;">
+                        <button class="btn btn-primary w-100 py-3" type="submit" style="margin-bottom: 5px;">  Sign In  </button>
+                    </div></a>
 
                 <div class="mt-4 mt-lg-0 me-lg-n4 py-3 px-4 bg-primary d-flex align-items-center">
-                    <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 45px; height: 45px;">
+                    <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white cta-icon-box" style="width: 45px; height: 45px;">
                         <i class="fa fa-phone-alt text-primary"></i>
                     </div>
                     <div class="ms-3">
@@ -222,78 +202,137 @@
             </div>
         </nav>
     </div>
-    <!-- Navbar End -->
-
-
-
-    <br>
-    <center>
-   
-      <div id="container">
-        <div id="title">Sign Up</div>
-        <div id="content">
-          <form action="#" method="post">
-            {%csrf_token%}
-            <div class="input-bo">
-              <span class="details">Profile Photo</span>
-              <input type="link" name="profile_image" placeholder="Enter the Image Link" required>
-            </div>
-            <div class="input-bo">
-              <span class="details">Full Name</span>
-              <input type="text" name="name" placeholder="Enter your name" required>
-            </div>
-            <div id="user-details"><br>
-              
-             <div class="input-box">
-                <span class="details">Phone Number</span>
-                <input type="text" name="phone" placeholder="Enter your number" required>
-              </div>
-              <div class="input-box">
-                <span class="details">Email</span>
-                <input type="text" name="mail" placeholder="Enter your email" required>
-              </div>
-              <div class="input-box">
-                <span class="details">Password</span>
-                <input type="password" name="passw" placeholder="Enter your password" required>
-              </div>
-              <div class="input-box">
-                <span class="details">Confirm Password</span>
-                <input type="password" name="rpass" placeholder="Confirm your password" required>
-              </div>
-            </div>
-            <div id="gender-details">  <span class="gender-title">Gender :</span>
-              <input type="radio" value="Male" name="gender" id="dot-1"> 
-              <label for="dot-1">
-                <span class="gender">Male</span>
-              </label>
-              <input type="radio" value="Female" name="gender" id="dot-2">
-              <label for="dot-2">
-                <span class="gender">Female</span>
-              </label>
-              <input type="radio" value="Other" name="gender" id="dot-3">
-              <label for="dot-3">
-                <span class="gender">Other</span>
-              </label>
-              <div class="input-box">
-                <span class="details">Address</span>  </div>
-                <textarea name="address" class="textarea"></textarea>
-            
-              
-            </div>
-            <div id="button">
-              <input type="submit" value="Register">
-            </div>
-          </form>
+    <div class="container-fluid page-header mb-5 py-5">
+        <div class="container">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Sign Up</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb text-uppercase">
+                    <li class="breadcrumb-item"><a class="text-white" href="/">Home</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Sign Up</li>
+                </ol>
+            </nav>
         </div>
-      </div>
-    </center>
-    
-
-
-    
-
-
-    <!-- JavaScript Libraries -->
+    </div>
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="text-secondary text-uppercase">Get Started</h6>
+                        <h1 class="mb-5">Create Your Account</h1>
+                    </div>
+                    <div class="signup-form">
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="url" class="form-control" id="profile_image" name="profile_image" placeholder="Profile Image URL" required>
+                                        <label for="profile_image">Profile Image URL (e.g., https://.../image.png)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Full Name" required>
+                                        <label for="name">Full Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number" required>
+                                        <label for="phone">Phone Number</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="mail" name="mail" placeholder="Your Email" required>
+                                        <label for="mail">Your Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control" id="passw" name="passw" placeholder="Create Password" required>
+                                        <label for="passw">Create Password</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control" id="rpass" name="rpass" placeholder="Confirm Password" required>
+                                        <label for="rpass">Confirm Password</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Your Address" id="address" name="address" style="height: 100px" required></textarea>
+                                        <label for="address">Address</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label class="form-label-group d-block">Gender</label>
+                                    <div class="btn-group w-100" role="group" aria-label="Gender toggle">
+                                        <input type="radio" class="btn-check" name="gender" id="gender-male" value="Male" autocomplete="off" required>
+                                        <label class="btn btn-outline-primary w-100" for="gender-male">Male</label>
+                                        
+                                        <input type="radio" class="btn-check" name="gender" id="gender-female" value="Female" autocomplete="off" required>
+                                        <label class="btn btn-outline-primary w-100" for="gender-female">Female</label>
+                                        
+                                        <input type="radio" class="btn-check" name="gender" id="gender-other" value="Other" autocomplete="off" required>
+                                        <label class="btn btn-outline-primary w-100" for="gender-other">Other</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mt-4">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">Register</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s" style="background-color: var(--dark);">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Address</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Developed, Government College of Engineering,Jalgaon</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+91 18001 12233</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>customer.services@gcoej.ac.in</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a classs="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Opening Hours</h4>
+                    <h6 class="text-light">Monday - Friday:</h6>
+                    <p class="mb-4">09.00 AM - 09.00 PM</p>
+                    <h6 class="text-light">Saturday - Sunday:</h6>
+                    <p class="mb-0">09.00 AM - 12.00 PM</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Services</h4>
+                    <a class="btn btn-link" href="">Electrician</a>
+                    <a class="btn btn-link" href="">House Cleaner</a>
+                    <a class="btn btn-link" href="">Plumber</a>
+                    <a class="btn btn-link" href="">Mechanical</a>
+                    <a class="btn btn-link" href="">Car/Bike Cleaner</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Newsletter</h4>
+                    <p>Subscribe to our newsletter for the latest updates.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/home/lib/wow/wow.min.js"></script>
@@ -305,7 +344,6 @@
     <script src="/static/home/lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="/static/home/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
-    <!-- Template Javascript -->
     <script src="/static/home/js/main.js"></script>
 </body>
 

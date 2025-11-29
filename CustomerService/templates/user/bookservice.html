@@ -4,19 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Book Service - Customer Service</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root { 
-            --primary-color: #4a90e2; 
-            --secondary-color: #6c5ce7; 
-            --accent-color: #00b894; 
+            --primary-dark: #2c3e50;
+            --primary-light: #3498db;
+            --accent-color: #1abc9c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #34495e;
+            --text-light: #7f8c8d;
+            --danger-color: #e74c3c;
+        }
+
+        /* Define Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         body { 
-            background: #f8f9fa; 
+            background: var(--bg-color); 
             min-height: 100vh; 
             margin: 0;
+            font-family: 'Poppins', 'Arial', sans-serif;
         }
 
         /* Mobile Menu Toggle */
@@ -25,25 +50,25 @@
             top: 10px;
             left: 15px;
             z-index: 1001;
-            background: var(--primary-color);
+            background: var(--primary-light);
             color: white;
             border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
+            border-radius: 8px;
+            width: 45px;
+            height: 45px;
             display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.5);
         }
 
         .menu-toggle i {
             font-size: 1.5rem;
-            vertical-align: middle;
         }
 
         /* Sidebar */
         .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--primary-dark);
             color: white;
-            padding: 1rem;
+            padding: 1.5rem 1rem;
             position: fixed;
             top: 0;
             left: -100%;
@@ -56,17 +81,58 @@
 
         .sidebar.active {
             left: 0;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+            box-shadow: 3px 0 20px rgba(0,0,0,0.2);
+        }
+        
+        /* Sidebar Profile */
+        .profile-card img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--primary-light);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+        .profile-card h5 {
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        .profile-card .text-muted {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #bdc3c7 !important;
+        }
+        
+        /* Sidebar Nav */
+        .sidebar .nav-link {
+            color: #bdc3c7;
+            font-weight: 500;
+            padding: 10px 15px;
+            margin: 2px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-link i {
+            width: 25px;
+            text-align: center;
+        }
+        .sidebar .nav-link:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: var(--primary-light);
+            color: white;
+            font-weight: 600;
         }
 
         /* Backdrop */
         .sidebar-backdrop {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 999;
         }
@@ -74,23 +140,27 @@
         /* Header */
         .header {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            border-bottom: 1px solid #ddd;
+            top: 0; left: 0; right: 0;
+            height: 70px; /* Increased height */
+            background: var(--card-bg);
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
             z-index: 990;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .header .header-title {
+            font-weight: 600;
+            color: var(--primary-dark);
         }
 
         /* Main Content */
         .main-content {
-            padding: 1rem;
-            padding-top: 80px;
+            padding: 1.5rem;
+            padding-top: 90px; /* 70px header + 20px space */
         }
 
         /* Responsive Layout */
@@ -98,15 +168,12 @@
             .sidebar {
                 left: 0;
             }
-            
             .header {
                 left: 280px;
             }
-            
             .main-content {
                 margin-left: 280px;
             }
-            
             .menu-toggle {
                 display: none;
             }
@@ -116,89 +183,135 @@
             .menu-toggle {
                 display: block;
             }
-            
             .header {
-                padding-left: 70px;
+                padding-left: 75px;
             }
-            
             .sidebar.active + .sidebar-backdrop {
                 display: block;
             }
         }
 
-        .portal-card { 
-            background: #DBF3FA; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            padding: 1.5rem;
-        }
-
+        /* Service Card */
         .service-card { 
-            background-color: white; 
-            border-radius: 15px; 
+            background-color: var(--card-bg); 
+            border-radius: 16px; 
+            border: none;
             overflow: hidden; 
-            transition: all 0.3s; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            transition: all 0.3s ease; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08); 
             position: relative; 
             margin-bottom: 1rem;
+            /* Animation */
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
         }
 
         .service-image { 
             width: 100%;
-            height: 300px;
-          
+            height: 220px; /* Optimized height */
+            object-fit: cover;
         }
 
         .service-details { 
-            padding: 1rem; 
-            background: white; 
+            padding: 1.5rem; 
+        }
+        .service-details h5 {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .service-details .detail-item {
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .service-details .detail-item i {
+            color: var(--primary-light);
+            width: 22px;
         }
 
+        /* Favorite Button */
         .favorite-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ff0000;
-            font-size: 1.5rem;
+            top: 15px;
+            right: 15px;
+            font-size: 1.25rem;
             cursor: pointer;
             z-index: 2;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s ease;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        .favorite-btn .fa-heart {
+            color: var(--danger-color);
+        }
+        .favorite-btn .far.fa-heart {
+             color: #ccc;
+        }
+        
+        /* Search Bar */
+        .search-container .form-control {
+            padding: 0.75rem 1rem;
+            border-radius: 8px 0 0 8px;
+            border: 1px solid #ddd;
+        }
+        .search-container .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border-color: var(--primary-light);
         }
 
-        .search-container {
-            max-width: 100%;
-            margin: 1rem 0;
-        }
-
+        /* Buttons */
         .btn-portal { 
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); 
+            background: var(--primary-light); 
             color: white; 
             white-space: nowrap;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-portal:hover {
+            background: var(--primary-dark);
+            color: white;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
+        }
+        
+        .header .btn-portal {
+            border-radius: 50px;
+            padding: 8px 15px;
+        }
+        
+        .search-container .btn-portal {
+            border-radius: 0 8px 8px 0;
         }
 
-        @media (min-width: 768px) {
-            .service-image {
-                height: 325px;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Backdrop -->
     <div class="sidebar-backdrop"></div>
 
-    <!-- Mobile Menu Toggle -->
     <button class="menu-toggle d-md-none">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Sidebar -->
     <div class="sidebar">
-        
         <div class="profile-card mb-4 text-center">
-
+            
             <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
-                 class="rounded-circle mb-3" style="width: 225px; height: 275px;object-fit: cover; fit-item:bottom;"alt="User_Photo">
+                 class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="User_Photo">
+            
             <h5 class="mb-1">
                 {% if request.COOKIES.user_name %}
                     {{ request.COOKIES.user_name }}
@@ -214,129 +327,163 @@
                 {% endif %}
             </p>
         </div>
+        
         <nav class="nav flex-column">
-            <a class="nav-link text-white active" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
-            <a class="nav-link text-white" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
-            <a class="nav-link text-white" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
-            <a class="nav-link text-white" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
+            <a class="nav-link" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
+            <a class="nav-link" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
+            <a class="nav-link" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
+            <a class="nav-link" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
         </nav>
     </div>
 
-    <!-- Header -->
     <div class="header">
-        <h4 class="fw-bold text-primary mb-0">CustomerService</h4>
+        <h4 class="header-title mb-0">CustomerService</h4>
         <div class="dropdown">
             <button class="btn btn-portal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user me-2"></i>Profile
+                <i class="fas fa-user me-1"></i> Profile
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="/logout">Logout</a></li>
             </ul>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <div class="portal-card">
-            <h3 class="mb-4"><i class="fas fa-calendar-alt me-2"></i>Available Services</h3>
+        
+        <h3 class="mb-3" style="font-weight: 600; color: var(--primary-dark);"><i class="fas fa-calendar-alt me-2"></i>Available Services</h3>
 
-            <!-- Search -->
-            <div class="mb-4">
-                <form method="GET" action="{% url 'bookservice' %}" class="input-group search-container">
-                    <input type="text" name="q" class="form-control" 
-                           placeholder="Search services..." 
-                           value="{{ search_query }}">
-                    <button class="btn btn-portal" type="submit">
-                        <i class="fas fa-search me-2"></i> Search
-                    </button>
-                </form>
-            </div>
-
-            <div class="row g-4">
-                {% for i in data reversed %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="service-card">
-                        <a href="{% url 'usercommon' i.unique %}" class="stretched-link text-decoration-none text-dark">
-                            <div class="favorite-btn" data-employee-id="{{ i.unique }}">
-                                <i class="{% if i.is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
-                            </div>
-                            <img src="{{i.profile_image}}" class="service-image" alt="Service Image">
-                            <div class="service-details">
-                                <h5 class="fw-bold mb-2">{{i.service_provided}}</h5>
-                                <div class="mb-2">
-                                    <i class="fas fa-user me-2 text-primary"></i>
-                                    <span>{{i.name}}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <i class="fas fa-envelope me-2 text-success"></i>
-                                    <span>{{i.email}}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <i class="fas fa-phone me-2 text-danger"></i>
-                                    <span>{{i.phone}}</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="mb-4">
+            <form method="GET" action="{% url 'bookservice' %}" class="input-group search-container shadow-sm">
+                <input type="text" name="q" class="form-control" 
+                       placeholder="Search services by name, provider, or email..." 
+                       value="{{ search_query }}">
+                <button class="btn btn-portal" type="submit">
+                    <i class="fas fa-search me-2"></i> Search
+                </button>
+            </form>
         </div>
+
+        <div class="row g-4">
+            {% for i in data reversed %}
+            <div class="col-12 col-md-6 col-lg-4 service-card-wrapper">
+                <div class="service-card">
+                    
+                    <div class="favorite-btn" data-employee-id="{{ i.unique }}">
+                        <i class="{% if i.is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+                    </div>
+                    
+                    <a href="{% url 'usercommon' i.unique %}" class="stretched-link text-decoration-none text-dark">
+                        <img src="{{i.profile_image}}" class="service-image" alt="Service Image">
+                        <div class="service-details">
+                            <h5 class="fw-bold mb-3">{{i.service_provided}}</h5>
+                            <div class="mb-2 detail-item">
+                                <i class="fas fa-user me-2"></i>
+                                <span>{{i.name}}</span>
+                            </div>
+                            <div class="mb-2 detail-item">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span>{{i.email}}</span>
+                            </div>
+                            <div class="mb-2 detail-item">
+                                <i class="fas fa-phone me-2"></i>
+                                <span>{{i.phone}}</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Services Found</h4>
+                    <p class="text-muted">No services found matching your search criteria.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Mobile Menu Handling
-        const menuToggle = document.querySelector('.menu-toggle');
-        const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.querySelector('.sidebar-backdrop');
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const backdrop = document.querySelector('.sidebar-backdrop');
 
-        // Toggle menu
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('active');
-            backdrop.style.display = 'block';
-        });
+            const openMenu = () => {
+                sidebar.classList.add('active');
+                backdrop.style.display = 'block';
+            };
 
-        // Close menu on backdrop click
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            backdrop.style.display = 'none';
-        });
-
-        // Close menu on window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
+            const closeMenu = () => {
                 sidebar.classList.remove('active');
                 backdrop.style.display = 'none';
-            }
-        });
+            };
 
-        // Active link handling
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href').endsWith(currentPage)) {
-                    link.classList.add('active');
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (sidebar.classList.contains('active')) {
+                    closeMenu();
+                } else {
+                    openMenu();
                 }
+            });
+
+            backdrop.addEventListener('click', closeMenu);
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    closeMenu();
+                }
+            });
+
+            // Active link handling
+            const currentPage = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            // Default to 'bookservice' if no match (e.g., on root path)
+            if (currentPage === '/' || !document.querySelector('.nav-link.active')) {
+                 document.querySelector('.nav-link[href="/bookservice"]').classList.add('active');
+            }
+            
+            // Staggered Animation Script
+            const cards = document.querySelectorAll('.service-card-wrapper');
+            cards.forEach((card, index) => {
+                // Set animation delay for each card
+                card.style.animationDelay = `${index * 70}ms`;
+                // Apply to the card itself, which is inside the wrapper
+                card.querySelector('.service-card').style.animationDelay = `${index * 70}ms`;
             });
         });
 
         // Favorite toggle functionality
         document.querySelectorAll('.favorite-btn').forEach(btn => {
             btn.addEventListener('click', async function(event) {
-                event.preventDefault();
-                event.stopPropagation();
+                event.preventDefault();  // Prevents card link click
+                event.stopPropagation(); // Stops event from bubbling up
                 
                 const employeeId = this.dataset.employeeId;
                 const icon = this.querySelector('i');
                 
                 try {
+                    // NOTE: You must replace '{{ csrf_token }}' with a real token
+                    // E.g., get it from a data attribute on the body tag
+                    const csrfToken = '{{ csrf_token }}'; 
+                    
                     const response = await fetch(`/toggle_favorite/${employeeId}/`, {
                         method: 'POST',
                         headers: {
-                            'X-CSRFToken': '{{ csrf_token }}',
-                            'Content-Type': 'application/json'
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         credentials: 'same-origin'
                     });
@@ -345,6 +492,8 @@
                     if (data.status === 'success') {
                         icon.classList.toggle('far');
                         icon.classList.toggle('fas');
+                    } else {
+                        console.error('Failed to toggle favorite');
                     }
                 } catch (error) {
                     console.error('Error:', error);
