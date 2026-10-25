@@ -308,21 +308,6 @@ DEFAULT_FROM_EMAIL = 'ServiceHub <your-email@gmail.com>'
 
 ---
 
-## 📄 Automated User Manual PDF Compilation
-
-The repository includes a standalone automated compilation script that uses **ReportLab** to generate a formatted PDF user manual and system guide.
-
-To generate or recompile the PDF manual:
-```bash
-python generate_manual_pdf.py
-```
-This generates `CustomerService_User_Manual.pdf` in the root directory, featuring:
-- Dynamic two-pass header and footer page numbering (`NumberedCanvas`).
-- Complete role breakdown for Customers, Providers, and Administrators.
-- High-resolution workflow tables and design palettes.
-
----
-
 ## 🛣️ Endpoint & Route Reference
 
 ### Public & Authentication
@@ -471,5 +456,5 @@ Contributions are welcome and appreciated! To contribute:
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
 
-- **Author & Creator**: **Hitendra Hemraj Yeole**
+- **Author & Creator**: **Bhushan Ingale**
 - **Special Thanks**: Built with Django, Leaflet.js, and ReportLab.
