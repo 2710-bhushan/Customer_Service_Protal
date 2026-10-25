@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallet & Earnings Control – Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-badge {
+    font-size: .72rem;
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    margin-top: .4rem;
+    display: inline-block;
+    font-weight: 700;
+  }
+  .nav-body {
+    padding: 1rem 1rem;
+    flex: 1;
+  }
+  .nav-section {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.25rem 0 .4rem;
+    padding-left: .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .1rem;
+    position: relative;
+  }
+  .nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+    font-size: .9rem;
+  }
+  .badge-count {
+    background: var(--primary);
+    color: white;
+    font-size: .7rem;
+    padding: .1rem .4rem;
+    border-radius: 50px;
+    margin-left: auto;
+    font-weight: 700;
+  }
+  .pending-badge {
+    background: var(--warning);
+  }
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 2.5rem;
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+  }
+  .topbar-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .topbar-title p {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-top: .15rem;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: .5rem 1rem .5rem .75rem;
+  }
+  .admin-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--danger-light);
+    color: var(--danger);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+  }
+  .admin-name {
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  .admin-role {
+    font-size: .7rem;
+    color: var(--text-muted);
+  }
+
+  /* CARDS AND TABLES */
+  .card-section {
+    margin-bottom: 2.5rem;
+  }
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    background: var(--bg-tertiary);
+    padding: .875rem 1.25rem;
+    text-align: left;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  td {
+    padding: .875rem 1.25rem;
+    font-size: .85rem;
+    border-top: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+  tr:hover td {
+    background: var(--bg-tertiary);
+  }
+
+  /* BUTTONS */
+  .btn {
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: .45rem .875rem;
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    text-decoration: none;
+  }
+  .btn-success {
+    background: var(--success-light);
+    color: var(--success);
+    border-color: var(--success);
+  }
+  .btn-success:hover {
+    background: var(--success);
+    color: white;
+  }
+  .btn-danger {
+    background: var(--danger-light);
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .btn-danger:hover {
+    background: var(--danger);
+    color: white;
+  }
+
+  /* BADGES */
+  .status-badge {
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .2rem .6rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .badge-pending { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+  .badge-approved { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .badge-rejected { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
+
+  .thumbnail-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .thumbnail-link:hover {
+    text-decoration: underline;
+  }
+
+  /* ALERT MESSAGE */
+  .alert-box {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+    color: var(--success);
+    border-radius: 12px;
+    padding: .875rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: .88rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="admin-badge">🛡️ Admin Control Panel</div>
+  </div>
+  <div class="nav-body">
+    <div class="nav-section">Overview</div>
+    <a href="/aadmin/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+    <div class="nav-section">User Management</div>
+    <a href="/userinfo/" class="nav-link"><i class="fas fa-users"></i> Customers</a>
+    <a href="/employeeinfo/" class="nav-link"><i class="fas fa-user-gear"></i> Providers</a>
+    <a href="/admin/pending-providers/" class="nav-link">
+      <i class="fas fa-user-clock"></i> Pending Verifications
+      {% if pending_providers > 0 %}<span class="badge-count pending-badge">{{ pending_providers }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Operations</div>
+    <a href="/servicebooked/" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+    <a href="/ticketraised/" class="nav-link">
+      <i class="fas fa-ticket-alt"></i> Complaints
+      {% if ticket_count > 0 %}<span class="badge-count">{{ ticket_count }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Content</div>
+    <a href="/admin/manage_ad/" class="nav-link"><i class="fas fa-ad"></i> Advertisements</a>
+    <a href="/admin/manage_offer/" class="nav-link"><i class="fas fa-tags"></i> Offers & Coupons</a>
+    <a href="/addemp/" class="nav-link"><i class="fas fa-user-plus"></i> Add Provider</a>
+
+    <div class="nav-section">Wallet</div>
+    <a href="/admin/wallet/" class="nav-link active"><i class="fas fa-wallet"></i> Earnings & Wallet</a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Earnings, Wallet & Approvals</h1>
+      <p>Verify service provider bank accounts, process withdrawals, and track payment transactions.</p>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      <div class="admin-info">
+        <div class="admin-avatar">A</div>
+        <div>
+          <div class="admin-name">System Admin</div>
+          <div class="admin-role">Super Administrator</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if request.GET.bank == 'approved' %}
+  <div class="alert-box"><i class="fas fa-check-circle"></i> Service provider banking details have been successfully verified and saved.</div>
+  {% elif request.GET.bank == 'rejected' %}
+  <div class="alert-box" style="background:var(--danger-light); border-color:var(--danger); color:var(--danger);"><i class="fas fa-times-circle"></i> Service provider bank verification request was rejected.</div>
+  {% elif request.GET.withdraw == 'approved' %}
+  <div class="alert-box"><i class="fas fa-check-circle"></i> Withdrawal payout confirmed! Earnings transferred and dummy transaction created.</div>
+  {% elif request.GET.withdraw == 'rejected' %}
+  <div class="alert-box" style="background:var(--danger-light); border-color:var(--danger); color:var(--danger);"><i class="fas fa-times-circle"></i> Withdrawal request has been declined.</div>
+  {% endif %}
+
+  <!-- 1. BANK DETAILS VERIFICATION REQUESTS -->
+  <div class="card-section">
+    <div class="section-title"><i class="fas fa-university text-primary"></i> Pending Bank Verification Requests</div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Bank Profile Details</th>
+            <th>Uploaded Verification Documents</th>
+            <th style="text-align: right; width: 280px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for emp in pending_bank_providers %}
+          <tr>
+            <td>
+              <div style="font-weight: 700; color: var(--text-primary);">{{ emp.name }}</div>
+              <div style="font-size: .78rem; color: var(--text-muted);">{{ emp.email }}</div>
+            </td>
+            <td>
+              <div style="font-weight: 700; color: var(--primary);">Holder: {{ emp.temp_account_holder_name }}</div>
+              <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">{{ emp.temp_bank_name }} – {{ emp.temp_branch_name }} Branch</div>
+              <div style="font-family: monospace; font-size: .8rem; color: var(--text-secondary); margin-top: 0.15rem;">
+                A/C: {{ emp.temp_bank_account_num }} | IFSC: {{ emp.temp_bank_ifsc }}
+              </div>
+            </td>
+            <td>
+              <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                {% if emp.temp_passbook_photo %}
+                  <a href="{{ emp.temp_passbook_photo.url }}" target="_blank" class="thumbnail-link">
+                    <i class="fas fa-file-invoice"></i> Passbook Front Page
+                  </a>
+                {% else %}
+                  <span style="color: var(--text-muted); font-size: 0.8rem;"><i class="fas fa-file-invoice"></i> Passbook: N/A</span>
+                {% endif %}
+                
+                {% if emp.temp_cheque_photo %}
+                  <a href="{{ emp.temp_cheque_photo.url }}" target="_blank" class="thumbnail-link">
+                    <i class="fas fa-money-check"></i> Cancelled Cheque
+                  </a>
+                {% else %}
+                  <span style="color: var(--text-muted); font-size: 0.8rem;"><i class="fas fa-money-check"></i> Cheque: N/A</span>
+                {% endif %}
+              </div>
+            </td>
+            <td style="text-align: right; vertical-align: top;">
+              <form method="POST" action="/admin/approve_bank/{{ emp.unique }}/" style="display: inline-block; margin-bottom: 0.5rem;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" style="padding: 0.35rem 0.75rem;" onclick="return confirm('Approve bank account details for {{ emp.name }}?')">
+                  <i class="fas fa-check"></i> Approve Bank
+                </button>
+              </form>
+              
+              <!-- Correction / Rejection Form -->
+              <form method="POST" action="/admin/reject_bank/{{ emp.unique }}/" style="text-align: left; display: block; border-top: 1px solid var(--border-light); padding-top: 0.5rem;">
+                {% csrf_token %}
+                <div style="display: flex; gap: 0.25rem; margin-bottom: 0.25rem;">
+                  <select name="action_type" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.72rem; flex: 1; background: var(--bg-tertiary);">
+                    <option value="correction">Request Correction</option>
+                    <option value="reject">Reject Profile</option>
+                  </select>
+                  <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.72rem;">
+                    Submit
+                  </button>
+                </div>
+                <input type="text" name="reason" placeholder="Reason for correction/rejection..." class="form-input" style="padding: 0.35rem; font-size: 0.72rem; width: 100%; border: 1px solid var(--border-medium); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);" required>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              No pending bank verification requests from service providers.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 2. WITHDRAWAL REQUESTS -->
+  <div class="card-section">
+    <div class="section-title"><i class="fas fa-hand-holding-usd text-primary"></i> Pending Withdrawal Requests</div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Bank Transfer Details</th>
+            <th>Requested Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in pending_withdrawals %}
+          <tr>
+            <td>
+              <div style="font-weight: 700; color: var(--text-primary);">{{ tx.employee.name }}</div>
+              <div style="font-size: .78rem; color: var(--text-muted);">{{ tx.employee.email }}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600;">{{ tx.employee.bank_name }}</div>
+              <div style="font-size: .78rem; font-family: monospace; color: var(--text-secondary);">A/C: {{ tx.employee.bank_account_num }}</div>
+              <div style="font-size: .72rem; font-family: monospace; color: var(--text-muted);">IFSC: {{ tx.employee.bank_ifsc }}</div>
+            </td>
+            <td style="color: var(--primary); font-weight: 800; font-size: 1rem;">₹{{ tx.amount|floatformat:2 }}</td>
+            <td>{{ tx.created_at|date:"M d, Y at H:i" }}</td>
+            <td><span class="status-badge badge-pending">Pending</span></td>
+            <td style="text-align: right;">
+              <form method="POST" action="/admin/approve_withdrawal/{{ tx.unique }}/" style="display: inline-block;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" onclick="return confirm('Confirm payout of ₹{{ tx.amount }} to {{ tx.employee.name }}?')">
+                  <i class="fas fa-wallet"></i> Confirm & Transfer
+                </button>
+              </form>
+              <form method="POST" action="/admin/reject_withdrawal/{{ tx.unique }}/" style="display: inline-block; margin-left: .25rem;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Decline withdrawal request of ₹{{ tx.amount }} for {{ tx.employee.name }}?')">
+                  <i class="fas fa-times"></i> Reject
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              No pending payout withdrawal requests found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. PLATFORM FINANCIAL TRANSACTION HISTORY LOG -->
+  <div class="card-section">
+    <div class="section-title"><i class="fas fa-list-ul text-primary"></i> Financial Transaction Ledger (Completed)</div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Tx ID</th>
+            <th>Provider Name</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Booking ID</th>
+            <th>Mock Transfer ID</th>
+            <th>Date/Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in completed_transactions %}
+          <tr>
+            <td style="font-family: monospace; font-weight: 700;">#TX{{ tx.unique }}</td>
+            <td>{{ tx.employee.name }}</td>
+            <td>
+              {% if tx.transaction_type == 'Collection' %}
+                <span style="color: var(--success); font-weight: 700;"><i class="fas fa-arrow-down"></i> Collection</span>
+              {% else %}
+                <span style="color: var(--primary); font-weight: 700;"><i class="fas fa-arrow-up"></i> Withdrawal</span>
+              {% endif %}
+            </td>
+            <td style="font-weight: 800; color: {% if tx.transaction_type == 'Collection' %}var(--success){% else %}var(--primary){% endif %};">
+              ₹{{ tx.amount|floatformat:2 }}
+            </td>
+            <td>
+              {% if tx.booking_id %}
+                <span style="font-weight: 600;">Booking #{{ tx.booking_id }}</span>
+              {% else %}
+                <span style="color: var(--text-muted);">N/A</span>
+              {% endif %}
+            </td>
+            <td style="font-family: monospace; font-size: .8rem; font-weight: 600;">
+              {{ tx.dummy_txn_id|default:"Cash On Service" }}
+            </td>
+            <td>{{ tx.created_at|date:"M d, Y at H:i" }}</td>
+            <td>
+              <span class="status-badge badge-approved">Completed</span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+              No completed transactions in the system ledger yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav">
+  <a href="/aadmin/" class="mobile-nav-item">
+    <i class="fas fa-tachometer-alt"></i>
+    <span>Dashboard</span>
+  </a>
+  <a href="/userinfo/" class="mobile-nav-item">
+    <i class="fas fa-users"></i>
+    <span>Customers</span>
+  </a>
+  <a href="/employeeinfo/" class="mobile-nav-item">
+    <i class="fas fa-user-gear"></i>
+    <span>Providers</span>
+  </a>
+  <a href="/admin/wallet/" class="mobile-nav-item active">
+    <i class="fas fa-wallet"></i>
+    <span>Wallet</span>
+  </a>
+</div>
+
+</body>
+</html>

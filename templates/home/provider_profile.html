@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ employee.name }} – Professional {{ employee.service_provided }} on ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+  }
+
+  /* NAVBAR */
+  .navbar {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: var(--transition);
+    padding: 0 2rem;
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: auto;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .nav-links a:hover {
+    color: var(--primary);
+  }
+  .btn-nav {
+    background: var(--primary-gradient);
+    color: white !important;
+    padding: .5rem 1.25rem;
+    border-radius: 10px;
+    transition: var(--transition);
+  }
+  .btn-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+  }
+
+  /* MAIN CONTENT */
+  .container {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    flex: 1;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .88rem;
+    margin-bottom: 2rem;
+    transition: var(--transition);
+    font-weight: 600;
+  }
+  .back-btn:hover {
+    color: var(--text-primary);
+  }
+
+  .profile-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--card-shadow);
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 3rem;
+  }
+
+  .photo-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .profile-image {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-medium);
+  }
+
+  .provider-name {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .cat-badge {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: .25rem .75rem;
+    border-radius: 50px;
+    font-size: .78rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: .4rem;
+  }
+
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .stars {
+    color: #f59e0b;
+    font-size: .9rem;
+    font-weight: 700;
+  }
+
+  .stars-num {
+    background: var(--warning-light);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+    padding: .2rem .6rem;
+    border-radius: 6px;
+    font-size: .85rem;
+    font-weight: 700;
+  }
+
+  .exp-label {
+    font-size: .88rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .provider-bio {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  /* BOOKING BLOCK */
+  .booking-panel {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .booking-price {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--success);
+    margin-bottom: 1rem;
+  }
+  .booking-price small {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: .88rem;
+  }
+
+  .btn-book {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .9rem;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    transition: var(--transition);
+  }
+  .btn-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+  }
+
+  .info-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 2rem;
+  }
+
+  .info-card h3 {
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .6rem;
+  }
+
+  .info-card p {
+    font-size: .88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-light);
+    padding: 3rem 2rem 1.5rem;
+    margin-top: auto;
+    transition: var(--transition);
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 4rem;
+  }
+  .footer-brand p {
+    color: var(--text-secondary);
+    font-size: .9rem;
+    margin-top: .75rem;
+    line-height: 1.5;
+  }
+  .footer-col h4 {
+    font-size: .95rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .footer-col a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    margin-bottom: .6rem;
+    transition: var(--transition);
+  }
+  .footer-col a:hover {
+    color: var(--primary);
+  }
+  .footer-col a:visited {
+    color: var(--text-secondary);
+  }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 3rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-light);
+    font-size: .8rem;
+  }
+
+  @media (max-width: 900px) {
+    .nav-links {
+      gap: 0.75rem;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+    }
+    .nav-links a[href="/about/"], .nav-links a[href="/contact/"] {
+      display: none;
+    }
+    .grid-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .profile-image { height: 280px; }
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="logo" onclick="window.location='/'">⚡ ServiceHub</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      {% if request.session.user_email %}
+        {% if request.session.user_type == 'user' %}
+          <a href="/bookservice/">Dashboard</a>
+          <a href="/logout/" class="btn-nav">Logout</a>
+        {% elif request.session.user_type == 'admin' %}
+          <a href="/aadmin/" class="btn-nav">Admin Panel</a>
+        {% elif request.session.user_type == 'employee' %}
+          <a href="/employeeservicebooked/" class="btn-nav">My Dashboard</a>
+        {% endif %}
+      {% else %}
+        <a href="/signin/">Sign In</a>
+        <a href="/signup/" class="btn-nav">Get Started</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- CONTAINER -->
+<main class="container">
+  <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Directory</a>
+
+  <div class="profile-card">
+    <div class="grid-layout">
+      
+      <!-- Photo and Sidebar Details -->
+      <div class="photo-side">
+        {% if employee.profile_image %}
+          <img src="{{ employee.profile_image }}" class="profile-image" alt="{{ employee.name }}">
+        {% else %}
+          <div class="profile-image" style="background: var(--bg-tertiary); display:flex; align-items:center; justify-content:center; font-size:5rem; font-weight:800; color:var(--text-light);">
+            {{ employee.name|slice:":1" }}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Info Side -->
+      <div>
+        <h2 class="provider-name">{{ employee.name }}</h2>
+        <div>
+          <span class="cat-badge">{{ employee.service_provided }}</span>
+        </div>
+
+        <div class="rating-row">
+          <span class="stars-num"><i class="fas fa-star"></i> {{ employee.rating|floatformat:1 }} Rating</span>
+          <span class="exp-label"><i class="fas fa-briefcase" style="margin-right: 0.25rem;"></i> {{ employee.experience }} Years Experience</span>
+        </div>
+
+        <p class="provider-bio">
+          {{ employee.description|default:"Experienced technician certified to perform complex diagnostic checks, repairs, installs, and routine service items in your local area." }}
+        </p>
+
+        <!-- BOOKING BLOCK -->
+        <div class="booking-panel">
+          <div class="booking-price">
+            ₹{{ employee.starting_price|floatformat:0 }} <small>/ service visit base rate</small>
+          </div>
+          
+          {% if request.session.user_email and request.session.user_type == 'user' %}
+            <a href="/payment/{{ employee.unique }}/" class="btn-book">
+              <i class="fas fa-calendar-check"></i> Book Now
+            </a>
+          {% else %}
+            <a href="/signin/?next=/payment/{{ employee.unique }}/" class="btn-book">
+              <i class="fas fa-calendar-check"></i> Login to Book Service
+            </a>
+          {% endif %}
+        </div>
+
+        <!-- INFO CARD ROW -->
+        <div class="info-details">
+          <div class="info-card">
+            <h3>Specialization & Credentials</h3>
+            <p style="margin-bottom: .25rem;"><strong>Skills:</strong> {{ employee.specialization|default:"General Repair & Maintenance" }}</p>
+            <p><strong>Jobs Done:</strong> {{ employee.no_of_service_provided }} completed bookings</p>
+          </div>
+
+          <div class="info-card">
+            <h3>Coverage Area</h3>
+            <p><i class="fas fa-map-marker-alt text-primary" style="margin-right: .35rem;"></i>{{ employee.address|default:employee.service_area }}</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">⚡ ServiceHub</div>
+      <p>India's trusted platform for home services. Connecting customers with verified professionals since 2024.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="/?category=Electrician">Electrician</a>
+      <a href="/?category=Plumber">Plumber</a>
+      <a href="/?category=Carpenter">Carpenter</a>
+      <a href="/?category=AC+Repair">AC Repair</a>
+      <a href="/?category=Cleaning">Cleaning</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/about/">About Us</a>
+      <a href="/contact/">Contact Support</a>
+      <a href="/signin/">Partner Portal Login</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 ServiceHub. All rights reserved.</p>
+    <p>Secured Dummy Environment</p>
+  </div>
+</footer>
+
+</body>
+</html>

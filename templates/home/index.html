@@ -1,427 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>Customer Servioce</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ServiceHub – Premium Home Services</title>
+<meta name="description" content="Book trusted electricians, plumbers, carpenters, cleaners and more near you. ServiceHub connects you with verified professionals.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    overflow-x: hidden;
+    transition: var(--transition);
+  }
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light);
+    padding: 0 2rem;
+    transition: var(--transition);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+  .logo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .nav-links a:hover {
+    color: var(--primary);
+  }
+  .btn-nav {
+    background: var(--primary-gradient);
+    color: white!important;
+    padding: .5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    transition: var(--transition);
+  }
+  .btn-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+  }
 
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 2rem 60px;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+  }
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: float 6s ease-in-out infinite;
+  }
+  .orb1 {
+    width: 400px;
+    height: 400px;
+    background: rgba(79, 70, 229, 0.1);
+    top: -100px;
+    right: -100px;
+  }
+  .orb2 {
+    width: 300px;
+    height: 300px;
+    background: rgba(14, 165, 233, 0.1);
+    bottom: -50px;
+    left: -50px;
+    animation-delay: -3s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) }
+    50% { transform: translateY(-20px) }
+  }
+  .hero-content {
+    text-align: center;
+    max-width: 700px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: 50px;
+    padding: .4rem 1.2rem;
+    font-size: .85rem;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    font-weight: 700;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+  .hero h1 span {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+  .search-box {
+    display: flex;
+    gap: .5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: .5rem;
+    max-width: 600px;
+    margin: auto;
+    box-shadow: var(--card-shadow);
+  }
+  .search-box input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 1rem;
+    padding: .5rem 1rem;
+    font-family: var(--font-family);
+  }
+  .search-box input::placeholder {
+    color: var(--text-light);
+  }
+  .search-box button {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: .7rem 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .search-box button:hover {
+    transform: scale(1.03);
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+  .stat-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label {
+    font-size: .8rem;
+    color: var(--text-muted);
+    margin-top: .2rem;
+    font-weight: 600;
+  }
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+  /* CATEGORIES */
+  .section {
+    padding: 80px 2rem;
+    max-width: 1200px;
+    margin: auto;
+  }
+  .section-head {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .section-head h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: .5rem;
+    color: var(--text-primary);
+  }
+  .section-head p {
+    color: var(--text-secondary);
+  }
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  .cat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: block;
+    box-shadow: var(--card-shadow);
+  }
+  .cat-card:hover, .cat-card.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    transform: translateY(-4px);
+  }
+  .cat-icon {
+    font-size: 2rem;
+    margin-bottom: .75rem;
+    display: block;
+  }
+  .cat-name {
+    color: var(--text-primary);
+    font-size: .85rem;
+    font-weight: 700;
+  }
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+  /* PROVIDERS */
+  .providers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .provider-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+  }
+  .provider-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary);
+  }
+  .provider-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: var(--bg-tertiary);
+  }
+  .provider-img-placeholder {
+    width: 100%;
+    height: 200px;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+  }
+  .provider-body {
+    padding: 1.25rem;
+  }
+  .provider-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: .3rem;
+    color: var(--text-primary);
+  }
+  .provider-category {
+    font-size: .8rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    display: inline-block;
+    margin-bottom: .75rem;
+    font-weight: 600;
+  }
+  .provider-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: .82rem;
+    color: var(--text-secondary);
+    margin-bottom: .75rem;
+  }
+  .provider-meta span {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+  }
+  .provider-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .provider-price {
+    color: var(--success);
+    font-weight: 800;
+    font-size: 1rem;
+  }
+  .btn-book {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: .5rem 1.2rem;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-book:hover {
+    transform: scale(1.03);
+  }
+  .stars {
+    color: #f59e0b;
+    font-size: .85rem;
+  }
 
-    <!-- Libraries Stylesheet -->
-    <link href="/static/home/lib/animate/animate.min.css" rel="stylesheet">
-    <link href="/static/home/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="/static/home/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+  /* ADS STRIP */
+  .ads-strip {
+    padding: 2rem;
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+  .ads-scroll {
+    display: flex;
+    gap: 1.5rem;
+    animation: scroll 25s linear infinite;
+  }
+  @keyframes scroll {
+    0% { transform: translateX(0) }
+    100% { transform: translateX(-50%) }
+  }
+  .ad-item {
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+  }
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="/static/home/css/bootstrap.min.css" rel="stylesheet">
+  /* FOOTER */
+  footer {
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-light);
+    padding: 3rem 2rem 1.5rem;
+    margin-top: 4rem;
+    transition: var(--transition);
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+  }
+  .footer-brand p {
+    color: var(--text-secondary);
+    font-size: .9rem;
+    margin-top: 1rem;
+    line-height: 1.7;
+  }
+  .footer-col h4 {
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+  .footer-col a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .9rem;
+    margin-bottom: .5rem;
+    transition: var(--transition);
+    font-weight: 500;
+  }
+  .footer-col a:hover {
+    color: var(--primary);
+  }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 2rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    color: var(--text-light);
+    font-size: .85rem;
+    font-weight: 600;
+  }
 
-    <!-- Template Stylesheet -->
-    <link href="/static/home/css/style.css" rel="stylesheet">
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+  }
+  .empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: .3;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--success);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.15);
+    z-index: 9999;
+    transform: translateY(100px);
+    transition: transform .4s;
+    font-weight: 700;
+  }
+  .toast.show {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      gap: 0.75rem;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+    }
+    .nav-links a[href="/about/"], .nav-links a[href="/contact/"] {
+      display: none;
+    }
+    .hero h1 { font-size: 2rem; }
+    .hero-stats { gap: 1rem; display: grid; grid-template-columns: 1fr 1fr; }
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .providers-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
-
 <body>
-    <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      {% if request.session.user_email %}
+        {% if request.session.user_type == 'user' %}
+          <a href="/bookservice/">Dashboard</a>
+          <a href="/logout/" class="btn-nav">Logout</a>
+        {% elif request.session.user_type == 'admin' %}
+          <a href="/aadmin/" class="btn-nav">Admin Panel</a>
+        {% elif request.session.user_type == 'employee' %}
+          <a href="/employeeservicebooked/" class="btn-nav">My Dashboard</a>
+        {% endif %}
+      {% else %}
+        <a href="/signin/">Sign In</a>
+        <a href="/signup/" class="btn-nav">Get Started</a>
+      {% endif %}
     </div>
-    <!-- Spinner End -->
+  </div>
+</nav>
 
-
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-light d-none d-lg-block">
-        <div class="row align-items-center top-bar">
-            <div class="col-lg-3 col-md-12 text-center text-lg-start">
-                <a href="" class="navbar-brand m-0 p-0">
-                    <h1 class="text-primary m-0">CustomerService</h1>
-                </a>
-            </div>
-            <div class="col-lg-9 col-md-12 text-end">
-                <div class="h-100 d-inline-flex align-items-center me-4">
-                    <i class="fa fa-map-marker-alt text-primary me-2"></i>
-                    <p class="m-0">Galaxy Market, Main Road, Jalgaon</p>
-                </div>
-                <div class="h-100 d-inline-flex align-items-center me-4">
-                    <i class="far fa-envelope-open text-primary me-2"></i>
-                    <p class="m-0">customerservice@gmail.com</p>
-                </div>
-                <div class="h-100 d-inline-flex align-items-center">
-                    <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-sm-square bg-white text-primary me-0" href=""><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span>⭐</span>
+      <span>Trusted by 10,000+ Customers</span>
     </div>
-    <!-- Topbar End -->
-
-
-    <!-- Navbar Start -->
-    <div class="container-fluid nav-bar bg-light">
-        <nav class="navbar navbar-expand-lg navbar-light bg-white p-3 py-lg-0 px-lg-4">
-            <a href="" class="navbar-brand d-flex align-items-center m-0 p-0 d-lg-none">
-                <h1 class="text-primary m-0">CustomerService</h1>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="fa fa-bars"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav me-auto">
-                    <a href="/" class="nav-item nav-link active">Home</a>
-                    <a href="/about" class="nav-item nav-link">About</a>
-                   
-                
-                    <a href="/contact" class="nav-item nav-link">Contact</a>
-                </div>
-
-                <a href="/signup">
-                    <div style="margin-right: 10px; ">
-                        <button class="btn btn-primary w-100 py-3" type="submit" style="margin-bottom: 5px;">  Sign Up  </button>
-                    </div></a>
-                    <a href="/signin">
-                    <div style="margin-right: 10px;">
-                        <button class="btn btn-primary w-100 py-3" type="submit" style="margin-bottom: 5px;">  Sign In  </button>
-                    </div></a>
-              
-
-                <div class="mt-4 mt-lg-0 me-lg-n4 py-3 px-4 bg-primary d-flex align-items-center">
-                    <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 45px; height: 45px;">
-                        <i class="fa fa-phone-alt text-primary"></i>
-                    </div>
-                    <div class="ms-3">
-                        <p class="mb-1 text-white">Emergency 24/7</p>
-                        <h5 class="m-0 text-secondary">+91 18001 12233</h5>
-                    </div>
-                </div>
-            </div>
-        </nav>
+    <h1>Your Home <span>Deserves</span> the Best Service</h1>
+    <p>Connect with verified professionals for all home services. Fast, reliable, and affordable. Book in minutes.</p>
+    <form class="search-box" action="/" method="get">
+      <input type="text" name="q" placeholder="Search for electrician, plumber, AC repair..." value="{{ search_query }}" id="hero-search">
+      <button type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Verified Pros</div></div>
+      <div class="stat"><div class="stat-num">15k+</div><div class="stat-label">Jobs Done</div></div>
+      <div class="stat"><div class="stat-num">4.8★</div><div class="stat-label">Avg Rating</div></div>
+      <div class="stat"><div class="stat-num">30min</div><div class="stat-label">Avg Response</div></div>
     </div>
-    <!-- Navbar End -->
+  </div>
+</section>
 
+<!-- ADS STRIP -->
+{% if ads %}
+<div class="ads-strip">
+  <div class="ads-scroll">
+    {% for ad in ads %}
+      <div class="ad-item">
+        {% if ad.target_url %}<a href="{{ ad.target_url }}" style="color:inherit;text-decoration:none;">{% endif %}
+        🎯 {{ ad.title }}
+        {% if ad.target_url %}</a>{% endif %}
+      </div>
+    {% endfor %}
+    {% for ad in ads %}
+      <div class="ad-item">🎯 {{ ad.title }}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0 mb-5">
-        <div class="owl-carousel header-carousel position-relative">
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="/static/carousel-1.jpg" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, .4);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-10 col-lg-8">
-                                <h5 class="text-white text-uppercase mb-3 animated slideInDown">Car Mechanic & Repairing Services</h5>
-                                <h1 class="display-3 text-white animated slideInDown mb-4">Expert Automotive Repair Services</h1>
-                                <p class="fs-5 fw-medium text-white mb-4 pb-2">True excellence with a simple touch. Quality service that stands firm. We handle repairs with precision and reliability, ensuring smooth performance every time.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="/static/carousel-2.jpg" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, .4);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-10 col-lg-8">
-                                <h5 class="text-white text-uppercase mb-3 animated slideInDown">Plumbing & Repairing Services</h5>
-                                <h1 class="display-3 text-white animated slideInDown mb-4">Efficient Commercial Plumbing Services</h1>
-                                <p class="fs-5 fw-medium text-white mb-4 pb-2">True excellence with a simple touch. Quality service that stands firm. We handle repairs with precision and reliability, ensuring smooth performance every time.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- CATEGORIES -->
+<div class="section">
+  <div class="section-head">
+    <h2>Browse by <span style="background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Category</span></h2>
+    <p>Find the right professional for any home service need</p>
+  </div>
+  <div class="category-grid">
+    {% for cat in categories %}
+    <a href="/?category={{ cat.name }}" class="cat-card {% if selected_category == cat.name %}active{% endif %}">
+      <span class="cat-icon">{{ cat.icon }}</span>
+      <span class="cat-name">{{ cat.name }}</span>
+    </a>
+    {% endfor %}
+    {% if selected_category %}
+    <a href="/" class="cat-card" style="border-color:var(--danger)">
+      <span class="cat-icon">❌</span>
+      <span class="cat-name">Clear Filter</span>
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- SERVICE PROVIDERS -->
+<div class="section" style="padding-top:0">
+  <div class="section-head">
+    <h2>{% if search_query %}Results for "{{ search_query }}"{% elif selected_category %}{{ selected_category }} Professionals{% else %}Featured <span style="background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Professionals</span>{% endif %}</h2>
+    <p>All providers are verified and background-checked</p>
+  </div>
+
+  {% if employees %}
+  <div class="providers-grid">
+    {% for emp in employees %}
+    <div class="provider-card" onclick="window.location='/provider/{{ emp.unique }}/'">
+      {% if emp.profile_image %}
+        <img src="{{ emp.profile_image }}" alt="{{ emp.name }}" class="provider-img">
+      {% else %}
+        <div class="provider-img-placeholder">👷</div>
+      {% endif %}
+      <div class="provider-body">
+        <div class="provider-category">{{ emp.service_provided }}</div>
+        <div class="provider-name">{{ emp.name }}</div>
+        <div class="stars">
+          ⭐ ⭐ ⭐ ⭐ ⭐ <span style="color:var(--text-muted);margin-left:.25rem">{{ emp.rating|floatformat:1 }}</span>
         </div>
+        <div class="provider-meta" style="margin-top:.5rem">
+          <span><i class="fas fa-briefcase"></i> {{ emp.experience }} yrs exp</span>
+          <span><i class="fas fa-map-marker-alt"></i> {{ emp.service_area|truncatechars:20 }}</span>
+        </div>
+        <div class="provider-footer">
+          <div class="provider-price">Starting ₹{{ emp.starting_price|floatformat:0 }}</div>
+          <a href="/provider/{{ emp.unique }}/" class="btn-book" onclick="event.stopPropagation()">View Profile</a>
+        </div>
+      </div>
     </div>
-    <!-- Carousel End -->
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-search-minus"></i>
+    <h3 style="margin-bottom:.5rem">No Providers Found</h3>
+    <p>Try a different search or category</p>
+    <a href="/" style="color:var(--primary);text-decoration:none;margin-top:1rem;display:inline-block">Browse All →</a>
+  </div>
+  {% endif %}
+</div>
 
-
-    <!-- Service Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6 service-item-top wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid w-100 h-100" src="/static/service-1.jpeg" alt="">
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between bg-light p-4">
-                        <h5 class="text-truncate me-3 mb-0">Residential Plumbing</h5>
-                        <a class="btn btn-square btn-outline-primary border-2 border-white flex-shrink-0" href=""><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 service-item-top wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid w-100 h-100" src="/static/service-2.jpg" alt="">
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between bg-light p-4">
-                        <h5 class="text-truncate me-3 mb-0">Car Mechanic</h5>
-                        <a class="btn btn-square btn-outline-primary border-2 border-white flex-shrink-0" href=""><i class="fa-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 service-item-top wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid w-100 h-100" src="/static/service-3.jpg" alt="">
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between bg-light p-4">
-                        <h5 class="text-truncate me-3 mb-0">Cleaner Services</h5>
-                        <a class="btn btn-square btn-outline-primary border-2 border-white flex-shrink-0" href=""><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- WHY US -->
+<div style="background:var(--bg-tertiary);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:4rem 2rem;margin-top:2rem">
+  <div class="section-head"><h2>Why Choose <span style="background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">ServiceHub?</span></h2></div>
+  <div style="max-width:1100px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;text-align:center">
+    {% for item in "1234" %}
+    <div style="background:var(--card-bg);border:1px solid var(--border-light);border-radius:16px;padding:2rem;box-shadow:var(--card-shadow)">
+      <div style="font-size:2.5rem;margin-bottom:1rem">
+        {% if forloop.counter == 1 %}✅{% elif forloop.counter == 2 %}⚡{% elif forloop.counter == 3 %}🔒{% else %}📱{% endif %}
+      </div>
+      <h3 style="margin-bottom:.5rem">
+        {% if forloop.counter == 1 %}Verified Pros{% elif forloop.counter == 2 %}Fast Booking{% elif forloop.counter == 3 %}Secure Payments{% else %}Live Tracking{% endif %}
+      </h3>
+      <p style="color:var(--text-secondary);font-size:.9rem">
+        {% if forloop.counter == 1 %}All providers go through Aadhaar & PAN verification{% elif forloop.counter == 2 %}Book a service in under 2 minutes{% elif forloop.counter == 3 %}100% secure dummy transactions{% else %}Track your service provider on live map{% endif %}
+      </p>
     </div>
-    <!-- Service End -->
+    {% endfor %}
+  </div>
+</div>
 
-
-    <!-- About Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <h6 class="text-secondary text-uppercase">About Us</h6>
-                    <h1 class="mb-4">We Are Trusted Service Company Since 1990</h1>
-                    <p class="mb-4">We are committed to delivering exceptional services with precision and reliability. Our team ensures quality and efficiency in every project, providing tailored solutions to meet your needs. Customer satisfaction is our priority, and we strive to exceed expectations with professionalism and dedication.</p>
-                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Residential , Commercial plumbing , Cleaning , Car Mechanic and more </p>
-                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Quality services at affordable prices</p>
-                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Immediate 24/ 7 emergency services</p>
-                    <div class="bg-primary d-flex align-items-center p-4 mt-5">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 60px; height: 60px;">
-                            <i class="fa fa-phone-alt fa-2x text-primary"></i>
-                        </div>
-                        <div class="ms-3">
-                            <p class="fs-5 fw-medium mb-2 text-white">Emergency 24/7</p>
-                            <h3 class="m-0 text-secondary">+91 18001 12233</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 pt-4" style="min-height: 500px;">
-                    <div class="position-relative h-100 wow fadeInUp" data-wow-delay="0.5s">
-                        <img class="position-absolute img-fluid w-100 h-100" src="/static/about-1.jpg" style="object-fit: cover; padding: 0 0 50px 100px;" alt="">
-                        <img class="position-absolute start-0 bottom-0 img-fluid bg-white pt-2 pe-2 w-50 h-50" src="/static/about-2.jpg" style="object-fit: cover;" alt="">
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">⚡ ServiceHub</div>
+      <p>India's trusted platform for home services. Connecting customers with verified professionals since 2024.</p>
     </div>
-    <!-- About End -->
-
-
-    <!-- Fact Start -->
-    <div class="container-fluid fact bg-dark my-5 py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.1s">
-                    <i class="fa fa-check fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">25</h2>
-                    <p class="text-white mb-0">Years Experience</p>
-                </div>
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.3s">
-                    <i class="fa fa-users-cog fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">30</h2>
-                    <p class="text-white mb-0">Expert Technicians (approx)</p>
-                </div>
-
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.7s">
-                    <i class="fa fa-wrench fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">2657</h2>
-                    <p class="text-white mb-0">Compleate Projects (approx)</p>
-                </div>
-            </div>
-        </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="/?category=Electrician">Electrician</a>
+      <a href="/?category=Plumber">Plumber</a>
+      <a href="/?category=Carpenter">Carpenter</a>
+      <a href="/?category=AC+Repair">AC Repair</a>
+      <a href="/?category=Cleaning">Cleaning</a>
     </div>
-    <!-- Fact End -->
-
-
-  
-
-
-    <!-- Booking Start -->
-    <div class="container-fluid my-5 px-0">
-        <div class="video wow fadeInUp" data-wow-delay="0.1s">
-            <button type="button" class="btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModal">
-                <span></span>
-            </button>
-
-            <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content rounded-0">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- 16:9 aspect ratio -->
-                            <div class="ratio ratio-16x9">
-                                <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always"
-                                    allow="autoplay"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h1 class="text-white mb-4">Emergency Service</h1>
-            <h3 class="text-white mb-0">24/7 Available</h3>
-        </div>
-       
-
-
-    <!-- Team Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="text-secondary text-uppercase">Our Technicians</h6>
-                <h1 class="mb-5">Our Top Expert Technicians</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="/static/team-1.jpg" alt="">
-                        </div>
-                        <div class="team-text">
-                            <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Arjun Sharma</h5>
-                                <small>Electrician</small>
-                            </div>
-                            <div class="bg-primary">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="/static/team-2.jpg" alt="">
-                        </div>
-                        <div class="team-text">
-                            <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Rohini Chaudhari</h5>
-                                <small>Plumber</small>
-                            </div>
-                            <div class="bg-primary">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="/static/team-3.jpg" alt="">
-                        </div>
-                        <div class="team-text">
-                            <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Yash Kumar</h5>
-                                <small>Mechanical</small>
-                            </div>
-                            <div class="bg-primary">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="/static/team-4.jpg" alt="">
-                        </div>
-                        <div class="team-text">
-                            <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Indira Patil</h5>
-                                <small>House Cleaner</small>
-                            </div>
-                            <div class="bg-primary">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/about/">About Us</a>
+      <a href="/contact/">Contact</a>
+      <a href="/signup/">Register</a>
+      <a href="/signin/">Sign In</a>
     </div>
-    <!-- Team End -->
+  </div>
+  <div class="footer-bottom">
+    © 2024 ServiceHub. All rights reserved. | Built with ❤️ for India
+  </div>
+</footer>
 
+{% if request.GET.payment == 'success' %}
+<div class="toast show" id="toast">🎉 Payment Successful! Booking confirmed.</div>
+{% endif %}
 
-    
-
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Address</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Galaxy Market, Main Road, Jalgaon</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+91 18001 12233</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>customerservice@gmail.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Opening Hours</h4>
-                    <h6 class="text-light">Monday - Friday:</h6>
-                    <p class="mb-4">09.00 AM - 09.00 PM</p>
-                    <h6 class="text-light">Saturday - Sunday:</h6>
-                    <p class="mb-0">09.00 AM - 12.00 PM</p>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Services</h4>
-                    <a class="btn btn-link" href="">Electrician</a>
-                    <a class="btn btn-link" href="">House Cleaner</a>
-                    <a class="btn btn-link" href="">Plumber</a>
-                    <a class="btn btn-link" href="">Mechanical</a>
-                    <a class="btn btn-link" href="">Car/Bike Cleaner</a>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-
-
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/home/lib/wow/wow.min.js"></script>
-    <script src="/static/home/lib/easing/easing.min.js"></script>
-    <script src="/static/home/lib/waypoints/waypoints.min.js"></script>
-    <script src="/static/home/lib/counterup/counterup.min.js"></script>
-    <script src="/static/home/lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="/static/home/lib/tempusdominus/js/moment.min.js"></script>
-    <script src="/static/home/lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="/static/home/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="/static/home/js/main.js"></script>
+<script>
+  setTimeout(()=>{const t=document.getElementById('toast');if(t)t.classList.remove('show')},4000);
+</script>
 </body>
-
 </html>

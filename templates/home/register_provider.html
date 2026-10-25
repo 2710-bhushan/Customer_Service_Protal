@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Provider Registration – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    transition: var(--transition);
+  }
+  .header-actions {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
+  }
+  .container {
+    max-width: 750px;
+    margin: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-top: 1rem;
+  }
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: .5rem;
+  }
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    margin-bottom: 1.5rem;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .8rem;
+  }
+  .step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7rem;
+    font-weight: 700;
+    transition: var(--transition);
+    color: var(--text-muted);
+  }
+  .step-dot.done {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+  .step-dot.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+  .step-line {
+    width: 40px;
+    height: 2px;
+    background: var(--border-light);
+  }
+  .step-line.done {
+    background: var(--success);
+  }
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    margin-bottom: .25rem;
+    color: var(--text-primary);
+  }
+  p.sub {
+    color: var(--text-muted);
+    font-size: .9rem;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: .4rem;
+  }
+  .req {
+    color: var(--danger);
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap i {
+    position: absolute;
+    left: .875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: .85rem;
+  }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="number"], select, textarea {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .7rem 1rem .7rem 2.3rem;
+    color: var(--text-primary);
+    font-size: .9rem;
+    font-family: var(--font-family);
+    transition: var(--transition);
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--bg-secondary);
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--text-light);
+  }
+  select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    padding-left: 1rem;
+  }
+  .no-icon {
+    padding-left: 1rem!important;
+  }
+
+  .file-upload {
+    border: 2px dashed var(--border-medium);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    background: var(--bg-tertiary);
+  }
+  .file-upload:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .file-upload input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+  }
+  .file-upload i {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    margin-bottom: .5rem;
+    display: block;
+  }
+  .file-upload p {
+    font-size: .82rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .file-upload .filename {
+    font-size: .82rem;
+    color: var(--success);
+    margin-top: .4rem;
+    font-weight: 600;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: .75rem;
+  }
+  .radio-opt {
+    flex: 1;
+  }
+  .radio-opt input {
+    display: none;
+  }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .75rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .radio-label:hover {
+    border-color: var(--primary);
+  }
+  .radio-opt input:checked + .radio-label {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .location-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+    margin-bottom: 1rem;
+  }
+  .loc-method {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-secondary);
+  }
+  .loc-method:hover, .loc-method.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .loc-method i {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: .4rem;
+    color: var(--primary);
+  }
+  .loc-method span {
+    font-size: .85rem;
+    font-weight: 600;
+  }
+
+  .btn-gps {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .9rem;
+    margin-bottom: 1rem;
+  }
+  .btn-gps:hover {
+    background: var(--success-hover);
+    transform: translateY(-2px);
+  }
+  .gps-status {
+    font-size: .82rem;
+    padding: .5rem .75rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .terms-box {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+  }
+  .terms-box input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+  }
+  .terms-box label {
+    color: var(--text-secondary);
+    font-size: .85rem;
+    cursor: pointer;
+  }
+  .terms-box a {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.35);
+  }
+  .error-box {
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: .75rem 1rem;
+    color: var(--danger);
+    font-size: .88rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .location-methods { grid-template-columns: 1fr; }
+    .header-actions { top: 1rem; right: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header-actions">
+  <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="steps">
+      <div class="step"><div class="step-dot done">✓</div></div>
+      <div class="step-line done"></div>
+      <div class="step"><div class="step-dot done">✓</div></div>
+      <div class="step-line done"></div>
+      <div class="step"><div class="step-dot active">3</div></div>
+    </div>
+    <h1>Service Provider Registration</h1>
+    <p class="sub">Email verified! Complete your provider profile for admin review.</p>
+  </div>
+
+  {% if error %}
+  <div class="error-box"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" id="providerForm">
+    {% csrf_token %}
+    <input type="hidden" name="address_type" id="address_type" value="manual">
+
+    <!-- Personal Info -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-user"></i> Personal Information</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Full Name <span class="req">*</span></label>
+          <div class="input-wrap"><i class="fas fa-user"></i>
+            <input type="text" name="full_name" placeholder="Your full name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrap"><i class="fas fa-envelope"></i>
+            <input type="email" value="{{ email }}" readonly style="opacity:.6">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number <span class="req">*</span></label>
+          <div class="input-wrap"><i class="fas fa-phone"></i>
+            <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Service Category <span class="req">*</span></label>
+          <div class="input-wrap"><i class="fas fa-tools"></i>
+            <select name="service_category" required>
+              <option value="">Select category...</option>
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Profile Photo</label>
+        <div class="file-upload">
+          <input type="file" name="profile_photo" accept="image/*" onchange="showFilename(this,'pf')">
+          <i class="fas fa-camera"></i>
+          <p>Click to upload profile photo (JPG, PNG)</p>
+          <div class="filename" id="pf-name"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-id-card"></i> Identity Documents</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Aadhaar Card <span class="req">*</span></label>
+          <div class="file-upload">
+            <input type="file" name="aadhaar_card" accept="image/*,.pdf" onchange="showFilename(this,'aa')">
+            <i class="fas fa-id-card"></i>
+            <p>Upload Aadhaar (front+back)</p>
+            <div class="filename" id="aa-name"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>PAN Card <span class="req">*</span></label>
+          <div class="file-upload">
+            <input type="file" name="pan_card" accept="image/*,.pdf" onchange="showFilename(this,'pan')">
+            <i class="fas fa-credit-card"></i>
+            <p>Upload PAN card</p>
+            <div class="filename" id="pan-name"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Do you have Business Registration?</label>
+        <div class="radio-group">
+          <div class="radio-opt">
+            <input type="radio" name="has_business_registration" id="biz_no" value="no" checked onchange="toggleBiz(false)">
+            <label class="radio-label" for="biz_no">❌ No</label>
+          </div>
+          <div class="radio-opt">
+            <input type="radio" name="has_business_registration" id="biz_yes" value="yes" onchange="toggleBiz(true)">
+            <label class="radio-label" for="biz_yes">✅ Yes</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" id="biz_cert_group" style="display:none">
+        <label>Business Registration Certificate</label>
+        <div class="file-upload">
+          <input type="file" name="business_registration_cert" accept="image/*,.pdf" onchange="showFilename(this,'biz')">
+          <i class="fas fa-file-invoice"></i>
+          <p>Upload govt. business registration cert</p>
+          <div class="filename" id="biz-name"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-map-marker-alt"></i> Service Location</div>
+      <div class="location-methods">
+        <div class="loc-method active" id="method-manual" onclick="setMethod('manual')">
+          <i class="fas fa-edit"></i>
+          <span>Enter Manually</span>
+        </div>
+        <div class="loc-method" id="method-gps" onclick="setMethod('gps')">
+          <i class="fas fa-crosshairs"></i>
+          <span>Use GPS Location</span>
+        </div>
+      </div>
+
+      <div id="gps-section" style="display:none">
+        <button type="button" class="btn-gps" onclick="detectLocation()">
+          <i class="fas fa-location-arrow"></i> Detect My Location
+        </button>
+        <div class="gps-status" id="gps-status"></div>
+        <input type="hidden" name="gps_lat" id="gps_lat" value="0">
+        <input type="hidden" name="gps_lng" id="gps_lng" value="0">
+        <input type="hidden" name="gps_address" id="gps_address" value="">
+      </div>
+
+      <div id="address-fields">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Address Line 1</label>
+            <div class="input-wrap"><i class="fas fa-home"></i>
+              <input type="text" name="address_line1" id="addr1" placeholder="House / Flat / Building No.">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Address Line 2</label>
+            <div class="input-wrap"><i class="fas fa-road"></i>
+              <input type="text" name="address_line2" id="addr2" placeholder="Street / Landmark">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Area / Locality</label>
+            <div class="input-wrap"><i class="fas fa-map"></i>
+              <input type="text" name="area" id="addr_area" placeholder="Area name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <div class="input-wrap"><i class="fas fa-city"></i>
+              <input type="text" name="city" id="addr_city" placeholder="City">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>District</label>
+            <div class="input-wrap"><i class="fas fa-map-pin"></i>
+              <input type="text" name="district" id="addr_district" placeholder="District">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <div class="input-wrap"><i class="fas fa-flag"></i>
+              <input type="text" name="state" id="addr_state" placeholder="State">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Pincode</label>
+            <div class="input-wrap"><i class="fas fa-hashtag"></i>
+              <input type="text" name="pincode" id="addr_pincode" placeholder="6-digit pincode" maxlength="6">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email Notifications Preference -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-envelope-open-text"></i> Email Notification Settings</div>
+      <div class="form-group">
+        <label>Allow Service Notifications by Email <span class="req">*</span></label>
+        <p style="font-size: .8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+          Specify if you want to receive booking requests, operational updates, payment receipts, and bank withdrawal notifications by email.
+          <br><strong>Note: This preference setting is permanently locked on registration and cannot be modified later by you or the Administrator.</strong>
+        </p>
+        <div class="radio-group">
+          <div class="radio-opt">
+            <input type="radio" name="allow_email_notifications" id="email_yes" value="yes" checked>
+            <label class="radio-label" for="email_yes">🟢 Enabled</label>
+          </div>
+          <div class="radio-opt">
+            <input type="radio" name="allow_email_notifications" id="email_no" value="no">
+            <label class="radio-label" for="email_no">🔴 Disabled</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms -->
+    <div class="card">
+      <div class="terms-box">
+        <input type="checkbox" name="terms_accepted" id="terms" required>
+        <label for="terms">
+          I agree to ServiceHub's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          I confirm all submitted documents are genuine. I understand my application is subject to verification.
+        </label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">
+      <i class="fas fa-paper-plane"></i> Submit Application for Review
+    </button>
+  </form>
+</div>
+
+<script>
+  function showFilename(input, id) {
+    const el = document.getElementById(id + '-name');
+    if (input.files[0]) el.textContent = '✓ ' + input.files[0].name;
+  }
+  function toggleBiz(show) {
+    document.getElementById('biz_cert_group').style.display = show ? 'block' : 'none';
+  }
+  function setMethod(m) {
+    document.getElementById('address_type').value = m;
+    document.getElementById('method-manual').classList.toggle('active', m === 'manual');
+    document.getElementById('method-gps').classList.toggle('active', m === 'gps');
+    document.getElementById('gps-section').style.display = m === 'gps' ? 'block' : 'none';
+  }
+  function detectLocation() {
+    const status = document.getElementById('gps-status');
+    status.style.display = 'block';
+    status.style.background = 'var(--primary-light)';
+    status.style.border = '1px solid var(--primary)';
+    status.style.color = 'var(--primary)';
+    status.textContent = '📡 Detecting location...';
+
+    if (!navigator.geolocation) {
+      status.textContent = '❌ Geolocation not supported.';
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      document.getElementById('gps_lat').value = lat;
+      document.getElementById('gps_lng').value = lng;
+      status.textContent = `📍 Location detected: ${lat}, ${lng}. Fetching address...`;
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const data = await res.json();
+        const a = data.address || {};
+        document.getElementById('addr1').value = a.house_number || '';
+        document.getElementById('addr2').value = a.road || a.suburb || '';
+        document.getElementById('addr_area').value = a.suburb || a.neighbourhood || '';
+        document.getElementById('addr_city').value = a.city || a.town || a.village || '';
+        document.getElementById('addr_district').value = a.county || a.state_district || '';
+        document.getElementById('addr_state').value = a.state || '';
+        document.getElementById('addr_pincode').value = a.postcode || '';
+        document.getElementById('gps_address').value = data.display_name || '';
+        status.style.background = 'var(--success-light)';
+        status.style.border = '1px solid var(--success)';
+        status.style.color = 'var(--success)';
+        status.textContent = '✓ Address auto-filled from GPS location!';
+      } catch(e) {
+        status.textContent = '⚠️ Location detected but could not fetch address. Fill manually.';
+      }
+    }, err => {
+      status.style.background = 'var(--danger-light)';
+      status.style.color = 'var(--danger)';
+      status.textContent = '❌ Could not get location. Please allow location access.';
+    });
+  }
+</script>
+</body>
+</html>

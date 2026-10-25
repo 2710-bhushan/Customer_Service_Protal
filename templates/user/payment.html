@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Checkout – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    padding: 2rem;
+    transition: var(--transition);
+  }
+  .header-actions {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
+  }
+  .container {
+    max-width: 1000px;
+    margin: auto;
+    position: relative;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .88rem;
+    margin-bottom: 2rem;
+    transition: var(--transition);
+    font-weight: 600;
+  }
+  .back-btn:hover {
+    color: var(--text-primary);
+  }
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: .25rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .sub {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin-bottom: 2rem;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+  }
+  .card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  }
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 750;
+    margin-bottom: 1.25rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* PROVIDER CARD SMALL */
+  .provider-mini {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+  }
+  .pm-img {
+    width: 68px;
+    height: 68px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .pm-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pm-name {
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+  .pm-cat {
+    font-size: .8rem;
+    color: var(--primary);
+    margin: .25rem 0;
+    font-weight: 600;
+  }
+  .pm-price {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--success);
+  }
+  .stars {
+    color: #f59e0b;
+    font-size: .85rem;
+  }
+
+  /* ADDRESS SELECTOR */
+  .addr-options {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .addr-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .addr-opt:hover {
+    border-color: var(--primary-hover);
+  }
+  .addr-opt.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .addr-opt input[type="radio"] {
+    margin-top: .2rem;
+    accent-color: var(--primary);
+  }
+  .addr-label-tag {
+    font-weight: 700;
+    font-size: .92rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .default-tag {
+    background: var(--primary);
+    color: white;
+    font-size: .65rem;
+    padding: .15rem .4rem;
+    border-radius: 4px;
+  }
+  .addr-text {
+    font-size: .8rem;
+    color: var(--text-secondary);
+    margin-top: .25rem;
+    line-height: 1.4;
+  }
+
+  .btn-gps {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .7rem 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: .85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: var(--transition);
+  }
+  .btn-gps:hover {
+    background: var(--success-hover);
+    transform: translateY(-2px);
+  }
+  .gps-status {
+    font-size: .82rem;
+    padding: .5rem .75rem;
+    border-radius: var(--radius-sm);
+    margin-top: .5rem;
+    display: none;
+  }
+
+  /* DATE TIME */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: .4rem;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap i {
+    position: absolute;
+    left: .875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: .85rem;
+  }
+  input[type="date"], input[type="time"] {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .7rem 1rem .7rem 2.3rem;
+    color: var(--text-primary);
+    font-size: .9rem;
+    font-family: var(--font-family);
+    transition: var(--transition);
+  }
+  input[type="date"]:focus, input[type="time"]:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  /* PAYMENT METHODS */
+  .pm-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+  }
+  .pm-opt {
+    position: relative;
+  }
+  .pm-opt input {
+    position: absolute;
+    opacity: 0;
+  }
+  .pm-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem .5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    min-height: 100px;
+  }
+  .pm-label:hover {
+    border-color: var(--primary);
+  }
+  .pm-opt input:checked + .pm-label {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .pm-icon {
+    font-size: 1.8rem;
+  }
+  .pm-name {
+    font-size: .8rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* COUPON */
+  .coupon-row {
+    display: flex;
+    gap: .5rem;
+  }
+  .coupon-row input {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .7rem 1rem;
+    color: var(--text-primary);
+    font-size: .9rem;
+    font-family: var(--font-family);
+  }
+  .coupon-row input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  .btn-apply {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: .7rem 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: .85rem;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+  .btn-apply:hover {
+    background: var(--primary);
+    color: white;
+  }
+  .coupon-success {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-sm);
+    padding: .5rem .75rem;
+    color: var(--success);
+    font-size: .82rem;
+    margin-top: .5rem;
+    display: none;
+  }
+  .coupon-error {
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: .5rem .75rem;
+    color: var(--danger);
+    font-size: .82rem;
+    margin-top: .5rem;
+    display: none;
+  }
+
+  /* ORDER SUMMARY */
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .6rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .summary-row:last-child {
+    border-bottom: none;
+  }
+  .summary-label {
+    font-size: .85rem;
+    color: var(--text-muted);
+  }
+  .summary-value {
+    font-weight: 700;
+    font-size: .9rem;
+  }
+  .total-row {
+    padding: .875rem 0;
+    border-top: 2px solid var(--primary);
+    margin-top: .5rem;
+  }
+  .total-row .summary-label {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .total-row .summary-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--success);
+  }
+  .discount-val {
+    color: var(--success);
+  }
+
+  .btn-pay {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 1.1rem;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    margin-top: 1rem;
+  }
+  .btn-pay:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.35);
+  }
+  .security-note {
+    text-align: center;
+    font-size: .76rem;
+    color: var(--text-muted);
+    margin-top: .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+  }
+
+  /* GATEWAY SIMULATOR */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+  .gateway-modal {
+    background: var(--modal-bg);
+    width: 95%;
+    max-width: 580px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-medium);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .gw-header {
+    background: #0f172a;
+    color: white;
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .gw-header-left .gw-logo {
+    font-weight: 800;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .gw-header-left .gw-sub {
+    font-size: .7rem;
+    color: #94a3b8;
+    margin-top: .2rem;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .gw-header-right {
+    text-align: right;
+  }
+  .gw-amount-label {
+    font-size: .68rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .gw-amount {
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #38bdf8;
+  }
+  
+  .gw-content-wrapper {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    min-height: 380px;
+  }
+  .gw-methods-list {
+    background: var(--bg-primary);
+    border-right: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0;
+  }
+  .gw-method-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .95rem 1.25rem;
+    color: var(--text-secondary);
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .gw-method-item:hover {
+    background: var(--border-light);
+    color: var(--text-primary);
+  }
+  .gw-method-item.active {
+    background: var(--bg-secondary);
+    color: var(--primary);
+    border-left: 3px solid var(--primary);
+  }
+  .gw-method-item i {
+    font-size: .95rem;
+    width: 16px;
+    text-align: center;
+  }
+
+  .gw-form-area {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg-secondary);
+  }
+  .gw-panel-title {
+    font-size: .92rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: .4rem;
+  }
+  
+  /* UPI PANEL */
+  .upi-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .upi-app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+    padding: .5rem;
+    border-radius: 8px;
+    transition: var(--transition);
+    border: 1px solid transparent;
+  }
+  .upi-app-item:hover {
+    background: var(--bg-primary);
+    border-color: var(--border-light);
+  }
+  .upi-app-item.selected {
+    background: var(--primary-light);
+    border-color: var(--primary);
+  }
+  .upi-app-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: white;
+    font-size: 1.15rem;
+  }
+  .gpay-icon { background: linear-gradient(135deg, #4285f4, #34a853); }
+  .phonepe-icon { background: #5f259f; }
+  .paytm-icon { background: #00b9f5; }
+  .bhim-icon { background: linear-gradient(135deg, #f05a28, #16365f); }
+  
+  .upi-app-name {
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .gw-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    margin-bottom: 1rem;
+  }
+  .gw-input-group label {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .gw-input {
+    width: 100%;
+    padding: .65rem .85rem;
+    border: 1.5px solid var(--border-medium);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: .88rem;
+    transition: var(--transition);
+  }
+  .gw-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  /* NETBANKING & WALLETS */
+  .nb-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+  }
+  .nb-item, .wallet-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border: 1.5px solid var(--border-medium);
+    border-radius: 8px;
+    padding: .75rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: .82rem;
+    transition: var(--transition);
+  }
+  .nb-item:hover, .wallet-item:hover {
+    border-color: var(--primary);
+    background: var(--bg-primary);
+  }
+  .nb-item.selected, .wallet-item.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .wallet-list {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+
+  /* SIMULATION CONTROLLER */
+  .gw-sim-control {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: .85rem;
+    margin: 1.25rem 0;
+  }
+  .sim-label {
+    font-size: .75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: .5rem;
+  }
+  .sim-toggle-row {
+    display: flex;
+    gap: .5rem;
+  }
+  .sim-toggle-btn {
+    flex: 1;
+    border: 1.5px solid var(--border-medium);
+    border-radius: 6px;
+    padding: .45rem;
+    font-size: .78rem;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .sim-toggle-btn.success { color: var(--success); }
+  .sim-toggle-btn.success.active { background: var(--success-light); border-color: var(--success); }
+  .sim-toggle-btn.fail { color: var(--danger); }
+  .sim-toggle-btn.fail.active { background: var(--danger-light); border-color: var(--danger); }
+
+  .gw-pay-btn {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: .9rem;
+    font-weight: 800;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+  }
+  .gw-pay-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  /* SCREEN LOADER */
+  .gw-body {
+    padding: 3rem 2rem;
+    background: var(--bg-secondary);
+  }
+  .gw-loader {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+  .pay-spinner {
+    width: 52px;
+    height: 52px;
+    border: 4px solid var(--border-medium);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 1.25rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SUCCESS & FAILURE SCREENS */
+  .gw-success-screen, .gw-error-screen {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+  .gw-success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--success-light);
+    color: var(--success);
+    border: 2px solid var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin: 0 auto 1.25rem;
+    animation: checkScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes checkScale {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .gw-error-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 2px solid var(--danger);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin: 0 auto 1.25rem;
+    animation: checkScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  .receipt-box {
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border-medium);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1.25rem 0;
+    text-align: left;
+    font-size: .82rem;
+  }
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: .45rem;
+  }
+  .receipt-row:last-child {
+    margin-bottom: 0;
+    border-top: 1px solid var(--border-light);
+    padding-top: .45rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .pm-methods { grid-template-columns: repeat(2, 1fr); }
+    .header-actions { top: 1rem; right: 1rem; }
+    .gw-content-wrapper { grid-template-columns: 1fr; }
+    .gw-methods-list { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border-light); }
+    .gw-method-item { padding: .75rem 1rem; white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header-actions">
+  <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+</div>
+
+<div class="container">
+  <a href="/bookservice/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Services</a>
+  <h1>Secure Booking Platform</h1>
+  <p class="sub">Review your order details and choose your payout method</p>
+
+  <form method="POST" action="/process_payment/" id="bookingForm">
+    {% csrf_token %}
+    <input type="hidden" name="service_id" value="{{ service.unique }}">
+    <input type="hidden" name="user_lat" id="user_lat" value="0">
+    <input type="hidden" name="user_lng" id="user_lng" value="0">
+    <input type="hidden" name="live_address" id="live_address" value="">
+    <input type="hidden" name="selected_address_idx" id="sel_addr_idx" value="">
+    <input type="hidden" name="txn_id" id="form_txn_id" value="">
+
+    <div class="layout">
+      <div>
+        <!-- PROVIDER INFO -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-user-gear"></i> Service Provider</div>
+          <div class="provider-mini">
+            <div class="pm-img">
+              {% if service.profile_image %}<img src="{{ service.profile_image }}" alt="{{ service.name }}">{% else %}👷{% endif %}
+            </div>
+            <div>
+              <div class="pm-name">{{ service.name }}</div>
+              <div class="pm-cat">{{ service.service_provided }}</div>
+              <div class="stars">⭐⭐⭐⭐&frac12; {{ service.rating|floatformat:1 }}</div>
+              <div class="pm-price">₹{{ service.starting_price|floatformat:0 }} <small style="font-size:.75rem;color:var(--text-muted);font-weight:400">/ visit</small></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:1rem;font-size:.82rem;color:var(--text-secondary);flex-wrap:wrap">
+            <span><i class="fas fa-briefcase"></i> {{ service.experience }} years experience</span>
+            <span><i class="fas fa-map-marker-alt"></i> {{ service.service_area|default:"Nearby" }}</span>
+            {% if service.is_verified %}<span style="color:var(--success)"><i class="fas fa-shield-alt"></i> Verified</span>{% endif %}
+          </div>
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-map-marker-alt"></i> Service Address</div>
+
+          {% if user.addresses %}
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:.875rem">Select a saved address:</p>
+          <div class="addr-options">
+            {% for addr in user.addresses %}
+            <label class="addr-opt" id="addr-label-{{ forloop.counter0 }}" onclick="selectSavedAddr({{ forloop.counter0 }})">
+              <input type="radio" name="addr_type" value="saved">
+              <div style="flex:1">
+                <div class="addr-label-tag">
+                  {% if addr.label == 'Home' %}🏠{% elif addr.label == 'Office' %}🏢{% else %}📍{% endif %}
+                  {{ addr.label }}
+                  {% if addr.is_default %}<span class="default-tag">Default</span>{% endif %}
+                </div>
+                <div class="addr-text">
+                  {% if addr.address_line1 %}{{ addr.address_line1 }}, {% endif %}{{ addr.area|default:"" }}{% if addr.city %}, {{ addr.city }}{% endif %}{% if addr.pincode %} – {{ addr.pincode }}{% endif %}
+                </div>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+          <p style="text-align:center;color:var(--text-muted);font-size:.82rem;margin:.75rem 0">── or ──</p>
+          {% endif %}
+
+          <button type="button" class="btn-gps" onclick="detectLocation()">
+            <i class="fas fa-crosshairs"></i> Use GPS Current Location
+          </button>
+          <div class="gps-status" id="gpsStatus"></div>
+          <div id="gpsAddressDisplay" style="font-size:.82rem;color:var(--primary);margin-top:.5rem;display:none;font-weight:600"></div>
+        </div>
+
+        <!-- SCHEDULE -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-calendar-alt"></i> Schedule Date & Time</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Preferred Date</label>
+              <div class="input-wrap"><i class="fas fa-calendar"></i>
+                <input type="date" name="service_date" id="service_date" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Preferred Time</label>
+              <div class="input-wrap"><i class="fas fa-clock"></i>
+                <input type="time" name="service_time" id="service_time" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENT METHOD SELECT -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-credit-card"></i> Payment Method</div>
+          <div class="pm-methods">
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_upi" value="UPI" checked onclick="togglePayMethod('online')">
+              <label class="pm-label" for="pm_upi">
+                <span class="pm-icon">📱</span>
+                <span class="pm-name">UPI Payment</span>
+                <span style="font-size:.68rem;color:var(--success)">Instant</span>
+              </label>
+            </div>
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_credit_card" value="Credit Card" onclick="togglePayMethod('online')">
+              <label class="pm-label" for="pm_credit_card">
+                <span class="pm-icon">💳</span>
+                <span class="pm-name">Credit Card</span>
+                <span style="font-size:.68rem;color:var(--text-muted)">Secure Pay</span>
+              </label>
+            </div>
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_debit_card" value="Debit Card" onclick="togglePayMethod('online')">
+              <label class="pm-label" for="pm_debit_card">
+                <span class="pm-icon">🪪</span>
+                <span class="pm-name">Debit Card</span>
+                <span style="font-size:.68rem;color:var(--text-muted)">NPCI Secure</span>
+              </label>
+            </div>
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_netbanking" value="Net Banking" onclick="togglePayMethod('online')">
+              <label class="pm-label" for="pm_netbanking">
+                <span class="pm-icon">🏦</span>
+                <span class="pm-name">Net Banking</span>
+                <span style="font-size:.68rem;color:var(--text-muted)">All Banks</span>
+              </label>
+            </div>
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_wallet" value="Wallet" onclick="togglePayMethod('online')">
+              <label class="pm-label" for="pm_wallet">
+                <span class="pm-icon">👛</span>
+                <span class="pm-name">Wallet Pay</span>
+                <span style="font-size:.68rem;color:var(--text-muted)">Fast Checkout</span>
+              </label>
+            </div>
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_cod" value="Cash On Delivery" onclick="togglePayMethod('cod')">
+              <label class="pm-label" for="pm_cod">
+                <span class="pm-icon">💵</span>
+                <span class="pm-name">Cash On Delivery</span>
+                <span style="font-size:.68rem;color:var(--primary)">Post Pay</span>
+              </label>
+            </div>
+            <div class="pm-opt">
+              <input type="radio" name="payment_method" id="pm_pas" value="Pay After Service" onclick="togglePayMethod('cod')">
+              <label class="pm-label" for="pm_pas">
+                <span class="pm-icon">🛠️</span>
+                <span class="pm-name">Pay After Service</span>
+                <span style="font-size:.68rem;color:var(--primary)">Verified Job</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- COUPON -->
+          <label style="margin-bottom:.5rem;display:block">Promo Coupon Code</label>
+          <div class="coupon-row">
+            <input type="text" id="coupon_input" name="coupon_code" placeholder="Enter coupon code (e.g. HUB10)">
+            <button type="button" class="btn-apply" onclick="applyCoupon()">Apply</button>
+          </div>
+          <div id="coupon-success" class="coupon-success"></div>
+          <div id="coupon-error" class="coupon-error"></div>
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY SIDEBAR -->
+      <div>
+        <div class="card" style="position:sticky;top:2rem">
+          <div class="card-title"><i class="fas fa-receipt"></i> Order Summary</div>
+          <div class="summary-row">
+            <span class="summary-label">Service</span>
+            <span class="summary-value">{{ service.service_provided }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Provider</span>
+            <span class="summary-value">{{ service.name }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Base Cost</span>
+            <span class="summary-value">₹<span id="base_price">{{ service.starting_price|floatformat:0 }}</span></span>
+          </div>
+          <div class="summary-row" id="discount-row" style="display:none">
+            <span class="summary-label">Promo Discount</span>
+            <span class="summary-value discount-val">-₹<span id="discount_amt">0</span></span>
+          </div>
+          <!-- ServiceHub Wallet Balance -->
+          <div class="summary-row" style="border-top: 1px dashed var(--border-light); padding-top: 0.75rem; margin-top: 0.5rem; flex-direction: column; align-items: stretch; gap: 0.4rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="summary-label" style="font-weight: 700; color: var(--text-primary);">ServiceHub Wallet</span>
+              <span class="summary-value" style="color: var(--primary);">₹<span id="wallet_display">{{ user.wallet_balance|floatformat:2 }}</span></span>
+            </div>
+            {% if user.wallet_balance > 0 %}
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                <input type="checkbox" id="use_wallet" name="use_wallet" value="true" onchange="updateTotal()" style="width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer;">
+                <label for="use_wallet" style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; user-select: none;">Apply Wallet Balance</label>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="summary-row" id="wallet-deduction-row" style="display:none">
+            <span class="summary-label">Wallet Deduction</span>
+            <span class="summary-value" style="color: var(--danger);">-₹<span id="wallet_deducted_val">0.00</span></span>
+          </div>
+
+          <div class="summary-row total-row">
+            <span class="summary-label">Total Payable</span>
+            <span class="summary-value">₹<span id="total_price">{{ service.starting_price|floatformat:0 }}</span></span>
+          </div>
+
+          <button type="button" class="btn-pay" id="payBtn" onclick="handleCheckoutSubmission()">
+            <i class="fas fa-lock"></i> <span id="payBtnText">Proceed to Payment</span>
+          </button>
+          <div class="security-note"><i class="fas fa-shield-alt"></i> 100% Encrypted Payout Sandbox</div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- SECURED CHECKOUT OVERLAY MODAL -->
+<div class="modal-overlay" id="gatewayModalOverlay" style="display:none">
+  <div class="gateway-modal">
+    <!-- Header banner -->
+    <div class="gw-header">
+      <div class="gw-header-left">
+        <div class="gw-logo">⚡ ServiceHub Pay Gateway</div>
+        <div class="gw-sub"><i class="fas fa-lock"></i> Sandbox Environment</div>
+      </div>
+      <div class="gw-header-right">
+        <div class="gw-amount-label">Amount to Pay</div>
+        <div class="gw-amount">₹<span id="gw-amount-display">299</span></div>
+      </div>
+    </div>
+    
+    <!-- Split Layout Body panel -->
+    <div class="gw-content-wrapper" id="gw-panel-setup">
+      <!-- Methods List Sidebar -->
+      <div class="gw-methods-list">
+        <div class="gw-method-item active" id="tab-upi" onclick="switchGwTab('upi')">
+          <i class="fas fa-mobile-alt"></i>
+          <span>UPI Apps</span>
+        </div>
+        <div class="gw-method-item" id="tab-card" onclick="switchGwTab('card')">
+          <i class="fas fa-credit-card"></i>
+          <span>Cards (Debit/Credit)</span>
+        </div>
+        <div class="gw-method-item" id="tab-netbanking" onclick="switchGwTab('netbanking')">
+          <i class="fas fa-university"></i>
+          <span>Internet Banking</span>
+        </div>
+        <div class="gw-method-item" id="tab-wallet" onclick="switchGwTab('wallet')">
+          <i class="fas fa-wallet"></i>
+          <span>E-Wallets</span>
+        </div>
+      </div>
+      
+      <!-- Form Input Area -->
+      <div class="gw-form-area">
+        
+        <!-- UPI PANEL -->
+        <div class="gw-tab-panel" id="panel-upi">
+          <div class="gw-panel-title">Unified Payments Interface (UPI)</div>
+          <div class="upi-apps-grid">
+            <div class="upi-app-item selected" id="app-gpay" onclick="selectUpiApp('gpay')">
+              <div class="upi-app-icon gpay-icon">G</div>
+              <div class="upi-app-name">GPay</div>
+            </div>
+            <div class="upi-app-item" id="app-phonepe" onclick="selectUpiApp('phonepe')">
+              <div class="upi-app-icon phonepe-icon">P</div>
+              <div class="upi-app-name">PhonePe</div>
+            </div>
+            <div class="upi-app-item" id="app-paytm" onclick="selectUpiApp('paytm')">
+              <div class="upi-app-icon paytm-icon">Py</div>
+              <div class="upi-app-name">Paytm</div>
+            </div>
+            <div class="upi-app-item" id="app-bhim" onclick="selectUpiApp('bhim')">
+              <div class="upi-app-icon bhim-icon">B</div>
+              <div class="upi-app-name">BHIM</div>
+            </div>
+          </div>
+          <div class="gw-input-group">
+            <label for="upi_id_input">Virtual Payment Address (VPA) / UPI ID</label>
+            <input type="text" class="gw-input" id="upi_id_input" placeholder="e.g. name@upi" value="bhushan@okaxis">
+          </div>
+        </div>
+        
+        <!-- CARD PANEL -->
+        <div class="gw-tab-panel" id="panel-card" style="display:none">
+          <div class="gw-panel-title">Debit / Credit Card Details</div>
+          <div class="gw-input-group">
+            <label for="card_num">Card Number</label>
+            <div style="position:relative">
+              <input type="text" class="gw-input" id="card_num" placeholder="4111 2222 3333 4444" value="4111 2222 3333 4444" maxlength="19">
+              <i class="fab fa-cc-visa" style="position:absolute; right:10px; top:12px; color:#94a3b8; font-size:1.25rem"></i>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem">
+            <div class="gw-input-group">
+              <label for="card_expiry">Expiry Date</label>
+              <input type="text" class="gw-input" id="card_expiry" placeholder="MM/YY" value="12/28" maxlength="5">
+            </div>
+            <div class="gw-input-group">
+              <label for="card_cvv">CVV Code</label>
+              <input type="password" class="gw-input" id="card_cvv" placeholder="123" value="123" maxlength="3">
+            </div>
+          </div>
+          <div class="gw-input-group">
+            <label for="card_name">Cardholder Name</label>
+            <input type="text" class="gw-input" id="card_name" placeholder="Name on card" value="Bhushan Bank">
+          </div>
+        </div>
+        
+        <!-- NETBANKING PANEL -->
+        <div class="gw-tab-panel" id="panel-netbanking" style="display:none">
+          <div class="gw-panel-title">Select Bank for Internet Banking</div>
+          <div class="nb-grid">
+            <div class="nb-item selected" id="bank-sbi" onclick="selectNbBank('sbi')">
+              <i class="fas fa-university text-primary"></i>
+              <span>SBI</span>
+            </div>
+            <div class="nb-item" id="bank-hdfc" onclick="selectNbBank('hdfc')">
+              <i class="fas fa-university text-primary"></i>
+              <span>HDFC</span>
+            </div>
+            <div class="nb-item" id="bank-icici" onclick="selectNbBank('icici')">
+              <i class="fas fa-university text-primary"></i>
+              <span>ICICI</span>
+            </div>
+            <div class="nb-item" id="bank-axis" onclick="selectNbBank('axis')">
+              <i class="fas fa-university text-primary"></i>
+              <span>Axis Bank</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- WALLETS PANEL -->
+        <div class="gw-tab-panel" id="panel-wallet" style="display:none">
+          <div class="gw-panel-title">Linked Wallets</div>
+          <div class="wallet-list">
+            <div class="wallet-item selected" id="w-paytm" onclick="selectWallet('paytm')">
+              <i class="fas fa-wallet text-success"></i>
+              <span>Paytm Wallet</span>
+            </div>
+            <div class="wallet-item" id="w-phonepe" onclick="selectWallet('phonepe')">
+              <i class="fas fa-wallet text-success"></i>
+              <span>PhonePe Wallet</span>
+            </div>
+            <div class="wallet-item" id="w-mobikwik" onclick="selectWallet('mobikwik')">
+              <i class="fas fa-wallet text-success"></i>
+              <span>MobiKwik Wallet</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- SIMULATION CONTROL SWITCHER -->
+        <div class="gw-sim-control">
+          <div class="sim-label"><i class="fas fa-sliders-h"></i> Simulated Payment Outcome:</div>
+          <div class="sim-toggle-row">
+            <div class="sim-toggle-btn success active" id="simSuccessBtn" onclick="setSimMode('success')">
+              <i class="fas fa-check-circle"></i> Success (Mock Appr)
+            </div>
+            <div class="sim-toggle-btn fail" id="simFailBtn" onclick="setSimMode('fail')">
+              <i class="fas fa-times-circle"></i> Failure (Mock Decl)
+            </div>
+          </div>
+        </div>
+        
+        <button type="button" class="gw-pay-btn" onclick="runSimPayment()">
+          Pay Securely ₹<span id="gw-amount-btn-display">99</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- LOADER SCREEN (Processing Animation) -->
+    <div class="gw-body" id="gw-panel-loader" style="display:none">
+      <div class="gw-loader">
+        <div class="pay-spinner"></div>
+        <p style="font-weight:800; margin-top:0.75rem; color:var(--text-primary)">Contacting Secure Payment Provider...</p>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem">Processing NPCI secured transaction credentials</p>
+        <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.15rem">Do not reload page or click back button</p>
+      </div>
+    </div>
+    
+    <!-- SUCCESS SCREEN (Success Animation + Receipt) -->
+    <div class="gw-body" id="gw-panel-success" style="display:none">
+      <div class="gw-success-screen">
+        <div class="gw-success-icon"><i class="fas fa-check"></i></div>
+        <h3 style="color:var(--success); font-weight:800; margin-bottom:0.5rem">Payment Successful!</h3>
+        <p style="font-size:0.8rem; color:var(--text-secondary)">Your transaction has been processed securely.</p>
+        
+        <!-- Payment Receipt Generation -->
+        <div class="receipt-box">
+          <h4 style="text-transform:uppercase; font-size:.7rem; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:.5rem; border-bottom:1px solid var(--border-light); padding-bottom:.25rem">Transaction Payout Receipt</h4>
+          <div class="receipt-row">
+            <span class="summary-label">Transaction ID:</span>
+            <span class="summary-value" id="txnIdDisplay" style="font-family:monospace">TXN_SH_xxxx</span>
+          </div>
+          <div class="receipt-row">
+            <span class="summary-label">Date & Time:</span>
+            <span class="summary-value" id="receiptTime">Just now</span>
+          </div>
+          <div class="receipt-row">
+            <span class="summary-label">Payment Gateway:</span>
+            <span class="summary-value" id="receiptGateway">UPI (ServiceHub Gateway)</span>
+          </div>
+          <div class="receipt-row">
+            <span class="summary-label">Amount Paid:</span>
+            <span class="summary-value" style="color:var(--success)">₹<span id="receiptAmount">299</span></span>
+          </div>
+        </div>
+
+        <button type="button" class="gw-pay-btn" style="background:var(--success); margin-bottom:.5rem;" onclick="submitBookingForm()">
+          <i class="fas fa-calendar-check"></i> Book Service Now
+        </button>
+        <button type="button" class="btn-apply" style="width:100%" onclick="downloadMockReceipt()">
+          <i class="fas fa-file-arrow-down"></i> Download Payout Receipt
+        </button>
+      </div>
+    </div>
+    
+    <!-- ERROR SCREEN (Failure Animation) -->
+    <div class="gw-body" id="gw-panel-error" style="display:none">
+      <div class="gw-error-screen">
+        <div class="gw-error-icon"><i class="fas fa-times"></i></div>
+        <h3 style="color:var(--danger); font-weight:800; margin-bottom:0.5rem">Payment Failed</h3>
+        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:1.5rem">Reason: Simulated payment failure or gateway timeout</p>
+        <button type="button" class="gw-pay-btn" style="background:var(--danger)" onclick="closePaymentGatewaySim()">
+          Retry Payout Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const basePrice = {{ service.starting_price }};
+  let discount = 0;
+  let simMode = 'success';
+  let activeTab = 'upi';
+  let generatedTxnId = '';
+
+  function togglePayMethod(mode) {
+    const btn = document.getElementById('payBtnText');
+    if (mode === 'cod') {
+      btn.textContent = 'Book Service Request';
+    } else {
+      btn.textContent = 'Proceed to Payment';
+    }
+  }
+
+  const walletBalance = {{ user.wallet_balance|default:0.0 }};
+  let walletDeducted = 0;
+
+  function updateTotal() {
+    const discounted = Math.max(0, basePrice - discount);
+    
+    const useWalletChkbx = document.getElementById('use_wallet');
+    const useWallet = useWalletChkbx ? useWalletChkbx.checked : false;
+    
+    let finalPayable = discounted;
+    if (useWallet) {
+      walletDeducted = Math.min(walletBalance, discounted);
+      finalPayable = discounted - walletDeducted;
+      document.getElementById('wallet-deduction-row').style.display = 'flex';
+      document.getElementById('wallet_deducted_val').textContent = walletDeducted.toFixed(2);
+    } else {
+      walletDeducted = 0;
+      document.getElementById('wallet-deduction-row').style.display = 'none';
+    }
+    
+    document.getElementById('total_price').textContent = finalPayable.toFixed(2);
+    
+    const btn = document.getElementById('payBtnText');
+    const payMethodEl = document.querySelector('input[name="payment_method"]:checked');
+    const paymentMethod = payMethodEl ? payMethodEl.value : 'UPI';
+    
+    if (finalPayable === 0) {
+      if (btn) btn.textContent = 'Book using Wallet Balance';
+    } else {
+      if (paymentMethod === 'Cash On Delivery' || paymentMethod === 'Pay After Service') {
+        if (btn) btn.textContent = 'Book Service Request';
+      } else {
+        if (btn) btn.textContent = 'Proceed to Payment';
+      }
+    }
+    
+    document.getElementById('btn-amount') ? document.getElementById('btn-amount').textContent = finalPayable.toFixed(0) : null;
+    document.getElementById('gw-amount-display').textContent = finalPayable.toFixed(0);
+    document.getElementById('gw-amount-btn-display').textContent = finalPayable.toFixed(0);
+    document.getElementById('receiptAmount').textContent = finalPayable.toFixed(0);
+    
+    if (discount > 0) {
+      document.getElementById('discount-row').style.display = 'flex';
+      document.getElementById('discount_amt').textContent = discount.toFixed(0);
+    } else {
+      document.getElementById('discount-row').style.display = 'none';
+    }
+  }
+
+  async function applyCoupon() {
+    const code = document.getElementById('coupon_input').value.trim();
+    if (!code) return;
+    const fd = new FormData();
+    fd.append('coupon_code', code);
+    fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    const r = await fetch('/validate_coupon/', {method:'POST', body:fd});
+    const d = await r.json();
+    if (d.success) {
+      discount = basePrice * (d.discount_percent / 100);
+      updateTotal();
+      document.getElementById('coupon-success').style.display = 'block';
+      document.getElementById('coupon-success').textContent = `✓ ${d.discount_percent}% OFF applied! ${d.desc || ''}`;
+      document.getElementById('coupon-error').style.display = 'none';
+    } else {
+      document.getElementById('coupon-error').style.display = 'block';
+      document.getElementById('coupon-error').textContent = '✗ ' + d.message;
+      document.getElementById('coupon-success').style.display = 'none';
+    }
+  }
+
+  function selectSavedAddr(idx) {
+    document.getElementById('sel_addr_idx').value = idx;
+    document.querySelectorAll('.addr-opt').forEach((el,i) => el.classList.toggle('selected', i===idx));
+  }
+
+  function detectLocation() {
+    const s = document.getElementById('gpsStatus');
+    s.style.display = 'block';
+    s.style.background = 'var(--primary-light)';
+    s.style.color = 'var(--primary)';
+    s.textContent = '📡 Detecting GPS location...';
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      document.getElementById('user_lat').value = lat;
+      document.getElementById('user_lng').value = lng;
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const data = await r.json();
+        const addr = data.display_name || `${lat}, ${lng}`;
+        document.getElementById('live_address').value = addr;
+        document.getElementById('sel_addr_idx').value = '';
+        const d = document.getElementById('gpsAddressDisplay');
+        d.style.display = 'block';
+        d.textContent = '📍 ' + addr;
+        s.style.background = 'var(--success-light)';
+        s.style.color = 'var(--success)';
+        s.textContent = '✓ Location captured!';
+        
+        // Remove selection from saved addresses
+        document.querySelectorAll('.addr-opt').forEach((el) => el.classList.remove('selected'));
+      } catch(e) {
+        document.getElementById('live_address').value = `${lat},${lng}`;
+        s.textContent = `✓ GPS captured: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      }
+    }, () => { s.style.background='var(--danger-light)'; s.style.color='var(--danger)'; s.textContent='❌ Location access denied.'; });
+  }
+
+  function handleCheckoutSubmission() {
+    // Validate inputs
+    const savedIdx = document.getElementById('sel_addr_idx').value;
+    const gpsAddr = document.getElementById('live_address').value;
+    if (savedIdx === '' && gpsAddr === '') {
+      alert('Please select or detect a service address first.');
+      return;
+    }
+    const serviceDate = document.getElementById('service_date').value;
+    const serviceTime = document.getElementById('service_time').value;
+    if (!serviceDate || !serviceTime) {
+      alert('Please select your preferred Date & Time.');
+      return;
+    }
+
+    const payMethodEl = document.querySelector('input[name="payment_method"]:checked');
+    const paymentMethod = payMethodEl ? payMethodEl.value : 'UPI';
+
+    const discounted = Math.max(0, basePrice - discount);
+    const useWalletChkbx = document.getElementById('use_wallet');
+    const useWallet = useWalletChkbx ? useWalletChkbx.checked : false;
+    let finalPayable = discounted;
+    if (useWallet) {
+      finalPayable = discounted - Math.min(walletBalance, discounted);
+    }
+
+    if (finalPayable === 0) {
+      // Paid completely via wallet balance
+      submitBookingForm();
+      return;
+    }
+
+    if (paymentMethod === 'Cash On Delivery' || paymentMethod === 'Pay After Service') {
+      // Direct Booking Creation
+      submitBookingForm();
+      return;
+    }
+
+    // Open Payout Sandbox Modal
+    openPaymentGatewaySim(paymentMethod);
+  }
+
+  function openPaymentGatewaySim(payMethod) {
+    document.getElementById('gatewayModalOverlay').style.display = 'flex';
+    document.getElementById('gw-panel-setup').style.display = 'grid';
+    document.getElementById('gw-panel-loader').style.display = 'none';
+    document.getElementById('gw-panel-success').style.display = 'none';
+    document.getElementById('gw-panel-error').style.display = 'none';
+    
+    // Auto switch to corresponding gateway tab
+    if (payMethod === 'UPI') switchGwTab('upi');
+    else if (payMethod === 'Credit Card' || payMethod === 'Debit Card') switchGwTab('card');
+    else if (payMethod === 'Net Banking') switchGwTab('netbanking');
+    else if (payMethod === 'Wallet') switchGwTab('wallet');
+
+    updateTotal();
+  }
+
+  function closePaymentGatewaySim() {
+    document.getElementById('gatewayModalOverlay').style.display = 'none';
+  }
+
+  function switchGwTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.gw-method-item').forEach(el => el.classList.remove('active'));
+    
+    let tabId = 'tab-upi';
+    if (tab === 'card') tabId = 'tab-card';
+    else if (tab === 'netbanking') tabId = 'tab-netbanking';
+    else if (tab === 'wallet') tabId = 'tab-wallet';
+    
+    document.getElementById(tabId).classList.add('active');
+    
+    document.querySelectorAll('.gw-tab-panel').forEach(panel => panel.style.display = 'none');
+    document.getElementById('panel-' + tab).style.display = 'block';
+  }
+
+  function selectUpiApp(app) {
+    document.querySelectorAll('.upi-app-item').forEach(el => el.classList.remove('selected'));
+    document.getElementById('app-' + app).classList.add('selected');
+    
+    if (app === 'gpay') document.getElementById('upi_id_input').value = 'bhushan@okaxis';
+    else if (app === 'phonepe') document.getElementById('upi_id_input').value = 'bhushan@ybl';
+    else if (app === 'paytm') document.getElementById('upi_id_input').value = 'bhushan@paytm';
+    else if (app === 'bhim') document.getElementById('upi_id_input').value = 'bhushan@upi';
+  }
+
+  function selectNbBank(bank) {
+    document.querySelectorAll('.nb-item').forEach(el => el.classList.remove('selected'));
+    document.getElementById('bank-' + bank).classList.add('selected');
+  }
+
+  function selectWallet(wallet) {
+    document.querySelectorAll('.wallet-item').forEach(el => el.classList.remove('selected'));
+    document.getElementById('w-' + wallet).classList.add('selected');
+  }
+
+  function setSimMode(mode) {
+    simMode = mode;
+    document.getElementById('simSuccessBtn').classList.toggle('active', mode === 'success');
+    document.getElementById('simFailBtn').classList.toggle('active', mode === 'fail');
+  }
+
+  function runSimPayment() {
+    document.getElementById('gw-panel-setup').style.display = 'none';
+    document.getElementById('gw-panel-loader').style.display = 'block';
+    
+    setTimeout(() => {
+      document.getElementById('gw-panel-loader').style.display = 'none';
+      if (simMode === 'success') {
+        document.getElementById('gw-panel-success').style.display = 'block';
+        generatedTxnId = 'TXN_SH_' + Math.floor(100000000 + Math.random() * 900000000);
+        document.getElementById('txnIdDisplay').textContent = generatedTxnId;
+        document.getElementById('form_txn_id').value = generatedTxnId;
+        document.getElementById('receiptTime').textContent = new Date().toLocaleString();
+        
+        let methodText = "UPI";
+        if (activeTab === 'card') methodText = "Debit/Credit Card";
+        else if (activeTab === 'netbanking') methodText = "Internet Banking";
+        else if (activeTab === 'wallet') methodText = "E-Wallet";
+        
+        document.getElementById('receiptGateway').textContent = methodText + " (Secured Sandbox)";
+      } else {
+        document.getElementById('gw-panel-error').style.display = 'block';
+      }
+    }, 2000);
+  }
+
+  function downloadMockReceipt() {
+    let receiptContent = `================================================
+SERVICEHUB SECURE TRANSACTION RECEIPT (SANDBOX)
+================================================
+Transaction ID : ${generatedTxnId}
+Amount Paid    : INR ${document.getElementById('total_price').textContent}.00
+Payment Status : SUCCESS / COMPLETED
+Payment Method : ${document.getElementById('receiptGateway').textContent}
+Receipt Date   : ${document.getElementById('receiptTime').textContent}
+
+Service Details:
+- Category : ${document.querySelector('.pm-cat').textContent}
+- Provider : ${document.querySelector('.pm-name').textContent}
+
+Thank you for choosing ServiceHub.
+This is a computer generated simulated transaction receipt.
+================================================`;
+    
+    let blob = new Blob([receiptContent], {type: "text/plain;charset=utf-8"});
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `receipt_${generatedTxnId}.txt`;
+    link.click();
+  }
+
+  function submitBookingForm() {
+    document.getElementById('bookingForm').submit();
+  }
+
+  // Set today as min date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('service_date').min = today;
+</script>
+</body>
+</html>

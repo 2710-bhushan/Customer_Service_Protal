@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Tracking – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .15rem;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .logout-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* SPLIT VIEW */
+  .main-split {
+    margin-left: 260px;
+    flex: 1;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .tracking-info-panel {
+    width: 380px;
+    border-right: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .map-pane {
+    flex: 1;
+    position: relative;
+    height: 100%;
+  }
+  #map {
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+
+  /* TRACKING COMPONENTS */
+  .status-badge-card {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .eta-indicator {
+    background: rgba(255, 255, 255, 0.2);
+    padding: .35rem .75rem;
+    border-radius: 50px;
+    font-size: .8rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: .75rem;
+  }
+  .status-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: .25rem;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 2.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: var(--border-medium);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-badge {
+    position: absolute;
+    left: -32px;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2.5px solid var(--border-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .65rem;
+    color: var(--text-light);
+    z-index: 2;
+    transition: var(--transition);
+  }
+  .timeline-content h4 {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .timeline-content p {
+    font-size: .75rem;
+    color: var(--text-muted);
+    margin-top: .15rem;
+  }
+
+  /* COMPLETED STATE */
+  .timeline-item.completed .timeline-badge {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+  .timeline-item.completed .timeline-content h4 {
+    color: var(--text-primary);
+  }
+  .timeline-item.active .timeline-badge {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 4px var(--primary-light);
+  }
+  .timeline-item.active .timeline-content h4 {
+    color: var(--primary);
+    font-weight: 800;
+  }
+
+  /* PARTNER CARD */
+  .partner-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .partner-top {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+  }
+  .partner-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-medium);
+  }
+  .partner-name {
+    font-weight: 800;
+    font-size: .92rem;
+  }
+  .partner-desc {
+    font-size: .75rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: .1rem;
+  }
+  .partner-actions {
+    display: flex;
+    gap: .5rem;
+  }
+  .btn-action {
+    flex: 1;
+    border: 1px solid var(--border-medium);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: .45rem;
+    border-radius: 8px;
+    text-align: center;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+  }
+  .btn-action:hover {
+    background: var(--border-light);
+  }
+  .btn-action-primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .btn-action-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  /* BILLING BOX */
+  .billing-box {
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.25rem;
+    font-size: .82rem;
+  }
+  .billing-box h4 {
+    font-size: .72rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .75rem;
+  }
+  .billing-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: .45rem;
+  }
+  .billing-label { color: var(--text-muted); }
+  .billing-val { font-weight: 700; }
+
+  /* OVERLAYS */
+  .top-overlay {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 500;
+  }
+  .sim-panel {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--card-shadow);
+    z-index: 500;
+    width: 280px;
+  }
+  .sim-title {
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--danger);
+    margin-bottom: .75rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .sim-title i {
+    animation: pulse-ring 1.5s infinite;
+  }
+  .sim-desc {
+    font-size: .75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+  .sim-btn {
+    width: 100%;
+    border: 1px solid var(--border-medium);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: .45rem;
+    border-radius: 8px;
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: .4rem;
+    transition: var(--transition);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .sim-btn:hover {
+    background: var(--border-light);
+  }
+  .sim-btn-reset { border-color: var(--danger); color: var(--danger); }
+  .sim-btn-reset:hover { background: var(--danger-light); }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-split { margin-left: 0; flex-direction: column; }
+    .tracking-info-panel { width: 100%; height: auto; order: 2; }
+    .map-pane { height: 400px; order: 1; }
+    .sim-panel { bottom: 10px; right: 10px; left: 10px; width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">⚡ ServiceHub</div>
+  <div class="nav-section">Dashboard</div>
+  <a href="/bookservice/" class="nav-link"><i class="fas fa-calendar-alt"></i> Book Service</a>
+  <a href="/favorites/" class="nav-link"><i class="fas fa-heart"></i> Favorites</a>
+  <a href="/servicehistory/" class="nav-link active"><i class="fas fa-history"></i> Service History</a>
+  <a href="/raiseticket/" class="nav-link"><i class="fas fa-ticket-alt"></i> Raise Ticket</a>
+  
+  <div class="nav-section">Account</div>
+  <a href="/profile/" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+  <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</aside>
+
+<!-- MAIN SPLIT WRAPPER -->
+<main class="main-split">
+  
+  <!-- LEFT: Panel containing tracker milestones, partner, invoice summary -->
+  <div class="tracking-info-panel">
+    
+    <div class="status-badge-card">
+      <div class="eta-indicator"><i class="far fa-clock"></i> <span id="eta-text">Calculating...</span></div>
+      <div class="status-title" id="status-title-text">Service Request Confirmed</div>
+      <div style="font-size: .8rem; opacity: .85;">Live tracking active for booking #{{ booking.unique }}.</div>
+    </div>
+
+    <!-- TIMELINE MILESTONES -->
+    <div class="timeline">
+      <div class="timeline-item completed" id="step-placed">
+        <div class="timeline-badge"><i class="fas fa-check"></i></div>
+        <div class="timeline-content">
+          <h4>Order Confirmed</h4>
+          <p>Task request received and payment successfully verified.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item completed" id="step-assigned">
+        <div class="timeline-badge"><i class="fas fa-check"></i></div>
+        <div class="timeline-content">
+          <h4>Provider Assigned</h4>
+          <p>Verified service expert allocated to your task location.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item" id="step-transit">
+        <div class="timeline-badge"><i class="fas fa-truck"></i></div>
+        <div class="timeline-content">
+          <h4>Heading to Location</h4>
+          <p>Service agent is traveling. Watch live movement on the map.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item" id="step-progress">
+        <div class="timeline-badge"><i class="fas fa-tools"></i></div>
+        <div class="timeline-content">
+          <h4>Work In Progress</h4>
+          <p>Partner has arrived and started the service assignment.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item" id="step-completed">
+        <div class="timeline-badge"><i class="fas fa-check-double"></i></div>
+        <div class="timeline-content">
+          <h4>Completed</h4>
+          <p>Job finished successfully. Thank you for booking!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTNER CARD -->
+    {% if employee %}
+    <div class="partner-card">
+      <div class="partner-top">
+        {% if employee.profile_image %}
+          <img src="{{ employee.profile_image }}" class="partner-avatar" alt="{{ employee.name }}">
+        {% else %}
+          <div class="partner-avatar" style="background: var(--bg-tertiary); display:flex; align-items:center; justify-content:center; font-weight:800;">
+            {{ employee.name|slice:":1" }}
+          </div>
+        {% endif %}
+        <div>
+          <div class="partner-name">{{ employee.name }}</div>
+          <div class="partner-desc">{{ employee.service_provided }} Specialist</div>
+        </div>
+      </div>
+      <div class="partner-actions">
+        <a href="tel:{{ employee.phone }}" class="btn-action btn-action-primary"><i class="fas fa-phone-alt"></i> Call Partner</a>
+        <a href="/raiseticket/" class="btn-action"><i class="fas fa-headset"></i> Support</a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- BILLING BOX -->
+    <div class="billing-box">
+      <h4>Summary & Invoice</h4>
+      <div class="billing-row">
+        <div class="billing-label">Customer</div>
+        <div class="billing-val">{{ customer.name }}</div>
+      </div>
+      <div class="billing-row">
+        <div class="billing-label">Destination Address</div>
+        <div class="billing-val" style="max-width: 180px; text-align: right; word-break: break-word;">{{ booking.booking_address }}</div>
+      </div>
+      <div class="billing-row">
+        <div class="billing-label">Price Paid</div>
+        <div class="billing-val" style="color: var(--success);">₹{{ booking.price|floatformat:2 }}</div>
+      </div>
+      <div class="billing-row">
+        <div class="billing-label">Payment Method</div>
+        <div class="billing-val">{{ booking.payment_method }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Map Pane with live simulation inputs -->
+  <div class="map-pane">
+    <div class="top-overlay">
+      <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+    </div>
+    
+    <div id="map"></div>
+
+    <!-- Live simulation panel overlay -->
+    <div class="sim-panel">
+      <div class="sim-title">
+        <i class="fas fa-broadcast-tower"></i>
+        <span>Live GPS Simulation</span>
+      </div>
+      <p class="sim-desc">Observe or manually override provider tracking parameters to preview app responsiveness.</p>
+      
+      <button class="sim-btn sim-btn-reset" onclick="controlSimulation('reset')">
+        <i class="fas fa-undo"></i> Reset Path & Travel
+      </button>
+      <button class="sim-btn" onclick="controlSimulation('inprogress')">
+        <i class="fas fa-running"></i> Skip to Work Started
+      </button>
+      <button class="sim-btn" onclick="controlSimulation('complete')">
+        <i class="fas fa-check-circle"></i> Complete Service Job
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var map, userMarker, empMarker, routeLine;
+  const bookingId = "{{ booking.unique }}";
+
+  // Markers icons
+  var userIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/845/845022.png', // Home Green Marker
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36]
+  });
+
+  var partnerIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/7542/7542670.png', // Blue Truck/Delivery Icon
+      iconSize: [38, 38],
+      iconAnchor: [19, 19],
+      popupAnchor: [0, -19]
+  });
+
+  function initTrackingMap(userLat, userLng, empLat, empLng) {
+      map = L.map('map').setView([empLat, empLng], 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Customer Location Pin
+      userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+      userMarker.bindPopup("<b>Your Location</b><br>{{ booking.booking_address }}").openPopup();
+
+      // Provider Location Pin
+      empMarker = L.marker([empLat, empLng], { icon: partnerIcon }).addTo(map);
+      empMarker.bindPopup("<b>{{ employee.name }} (Partner)</b><br>Out for delivery");
+
+      // Draw routing polyline path
+      routeLine = L.polyline([
+          [empLat, empLng],
+          [userLat, userLng]
+      ], {
+          color: '#4f46e5',
+          weight: 4,
+          opacity: 0.8,
+          dashArray: '8, 8',
+          lineJoin: 'round'
+      }).addTo(map);
+
+      map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+  }
+
+  // Trigger map init
+  initTrackingMap({{ booking.user_lat }}, {{ booking.user_lng }}, {{ booking.emp_lat }}, {{ booking.emp_lng }});
+
+  function pollTracking() {
+      fetch('/api/track/' + bookingId + '/')
+          .then(r => r.json())
+          .then(data => {
+              updateTrackingUI(data);
+          })
+          .catch(e => console.error("Poll Error:", e));
+  }
+
+  function updateTrackingUI(data) {
+      const status = data.status;
+      const empLat = data.emp_lat;
+      const empLng = data.emp_lng;
+      const userLat = data.user_lat;
+      const userLng = data.user_lng;
+
+      // Update positions
+      if (empMarker) empMarker.setLatLng([empLat, empLng]);
+      if (routeLine) routeLine.setLatLngs([[empLat, empLng], [userLat, userLng]]);
+
+      // Timeline nodes
+      const placed = document.getElementById('step-placed');
+      const assigned = document.getElementById('step-assigned');
+      const transit = document.getElementById('step-transit');
+      const progress = document.getElementById('step-progress');
+      const completed = document.getElementById('step-completed');
+      
+      const etaText = document.getElementById('eta-text');
+      const statusTitleText = document.getElementById('status-title-text');
+
+      // Clean active and completed markers
+      [placed, assigned, transit, progress, completed].forEach(node => {
+          node.classList.remove('active', 'completed');
+      });
+
+      placed.classList.add('completed');
+      assigned.classList.add('completed');
+
+      if (status === "Heading to Location") {
+          transit.classList.add('active');
+          
+          // Calculate direct distance
+          const latDiff = userLat - empLat;
+          const lngDiff = userLng - empLng;
+          const dist = Math.sqrt(latDiff*latDiff + lngDiff*lngDiff);
+          const mins = Math.max(1, Math.round(dist * 1000));
+
+          etaText.innerText = mins + " mins away";
+          statusTitleText.innerText = "Partner Heading to You";
+      }
+      else if (status === "Arrived") {
+          transit.classList.add('completed');
+          progress.classList.add('active');
+          etaText.innerText = "Arrived at location";
+          statusTitleText.innerText = "Partner Arrived";
+      }
+      else if (status === "In Progress") {
+          transit.classList.add('completed');
+          progress.classList.add('active');
+          etaText.innerText = "Task in progress";
+          statusTitleText.innerText = "Job Underway";
+      }
+      else if (status === "Completed") {
+          transit.classList.add('completed');
+          progress.classList.add('completed');
+          completed.classList.add('completed');
+          etaText.innerText = "Completed";
+          statusTitleText.innerText = "Service Job Completed";
+          if (routeLine) map.removeLayer(routeLine);
+      }
+  }
+
+  function controlSimulation(action) {
+      const formData = new FormData();
+      formData.append('action', action);
+
+      fetch('/api/track/' + bookingId + '/control/', {
+          method: 'POST',
+          body: formData
+      })
+      .then(res => res.json())
+      .then(d => {
+          if (d.status === 'success') {
+              pollTracking();
+          }
+      })
+      .catch(e => console.error("Sim command error:", e));
+  }
+
+  // Poll coordinate changes every 3 seconds
+  setInterval(pollTracking, 3000);
+  pollTracking();
+</script>
+
+</body>
+</html>

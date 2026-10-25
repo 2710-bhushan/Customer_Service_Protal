@@ -1,356 +1,781 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Book Service - Customer Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { 
-            --primary-color: #4a90e2; 
-            --secondary-color: #6c5ce7; 
-            --accent-color: #00b894; 
-        }
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Services – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
 
-        body { 
-            background: #f8f9fa; 
-            min-height: 100vh; 
-            margin: 0;
-        }
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+  }
+  .user-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .user-info-s .name {
+    font-weight: 700;
+    font-size: .9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+  .user-info-s .badge {
+    font-size: .72rem;
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+    border-radius: 50px;
+    padding: .1rem .5rem;
+    margin-top: .2rem;
+    display: inline-block;
+    font-weight: 600;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .15rem;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .logout-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
 
-        /* Mobile Menu Toggle */
-        .menu-toggle {
-            position: fixed;
-            top: 10px;
-            left: 15px;
-            z-index: 1001;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 2.5rem;
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1.5rem;
+  }
+  .topbar h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+  }
+  .search-form {
+    display: flex;
+    gap: .5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .4rem;
+    flex: 1;
+    max-width: 500px;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-form input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: .9rem;
+    padding: .3rem .5rem;
+    font-family: var(--font-family);
+  }
+  .search-form input::placeholder {
+    color: var(--text-light);
+  }
+  .search-form button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: .4rem .9rem;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 700;
+    transition: var(--transition);
+  }
+  .search-form button:hover {
+    background: var(--primary-hover);
+  }
 
-        .menu-toggle i {
-            font-size: 1.5rem;
-            vertical-align: middle;
-        }
+  /* CATEGORY FILTERS */
+  .category-scroll {
+    display: flex;
+    gap: .75rem;
+    overflow-x: auto;
+    padding-bottom: .75rem;
+    margin-bottom: 2rem;
+    scrollbar-width: none;
+  }
+  .category-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .cat-pill {
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 50px;
+    padding: .5rem 1.2rem;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .cat-pill:hover, .cat-pill.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
 
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1rem;
-            position: fixed;
-            top: 0;
-            left: -100%;
-            height: 100vh;
-            width: 280px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            overflow-y: auto;
-        }
+  /* PROMO BANNERS */
+  .promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .promo-card {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .promo-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  .promo-code {
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary);
+    display: block;
+  }
+  .promo-desc {
+    font-size: .8rem;
+    color: var(--text-secondary);
+    margin-top: .15rem;
+  }
 
-        .sidebar.active {
-            left: 0;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
-        }
+  /* PROVIDERS GRID */
+  .providers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .provider-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+    box-shadow: var(--card-shadow);
+  }
+  .provider-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+  }
+  .fav-btn {
+    position: absolute;
+    top: .75rem;
+    right: .75rem;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+  .fav-btn:hover {
+    transform: scale(1.15);
+  }
+  .provider-img-wrap {
+    height: 190px;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+  }
+  .provider-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s;
+  }
+  .provider-card:hover .provider-img-wrap img {
+    transform: scale(1.05);
+  }
+  .provider-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    background: var(--primary-light);
+  }
+  .provider-body {
+    padding: 1.25rem;
+  }
+  .cat-badge {
+    font-size: .72rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    display: inline-block;
+    margin-bottom: .5rem;
+    font-weight: 600;
+  }
+  .verified-badge {
+    font-size: .72rem;
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    margin-left: .3rem;
+    font-weight: 600;
+  }
+  .pname {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin-bottom: .3rem;
+    color: var(--text-primary);
+  }
+  .stars {
+    color: #f59e0b;
+    font-size: .8rem;
+    margin-bottom: .5rem;
+  }
+  .stars span {
+    color: var(--text-muted);
+    font-size: .78rem;
+    margin-left: .25rem;
+  }
+  .pmeta {
+    display: flex;
+    gap: 1rem;
+    font-size: .78rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+  }
+  .pmeta span {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+  }
+  .pfooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: .875rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .pprice {
+    color: var(--success);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+  .pprice small {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: .75rem;
+  }
+  .btn-book {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: .45rem 1.1rem;
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: var(--transition);
+  }
+  .btn-book:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
 
-        /* Backdrop */
-        .sidebar-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
+  .empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+    grid-column: 1/-1;
+  }
+  .empty-state i {
+    font-size: 3.5rem;
+    opacity: .2;
+    display: block;
+    margin-bottom: 1rem;
+  }
 
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-            z-index: 990;
-        }
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--text-primary);
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-light);
+    margin-left: .75rem;
+  }
 
-        /* Main Content */
-        .main-content {
-            padding: 1rem;
-            padding-top: 80px;
-        }
-
-        /* Responsive Layout */
-        @media (min-width: 768px) {
-            .sidebar {
-                left: 0;
-            }
-            
-            .header {
-                left: 280px;
-            }
-            
-            .main-content {
-                margin-left: 280px;
-            }
-            
-            .menu-toggle {
-                display: none;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .header {
-                padding-left: 70px;
-            }
-            
-            .sidebar.active + .sidebar-backdrop {
-                display: block;
-            }
-        }
-
-        .portal-card { 
-            background: #DBF3FA; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            padding: 1.5rem;
-        }
-
-        .service-card { 
-            background-color: white; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            transition: all 0.3s; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            position: relative; 
-            margin-bottom: 1rem;
-        }
-
-        .service-image { 
-            width: 100%;
-            height: 300px;
-          
-        }
-
-        .service-details { 
-            padding: 1rem; 
-            background: white; 
-        }
-
-        .favorite-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ff0000;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .search-container {
-            max-width: 100%;
-            margin: 1rem 0;
-        }
-
-        .btn-portal { 
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); 
-            color: white; 
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .service-image {
-                height: 325px;
-            }
-        }
-    </style>
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-    <!-- Backdrop -->
-    <div class="sidebar-backdrop"></div>
 
-    <!-- Mobile Menu Toggle -->
-    <button class="menu-toggle d-md-none">
-        <i class="fas fa-bars"></i>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">⚡ ServiceHub</div>
+  <div class="user-card">
+    <div class="user-avatar">
+      {% if user.profile_image %}
+        <img src="{{ user.profile_image }}" alt="{{ user.name }}">
+      {% else %}
+        👤
+      {% endif %}
+    </div>
+    <div class="user-info-s">
+      <div class="name">{{ user.name|default:user.mail }}</div>
+      <div class="badge">✓ Customer</div>
+    </div>
+  </div>
+
+  <span class="nav-section">Main</span>
+  <a href="/bookservice/" class="nav-link active"><i class="fas fa-search"></i> Find Services</a>
+  <a href="/profile/" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+  <a href="/servicehistory/" class="nav-link"><i class="fas fa-history"></i> My Bookings</a>
+  <a href="/favorites/" class="nav-link"><i class="fas fa-heart"></i> Favorites</a>
+
+  <span class="nav-section">Support</span>
+  <a href="/raiseticket/" class="nav-link"><i class="fas fa-ticket-alt"></i> Raise Ticket</a>
+  <a href="/contact/" class="nav-link"><i class="fas fa-headset"></i> Contact Us</a>
+
+  <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <h1>Find Services</h1>
+    <form class="search-form" method="get" action="/bookservice/">
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Search services, providers...">
+      {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+      <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+    <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+  </div>
+
+  <!-- Service Completion Confirmation Card (If provider completed a service but customer hasn't confirmed it yet) -->
+  {% if completed_bookings %}
+    {% for cb in completed_bookings %}
+    <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); border: 2px solid var(--warning); border-radius: 18px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--card-shadow); display: flex; flex-direction: column; gap: 1rem; position: relative; z-index: 10;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          🔔 Confirm Service Completion
+        </h3>
+        <span style="font-size: 0.72rem; background: var(--warning-light); color: var(--warning); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 50px; border: 1px solid var(--warning);">Action Required</span>
+      </div>
+      
+      <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+        Your service provider <strong>{{ cb.employee.name|default:"Provider" }}</strong> has marked the service for Booking <strong>#{{ cb.unique }}</strong> as completed. Please confirm if the job was completed successfully.
+      </p>
+
+      <!-- Details Summary -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); border-radius: 12px; padding: 1rem;">
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Service Category</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">{{ cb.employee.service_provided }}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Provider Name</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">{{ cb.employee.name }}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Scheduled Date</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">{{ cb.service_date|default:"Recently" }}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Service Amount</div>
+          <div style="font-size: 0.85rem; font-weight: 800; color: var(--success);">₹{{ cb.price|floatformat:2 }}</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <form method="POST" action="{% url 'customer_confirm_booking' cb.unique %}" style="display: inline-block;">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary" style="background: var(--success); font-size: 0.85rem; padding: 0.55rem 1.25rem;"><i class="fas fa-check-circle"></i> Confirm Completion</button>
+        </form>
+        <form method="POST" action="{% url 'customer_raise_issue' cb.unique %}" style="display: inline-block;">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary" style="background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); font-size: 0.85rem; padding: 0.55rem 1.25rem;"><i class="fas fa-exclamation-triangle"></i> Report Issue</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- CATEGORY PILLS -->
+  <div class="category-scroll">
+    <a href="/bookservice/" class="cat-pill {% if not selected_category %}active{% endif %}">🌐 All Services</a>
+    {% for cat in categories %}
+    <a href="/bookservice/?category={{ cat.name }}{% if search_query %}&q={{ search_query }}{% endif %}" class="cat-pill {% if selected_category == cat.name %}active{% endif %}">{{ cat.icon }} {{ cat.name }}</a>
+    {% endfor %}
+  </div>
+
+  <!-- PROMO OFFERS -->
+  {% if offers %}
+  <div class="section-title">🎁 Active Offers</div>
+  <div class="promo-grid">
+    {% for offer in offers %}
+    <div class="promo-card">
+      <div class="promo-icon">🏷️</div>
+      <div>
+        <span class="promo-code">{{ offer.code }}</span>
+        <div class="promo-desc">{{ offer.discount_percent }}% OFF – {{ offer.description|default:"Apply at checkout" }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- View Mode Selector Tabs -->
+  <div style="display: flex; gap: .75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: .75rem;">
+    <button type="button" class="tab-btn active" id="btn-list-view" onclick="switchViewMode('list')" style="background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); padding: .5rem 1.25rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transition);">
+      <i class="fas fa-list" style="margin-right: .35rem;"></i> Grid Directory
     </button>
+    <button type="button" class="tab-btn" id="btn-map-view" onclick="switchViewMode('map')" style="background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-medium); padding: .5rem 1.25rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transition);">
+      <i class="fas fa-map-marked-alt" style="margin-right: .35rem;"></i> Nearest Providers Map
+    </button>
+  </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        
-        <div class="profile-card mb-4 text-center">
+  <!-- Nearest Providers Map Container -->
+  <div id="nearest-map-container" style="display: none; height: 500px; margin-bottom: 2.5rem; border-radius: 18px; overflow: hidden; border: 1px solid var(--border-light); box-shadow: var(--card-shadow); position: relative; z-index: 10;">
+    <div id="nearest-map" style="width: 100%; height: 100%;"></div>
+  </div>
 
-            <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
-                 class="rounded-circle mb-3" style="width: 225px; height: 275px;object-fit: cover; fit-item:bottom;"alt="User_Photo">
-            <h5 class="mb-1">
-                {% if request.COOKIES.user_name %}
-                    {{ request.COOKIES.user_name }}
-                {% else %}
-                    John Doe
-                {% endif %}
-            </h5>
-            <p class="text-muted mb-0">
-                {% if request.COOKIES.user_email %}
-                    {{ request.COOKIES.user_email }}
-                {% else %}
-                    john@example.com
-                {% endif %}
-            </p>
+  <!-- PROVIDERS -->
+  <div class="section-title">
+    🔧 {% if search_query %}Results for "{{ search_query }}"{% elif selected_category %}{{ selected_category }} Providers{% else %}All Verified Providers{% endif %}
+    <span style="font-size:.8rem;color:var(--text-muted);font-weight:400;margin-left:.5rem">({{ data|length }} found)</span>
+  </div>
+
+  <div class="providers-grid">
+    {% for emp in data %}
+    <div class="provider-card" onclick="window.location='/usercommon/{{ emp.unique }}/'">
+      <button class="fav-btn" id="fav-{{ emp.unique }}" onclick="event.stopPropagation();toggleFav({{ emp.unique }})" title="{% if emp.is_favorite %}Remove favorite{% else %}Add to favorites{% endif %}">
+        {% if emp.is_favorite %}❤️{% else %}🤍{% endif %}
+      </button>
+      <div class="provider-img-wrap">
+        {% if emp.profile_image %}
+          <img src="{{ emp.profile_image }}" alt="{{ emp.name }}">
+        {% else %}
+          <div class="provider-img-placeholder">👷</div>
+        {% endif %}
+      </div>
+      <div class="provider-body">
+        <div>
+          <span class="cat-badge">{{ emp.service_provided }}</span>
+          {% if emp.is_verified %}<span class="verified-badge">✓ Verified</span>{% endif %}
         </div>
-        <nav class="nav flex-column">
-            <a class="nav-link text-white active" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
-            <a class="nav-link text-white" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
-            <a class="nav-link text-white" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
-            <a class="nav-link text-white" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
-        </nav>
-    </div>
-
-    <!-- Header -->
-    <div class="header">
-        <h4 class="fw-bold text-primary mb-0">CustomerService</h4>
-        <div class="dropdown">
-            <button class="btn btn-portal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user me-2"></i>Profile
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
+        <div class="pname">{{ emp.name }}</div>
+        <div class="stars">
+          ⭐⭐⭐⭐⭐ <span>{{ emp.rating|floatformat:1 }} ({{ emp.no_of_service_provided }} reviews)</span>
         </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="portal-card">
-            <h3 class="mb-4"><i class="fas fa-calendar-alt me-2"></i>Available Services</h3>
-
-            <!-- Search -->
-            <div class="mb-4">
-                <form method="GET" action="{% url 'bookservice' %}" class="input-group search-container">
-                    <input type="text" name="q" class="form-control" 
-                           placeholder="Search services..." 
-                           value="{{ search_query }}">
-                    <button class="btn btn-portal" type="submit">
-                        <i class="fas fa-search me-2"></i> Search
-                    </button>
-                </form>
-            </div>
-
-            <div class="row g-4">
-                {% for i in data reversed %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="service-card">
-                        <a href="{% url 'usercommon' i.unique %}" class="stretched-link text-decoration-none text-dark">
-                            <div class="favorite-btn" data-employee-id="{{ i.unique }}">
-                                <i class="{% if i.is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
-                            </div>
-                            <img src="{{i.profile_image}}" class="service-image" alt="Service Image">
-                            <div class="service-details">
-                                <h5 class="fw-bold mb-2">{{i.service_provided}}</h5>
-                                <div class="mb-2">
-                                    <i class="fas fa-user me-2 text-primary"></i>
-                                    <span>{{i.name}}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <i class="fas fa-envelope me-2 text-success"></i>
-                                    <span>{{i.email}}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <i class="fas fa-phone me-2 text-danger"></i>
-                                    <span>{{i.phone}}</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="pmeta">
+          <span><i class="fas fa-briefcase"></i> {{ emp.experience }} yrs</span>
+          <span><i class="fas fa-map-marker-alt"></i> {{ emp.service_area|truncatechars:18 }}</span>
         </div>
+        <div class="pfooter">
+          <div class="pprice">₹{{ emp.starting_price|floatformat:0 }} <small>/ visit</small></div>
+          <a href="/payment/{{ emp.unique }}/" class="btn-book" onclick="event.stopPropagation()">Book Now</a>
+        </div>
+      </div>
     </div>
+    {% empty %}
+    <div class="empty-state">
+      <i class="fas fa-search-minus"></i>
+      <h3>No providers found</h3>
+      <p>Try different search terms or clear the category filter</p>
+      <a href="/bookservice/" style="color:var(--primary);text-decoration:none;margin-top:1rem;display:inline-block">View All →</a>
+    </div>
+    {% endfor %}
+  </div>
+</main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Mobile Menu Handling
-        const menuToggle = document.querySelector('.menu-toggle');
-        const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.querySelector('.sidebar-backdrop');
+<script>
+  const providersData = [
+    {% for emp in data %}
+    {
+      unique: "{{ emp.unique }}",
+      name: "{{ emp.name|escapejs }}",
+      category: "{{ emp.service_provided|escapejs }}",
+      rating: "{{ emp.rating|floatformat:1 }}",
+      experience: "{{ emp.experience }}",
+      price: "{{ emp.starting_price|floatformat:0 }}",
+      lat: {{ emp.live_lat|default:21.0150 }},
+      lng: {{ emp.live_lng|default:75.5690 }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+  const userLat = {{ user.live_lat|default:21.0150 }};
+  const userLng = {{ user.live_lng|default:75.5690 }};
 
-        // Toggle menu
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('active');
-            backdrop.style.display = 'block';
-        });
+  let mapInitialized = false;
+  let nearestMap;
 
-        // Close menu on backdrop click
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            backdrop.style.display = 'none';
-        });
+  function switchViewMode(mode) {
+    const listBtn = document.getElementById('btn-list-view');
+    const mapBtn = document.getElementById('btn-map-view');
+    const listGrid = document.querySelector('.providers-grid');
+    const mapContainer = document.getElementById('nearest-map-container');
+    
+    if (mode === 'list') {
+      listBtn.style.background = 'var(--primary-light)';
+      listBtn.style.color = 'var(--primary)';
+      listBtn.style.borderColor = 'var(--primary)';
+      
+      mapBtn.style.background = 'var(--bg-secondary)';
+      mapBtn.style.color = 'var(--text-secondary)';
+      mapBtn.style.borderColor = 'var(--border-medium)';
+      
+      listGrid.style.display = 'grid';
+      mapContainer.style.display = 'none';
+    } else {
+      mapBtn.style.background = 'var(--primary-light)';
+      mapBtn.style.color = 'var(--primary)';
+      mapBtn.style.borderColor = 'var(--primary)';
+      
+      listBtn.style.background = 'var(--bg-secondary)';
+      listBtn.style.color = 'var(--text-secondary)';
+      listBtn.style.borderColor = 'var(--border-medium)';
+      
+      listGrid.style.display = 'none';
+      mapContainer.style.display = 'block';
+      
+      if (!mapInitialized) {
+        initNearestMap();
+      } else {
+        setTimeout(() => nearestMap.invalidateSize(), 100);
+      }
+    }
+  }
 
-        // Close menu on window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                sidebar.classList.remove('active');
-                backdrop.style.display = 'none';
-            }
-        });
+  function initNearestMap() {
+    mapInitialized = true;
+    nearestMap = L.map('nearest-map').setView([userLat, userLng], 13);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(nearestMap);
+    
+    // Customer marker icon
+    var userIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/845/845022.png',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36]
+    });
+    
+    // Provider marker icon
+    var providerIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/7542/7542670.png',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -18]
+    });
+    
+    // User marker
+    L.marker([userLat, userLng], { icon: userIcon }).addTo(nearestMap)
+      .bindPopup("<b>Your Location</b>").openPopup();
+      
+    // Provider markers
+    providersData.forEach(p => {
+      if (p.lat && p.lng) {
+        const marker = L.marker([p.lat, p.lng], { icon: providerIcon }).addTo(nearestMap);
+        const popupContent = `
+          <div style="font-family: var(--font-family); padding: .25rem; min-width: 160px;">
+            <h4 style="font-weight:800; color:var(--text-primary); margin:0 0 .25rem;">${p.name}</h4>
+            <span style="background:var(--primary-light); color:var(--primary); font-size:.7rem; font-weight:700; padding:.15rem .5rem; border-radius:50px; display:inline-block; margin-bottom:.5rem;">${p.category}</span>
+            <div style="font-size:.78rem; color:var(--text-secondary); margin-bottom:.25rem;">Rating: ⭐ ${p.rating} (${p.experience} yrs exp)</div>
+            <div style="font-size:.85rem; font-weight:700; color:var(--success); margin-bottom:.5rem;">Price: ₹${p.price}</div>
+            <a href="/payment/${p.unique}/" style="background:var(--primary-gradient); color:white; font-size:.75rem; font-weight:700; padding:.4rem .8rem; border-radius:6px; text-decoration:none; display:block; text-align:center;">Book Now</a>
+          </div>
+        `;
+        marker.bindPopup(popupContent);
+      }
+    });
+    
+    // Fit bounds if there are providers
+    if (providersData.length > 0) {
+      const markers = providersData.map(p => [p.lat, p.lng]);
+      markers.push([userLat, userLng]);
+      nearestMap.fitBounds(markers, { padding: [50, 50] });
+    }
+  }
 
-        // Active link handling
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href').endsWith(currentPage)) {
-                    link.classList.add('active');
-                }
-            });
-        });
+  function toggleFav(id) {
+    fetch('/toggle_favorite/'+id+'/', {method:'POST', headers:{'X-CSRFToken':getCookie('csrftoken')}})
+    .then(r=>r.json()).then(d=>{
+      const btn = document.getElementById('fav-'+id);
+      if(d.action==='added') btn.innerHTML='❤️';
+      else btn.innerHTML='🤍';
+    });
+  }
+  function getCookie(n){let v=null;document.cookie.split(';').forEach(c=>{const [k,val]=c.trim().split('=');if(k===n)v=decodeURIComponent(val)});return v}
+</script>
 
-        // Favorite toggle functionality
-        document.querySelectorAll('.favorite-btn').forEach(btn => {
-            btn.addEventListener('click', async function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                
-                const employeeId = this.dataset.employeeId;
-                const icon = this.querySelector('i');
-                
-                try {
-                    const response = await fetch(`/toggle_favorite/${employeeId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'same-origin'
-                    });
-                    
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        icon.classList.toggle('far');
-                        icon.classList.toggle('fas');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            });
-        });
-    </script>
+<!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav">
+  <a href="/bookservice/" class="mobile-nav-item active">
+    <i class="fas fa-search"></i>
+    <span>Find</span>
+  </a>
+  <a href="/servicehistory/" class="mobile-nav-item">
+    <i class="fas fa-history"></i>
+    <span>Bookings</span>
+  </a>
+  <a href="/favorites/" class="mobile-nav-item">
+    <i class="fas fa-heart"></i>
+    <span>Favorites</span>
+  </a>
+  <a href="/profile/" class="mobile-nav-item">
+    <i class="fas fa-user-circle"></i>
+    <span>Profile</span>
+  </a>
+</div>
+
 </body>
 </html>

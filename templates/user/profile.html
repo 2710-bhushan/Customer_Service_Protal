@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .15rem;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .logout-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+  
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 2.5rem;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    margin-bottom: .25rem;
+  }
+  .sub {
+    color: var(--text-muted);
+    font-size: .9rem;
+  }
+  .profile-hero {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .avatar-wrap {
+    position: relative;
+  }
+  .avatar {
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .hero-info h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+  .hero-info p {
+    color: var(--text-secondary);
+    font-size: .88rem;
+    margin-top: .25rem;
+  }
+  .badge-row {
+    display: flex;
+    gap: .5rem;
+    margin-top: .75rem;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: .75rem;
+    border-radius: 50px;
+    padding: .25rem .75rem;
+    font-weight: 600;
+  }
+  .badge-green {
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+  }
+  .badge-purple {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+
+  .tabs {
+    display: flex;
+    gap: .25rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .35rem;
+    margin-bottom: 2rem;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: .6rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: var(--transition);
+    border: none;
+    background: none;
+  }
+  .tab.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  .panel {
+    display: none;
+  }
+  .panel.active {
+    display: block;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: .4rem;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap i {
+    position: absolute;
+    left: .875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: .85rem;
+  }
+  input, select {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .7rem 1rem .7rem 2.3rem;
+    color: var(--text-primary);
+    font-size: .9rem;
+    font-family: var(--font-family);
+    transition: var(--transition);
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--bg-secondary);
+  }
+  input::placeholder {
+    color: var(--text-light);
+  }
+  select option {
+    background: var(--bg-secondary);
+  }
+  .no-icon {
+    padding-left: 1rem!important;
+  }
+  .btn-save {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .7rem 2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: .9rem;
+  }
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  }
+  .btn-danger {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: .5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: .82rem;
+    transition: var(--transition);
+  }
+  .btn-danger:hover {
+    background: var(--danger);
+    color: white;
+  }
+
+  /* ADDRESSES */
+  .addr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .addr-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: var(--transition);
+  }
+  .addr-card.default {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .addr-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border-light);
+  }
+  .addr-label {
+    font-weight: 700;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .default-tag {
+    font-size: .7rem;
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+    border-radius: 50px;
+    padding: .15rem .5rem;
+  }
+  .addr-text {
+    color: var(--text-secondary);
+    font-size: .82rem;
+    margin-top: .2rem;
+    line-height: 1.5;
+  }
+  .addr-actions {
+    display: flex;
+    gap: .5rem;
+    flex-shrink: 0;
+  }
+
+  /* MASKED VALUES */
+  .masked-val {
+    font-family: monospace;
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: .05em;
+  }
+  .info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .info-row:last-child {
+    border-bottom: none;
+  }
+  .info-label {
+    font-size: .82rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .info-value {
+    font-weight: 600;
+    font-size: .9rem;
+  }
+
+  .alert-success {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-md);
+    padding: .75rem 1rem;
+    color: var(--success);
+    font-size: .88rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">⚡ ServiceHub</div>
+  <span class="nav-section">Main</span>
+  <a href="/bookservice/" class="nav-link"><i class="fas fa-search"></i> Find Services</a>
+  <a href="/profile/" class="nav-link active"><i class="fas fa-user-circle"></i> My Profile</a>
+  <a href="/servicehistory/" class="nav-link"><i class="fas fa-history"></i> My Bookings</a>
+  <a href="/favorites/" class="nav-link"><i class="fas fa-heart"></i> Favorites</a>
+  <span class="nav-section">Support</span>
+  <a href="/raiseticket/" class="nav-link"><i class="fas fa-ticket-alt"></i> Raise Ticket</a>
+  <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+</aside>
+
+<main class="main">
+  <div class="header-row">
+    <div>
+      <h1>My Profile</h1>
+      <p class="sub">Manage your account information, addresses, and payment details</p>
+    </div>
+    <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+  </div>
+
+  {% if request.GET.updated or request.GET.addr or request.GET.bank %}
+  <div class="alert-success"><i class="fas fa-check-circle"></i>
+    {% if request.GET.updated %}Profile updated successfully!{% elif request.GET.addr %}Address saved!{% else %}Payment details updated!{% endif %}
+  </div>
+  {% endif %}
+
+  <!-- PROFILE HERO -->
+  <div class="profile-hero">
+    <div class="avatar-wrap">
+      <div class="avatar">
+        {% if user.profile_image %}<img src="{{ user.profile_image }}" alt="{{ user.name }}">{% else %}👤{% endif %}
+      </div>
+    </div>
+    <div class="hero-info">
+      <h2>{{ user.name|default:"Update your name" }}</h2>
+      <p>{{ user.mail }}</p>
+      <div class="badge-row">
+        <span class="badge badge-green">✓ Verified</span>
+        <span class="badge badge-purple">👤 Customer</span>
+        {% if user.phone %}<span class="badge badge-purple">📞 {{ user.phone }}</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab(0)" id="tab0">👤 Personal Info</button>
+    <button class="tab" onclick="showTab(1)" id="tab1">📍 Addresses</button>
+    <button class="tab" onclick="showTab(2)" id="tab2">💳 Payment</button>
+    <button class="tab" onclick="showTab(3)" id="tab3">👛 Wallet & Payouts</button>
+  </div>
+
+  <!-- PANEL 0: Personal Info -->
+  <div class="panel active" id="panel0">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-user"></i> Personal Information</div>
+      <form method="POST" action="/profile/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_profile">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-wrap"><i class="fas fa-user"></i>
+              <input type="text" name="name" value="{{ user.name }}" placeholder="Your full name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrap"><i class="fas fa-envelope"></i>
+              <input type="email" value="{{ user.mail }}" readonly style="opacity:.6">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-wrap"><i class="fas fa-phone"></i>
+              <input type="text" name="phone" value="{{ user.phone }}" placeholder="+91 XXXXX XXXXX">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <div class="input-wrap"><i class="fas fa-venus-mars"></i>
+              <select name="gender" class="no-icon" style="padding-left:2.3rem">
+                <option value="" {% if not user.gender %}selected{% endif %}>Select gender</option>
+                <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Profile Photo</label>
+          <input type="file" name="profile_photo" accept="image/*" class="no-icon" style="padding-left:1rem">
+        </div>
+        <button type="submit" class="btn-save">💾 Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PANEL 1: Addresses -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-map-marker-alt"></i> Saved Addresses</div>
+
+      {% if user.addresses %}
+      <div class="addr-list">
+        {% for addr in user.addresses %}
+        <div class="addr-card {% if addr.is_default %}default{% endif %}">
+          <div style="display:flex;align-items:flex-start;gap:.875rem">
+            <div class="addr-icon">
+              {% if addr.label == 'Home' %}🏠{% elif addr.label == 'Office' %}🏢{% elif addr.label == 'Shop' %}🛒{% else %}📍{% endif %}
+            </div>
+            <div>
+              <div class="addr-label">
+                {{ addr.label }}
+                {% if addr.is_default %}<span class="default-tag">Default</span>{% endif %}
+              </div>
+              <div class="addr-text">
+                {% if addr.address_line1 %}{{ addr.address_line1 }}, {% endif %}
+                {% if addr.address_line2 %}{{ addr.address_line2 }}, {% endif %}
+                {% if addr.area %}{{ addr.area }}, {% endif %}
+                {{ addr.city }}{% if addr.state %}, {{ addr.state }}{% endif %}
+                {% if addr.pincode %} – {{ addr.pincode }}{% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="addr-actions">
+            <form method="POST" action="/profile/" onsubmit="return confirm('Delete this address?')">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete_address">
+              <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+              <button type="submit" class="btn-danger"><i class="fas fa-trash"></i></button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div style="text-align:center;color:var(--text-muted);padding:1.5rem 0;font-size:.9rem">No saved addresses yet. Add one below.</div>
+      {% endif %}
+
+      <!-- ADD ADDRESS FORM -->
+      <details style="margin-top:1rem">
+        <summary style="cursor:pointer;color:var(--primary);font-weight:700;font-size:.9rem;padding:.5rem 0">➕ Add New Address</summary>
+        <div style="margin-top:1rem">
+          <form method="POST" action="/profile/" id="addAddrForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_address">
+            <div class="form-group">
+              <label>Label</label>
+              <div class="input-wrap"><i class="fas fa-tag"></i>
+                <select name="label" style="padding-left:2.3rem">
+                  <option value="Home">🏠 Home</option>
+                  <option value="Office">🏢 Office</option>
+                  <option value="Shop">🛒 Shop</option>
+                  <option value="Other">📍 Other</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:.75rem">
+              <button type="button" class="btn-save" onclick="detectAddrGPS()" style="background:var(--success)">
+                <i class="fas fa-crosshairs"></i> Auto-Detect via GPS
+              </button>
+            </div>
+            <div class="grid-2">
+              <div class="form-group"><label>Address Line 1</label><div class="input-wrap"><i class="fas fa-home"></i><input type="text" name="address_line1" id="na1" placeholder="House / Flat No."></div></div>
+              <div class="form-group"><label>Address Line 2</label><div class="input-wrap"><i class="fas fa-road"></i><input type="text" name="address_line2" id="na2" placeholder="Street / Landmark"></div></div>
+              <div class="form-group"><label>Area</label><div class="input-wrap"><i class="fas fa-map"></i><input type="text" name="area" id="na_area" placeholder="Locality"></div></div>
+              <div class="form-group"><label>City</label><div class="input-wrap"><i class="fas fa-city"></i><input type="text" name="city" id="na_city" placeholder="City"></div></div>
+              <div class="form-group"><label>District</label><div class="input-wrap"><i class="fas fa-map-pin"></i><input type="text" name="district" id="na_dist" placeholder="District"></div></div>
+              <div class="form-group"><label>State</label><div class="input-wrap"><i class="fas fa-flag"></i><input type="text" name="state" id="na_state" placeholder="State"></div></div>
+              <div class="form-group"><label>Pincode</label><div class="input-wrap"><i class="fas fa-hashtag"></i><input type="text" name="pincode" id="na_pin" placeholder="Pincode" maxlength="6"></div></div>
+            </div>
+            <button type="submit" class="btn-save">💾 Save Address</button>
+          </form>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Payment -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-lock"></i> Secure Payment Details</div>
+      <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.25rem">Sensitive information is masked for your security. Used for refund processing only.</p>
+      <div class="info-row">
+        <span class="info-label">Bank Account Number</span>
+        <span class="masked-val">{{ masked_bank }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Bank IFSC Code</span>
+        <span class="info-value">{% if user.bank_ifsc %}{{ user.bank_ifsc|slice:":4" }}****{% else %}Not Provided{% endif %}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">UPI ID</span>
+        <span class="masked-val">{{ masked_upi }}</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-edit"></i> Update Payment Details</div>
+      <form method="POST" action="/profile/">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_bank">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Bank Account Number</label>
+            <div class="input-wrap"><i class="fas fa-university"></i>
+              <input type="text" name="bank_account_num" placeholder="Account number">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>IFSC Code</label>
+            <div class="input-wrap"><i class="fas fa-code"></i>
+              <input type="text" name="bank_ifsc" placeholder="IFSC code (e.g. SBIN0001234)">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>UPI ID</label>
+          <div class="input-wrap"><i class="fas fa-mobile-alt"></i>
+            <input type="text" name="upi_id" placeholder="yourname@upi">
+          </div>
+        </div>
+        <p style="color:var(--text-muted);font-size:.78rem;margin-bottom:1rem">⚠️ This data is used only for refunds and is never shared with third parties.</p>
+        <button type="submit" class="btn-save">💾 Update Payment Details</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PANEL 3: Wallet & Payouts -->
+  <div class="panel" id="panel3">
+    <div class="card" style="border: 1px solid var(--success); background: linear-gradient(135deg, rgba(16,185,129,0.02), rgba(5,150,105,0.05));">
+      <div class="card-title" style="color: var(--success); font-weight: 800;"><i class="fas fa-wallet"></i> ServiceHub Customer Wallet</div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+        Welcome to your ServiceHub Wallet. Any successful refund amount from booking disputes or support requests is credited directly here. 
+        You can use this wallet balance to book any future service on our platform. 
+        <strong style="color: var(--text-primary);">Note: Wallet balance is non-withdrawable to bank accounts and is reserved solely for booking services.</strong>
+      </p>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); border: 1px solid var(--border-light); padding: 1.5rem 2rem; border-radius: 16px; margin-bottom: 2rem;">
+        <div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Available Balance</div>
+          <div style="font-size: 2.2rem; font-weight: 900; color: var(--success); margin-top: 0.25rem;">₹{{ user.wallet_balance|floatformat:2 }}</div>
+        </div>
+        <div style="font-size: 3rem; opacity: 0.35;">👛</div>
+      </div>
+    </div>
+
+    <!-- Wallet Transaction History -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-history"></i> Wallet Transaction History</div>
+      
+      <div class="table-card" style="overflow-x: auto; max-height: 50vh; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-light);">
+              <th style="padding: 1rem 0.75rem; font-size: 0.85rem; color: var(--text-muted);">Date & Time</th>
+              <th style="padding: 1rem 0.75rem; font-size: 0.85rem; color: var(--text-muted);">Transaction Type</th>
+              <th style="padding: 1rem 0.75rem; font-size: 0.85rem; color: var(--text-muted);">Description</th>
+              <th style="padding: 1rem 0.75rem; font-size: 0.85rem; color: var(--text-muted); text-align: right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in wallet_history %}
+            <tr style="border-bottom: 1px solid var(--border-light); font-size: 0.85rem;">
+              <td style="padding: 1rem 0.75rem; color: var(--text-secondary);">{{ item.date|date:"M d, Y at H:i" }}</td>
+              <td style="padding: 1rem 0.75rem; font-weight: 700;">{{ item.type }}</td>
+              <td style="padding: 1rem 0.75rem; color: var(--text-muted);">{{ item.desc }}</td>
+              <td style="padding: 1rem 0.75rem; text-align: right; {{ item.style }}">{{ item.amount }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📄</div>
+                No wallet transactions found.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  function showTab(n) {
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+    document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  }
+
+  function detectAddrGPS() {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const d = await r.json();
+        const a = d.address || {};
+        document.getElementById('na1').value = a.house_number || '';
+        document.getElementById('na2').value = a.road || '';
+        document.getElementById('na_area').value = a.suburb || a.neighbourhood || '';
+        document.getElementById('na_city').value = a.city || a.town || a.village || '';
+        document.getElementById('na_dist').value = a.county || '';
+        document.getElementById('na_state').value = a.state || '';
+        document.getElementById('na_pin').value = a.postcode || '';
+        alert('✓ Address auto-detected from GPS!');
+      } catch(e){ alert('Could not fetch address. Fill manually.'); }
+    }, () => alert('Location access denied.'));
+  }
+</script>
+
+<!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav">
+  <a href="/bookservice/" class="mobile-nav-item">
+    <i class="fas fa-search"></i>
+    <span>Find</span>
+  </a>
+  <a href="/servicehistory/" class="mobile-nav-item">
+    <i class="fas fa-history"></i>
+    <span>Bookings</span>
+  </a>
+  <a href="/favorites/" class="mobile-nav-item">
+    <i class="fas fa-heart"></i>
+    <span>Favorites</span>
+  </a>
+  <a href="/profile/" class="mobile-nav-item active">
+    <i class="fas fa-user-circle"></i>
+    <span>Profile</span>
+  </a>
+</div>
+
+</body>
+</html>

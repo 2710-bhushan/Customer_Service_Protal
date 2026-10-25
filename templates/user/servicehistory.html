@@ -1,321 +1,537 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service History - Customer Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-    
-        .service-card {
-            background-color: white;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 15px;
-        }
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-        }
-        .service-img {
-            width: 100px;
-            height: 125px;
-            border-radius: 50%;
-            background: #ddd;
-            object-fit: cover;
-        }
-        .service-details {
-            padding-left: 15px;
-        }
-        :root { 
-            --primary-color: #4a90e2; 
-            --secondary-color: #6c5ce7; 
-            --accent-color: #00b894; 
-        }
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Bookings – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
 
-        body { 
-            background: #f8f9fa; 
-            min-height: 100vh; 
-            margin: 0;
-        }
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .15rem;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .logout-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
 
-        /* Mobile Menu Toggle */
-        .menu-toggle {
-            position: fixed;
-            top: 10px;
-            left: 15px;
-            z-index: 1001;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 2.5rem;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+  }
+  .header-left h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+  }
+  .header-left p {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin-top: .15rem;
+  }
 
-        .menu-toggle i {
-            font-size: 1.5rem;
-            vertical-align: middle;
-        }
+  /* BOOKINGS */
+  .bookings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .booking-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 1.75rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+  .booking-card:hover {
+    border-color: var(--primary-light);
+  }
+  
+  .booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+  .booking-ref {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .booking-date {
+    font-size: .78rem;
+    color: var(--text-light);
+    margin-top: .15rem;
+  }
 
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1rem;
-            position: fixed;
-            top: 0;
-            left: -100%;
-            height: 100vh;
-            width: 280px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            overflow-y: auto;
-        }
+  .status-pill {
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .25rem .75rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .status-pending { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+  .status-active { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+  .status-completed { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .status-declined { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
 
-        .sidebar.active {
-            left: 0;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
-        }
+  .provider-banner {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .provider-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-medium);
+  }
+  .provider-name {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .provider-cat {
+    font-size: .78rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: .1rem;
+  }
 
-        /* Backdrop */
-        .sidebar-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.25rem;
+  }
+  .detail-item {
+    font-size: .88rem;
+  }
+  .detail-label {
+    font-size: .75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .25rem;
+  }
+  .detail-val {
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
 
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-            z-index: 990;
-        }
+  .action-row {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: .5rem 1rem;
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    text-decoration: none;
+  }
+  .btn-track {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+  }
+  .btn-track:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
+  .btn-refund {
+    background: var(--warning-light);
+    color: var(--warning);
+    border-color: var(--warning);
+  }
+  .btn-refund:hover {
+    background: var(--warning);
+    color: white;
+  }
+  .btn-ticket {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+  .btn-ticket:hover {
+    background: var(--border-light);
+  }
 
-        /* Main Content */
-        .main-content {
-            padding: 1rem;
-            padding-top: 80px;
-        }
+  .empty-state {
+    text-align: center;
+    padding: 6rem 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-muted);
+  }
+  .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-light);
+  }
 
-        /* Responsive Layout */
-        @media (min-width: 768px) {
-            .sidebar {
-                left: 0;
-            }
-            
-            .header {
-                left: 280px;
-            }
-            
-            .main-content {
-                margin-left: 280px;
-            }
-            
-            .menu-toggle {
-                display: none;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .header {
-                padding-left: 70px;
-            }
-            
-            .sidebar.active + .sidebar-backdrop {
-                display: block;
-            }
-        }
-
-        .portal-card { 
-            background: #DBF3FA; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            padding: 1.5rem;
-        }
-
-        .service-card { 
-            background-color: white; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            transition: all 0.3s; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            position: relative; 
-            margin-bottom: 1rem;
-        }
-
-        .service-image { 
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .service-details { 
-            padding: 1rem; 
-            background: white; 
-        }
-
-        .favorite-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ff0000;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .search-container {
-            max-width: 100%;
-            margin: 1rem 0;
-        }
-
-        .btn-portal { 
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); 
-            color: white; 
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .service-image {
-                height: 250px;
-            }
-        }
-    </style>
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+</style>
 </head>
 <body>
-    <button class="menu-toggle d-md-none">
-        <i class="fas fa-bars"></i>
-    </button>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="profile-card mb-4 text-center">
-            <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
-                 class="rounded-circle mb-3" style="width: 225px; height: 275px;object-fit: cover;" alt="User_Photo">
-            <h5 class="mb-1">
-                {% if request.COOKIES.user_name %}
-                    {{ request.COOKIES.user_name }}
-                {% else %}
-                    {{ user_name }}
-                {% endif %}
-            </h5>
-            <p class="text-muted mb-0">
-                {% if request.COOKIES.user_email %}
-                    {{ request.COOKIES.user_email }}
-                {% else %}
-                    {{ user_email }}
-                {% endif %}
-            </p>
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link text-white" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
-            <a class="nav-link text-white" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
-            <a class="nav-link text-white active" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
-            <a class="nav-link text-white" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
-        </nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">⚡ ServiceHub</div>
+  <div class="nav-section">Dashboard</div>
+  <a href="/bookservice/" class="nav-link"><i class="fas fa-calendar-alt"></i> Book Service</a>
+  <a href="/favorites/" class="nav-link"><i class="fas fa-heart"></i> Favorites</a>
+  <a href="/servicehistory/" class="nav-link active"><i class="fas fa-history"></i> Service History</a>
+  <a href="/raiseticket/" class="nav-link"><i class="fas fa-ticket-alt"></i> Raise Ticket</a>
+  
+  <div class="nav-section">Account</div>
+  <a href="/profile/" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+  <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="header-row">
+    <div class="header-left">
+      <h1>My Bookings</h1>
+      <p>View invoices, coordinate active bookings, and contact providers.</p>
     </div>
+    <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+  </div>
 
-    <!-- Header -->
-    <div class="header">
-        <h4 class="fw-bold text-primary mb-0">CustomerService</h4>
-        <div class="dropdown">
-            <button class="btn btn-portal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user me-2"></i>Profile
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
+  <!-- Service Completion Confirmation Card (If provider completed a service but customer hasn't confirmed it yet) -->
+  {% if completed_bookings %}
+    {% for cb in completed_bookings %}
+    <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); border: 2px solid var(--warning); border-radius: 18px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--card-shadow); display: flex; flex-direction: column; gap: 1rem; position: relative; z-index: 10;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          🔔 Confirm Service Completion
+        </h3>
+        <span style="font-size: 0.72rem; background: var(--warning-light); color: var(--warning); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 50px; border: 1px solid var(--warning);">Action Required</span>
+      </div>
+      
+      <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+        Your service provider <strong>{{ cb.employee.name|default:"Provider" }}</strong> has marked the service for Booking <strong>#{{ cb.unique }}</strong> as completed. Please confirm if the job was completed successfully.
+      </p>
+
+      <!-- Details Summary -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); border-radius: 12px; padding: 1rem;">
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Service Category</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">{{ cb.employee.service_provided }}</div>
         </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="portal-card p-4">
-            <h3 class="mb-4"><i class="fas fa-history me-2"></i>Your Service History</h3>
-            <div class="row g-4">
-                {% for service in services %}
-                <a href="{% url 'usercommon' service.unique %}" class="stretched-link text-decoration-none text-dark">
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="service-card d-flex align-items-center">
-                        <img src="{{ service.profile_image }}" alt="Service" class="service-img">
-                        <div class="service-details">
-                            <h5 class="fw-bold mb-2">{{ service.service_type }}</h5>
-                            <div class="mb-1"><i class="fas fa-user me-2 text-success"></i>NAME: {{ service.name }}</div>
-                            <div class="mb-1"><i class="fas fa-envelope me-2 text-info"></i>EMAIL: {{ service.email }}</div>
-                            <div class="mb-1"><i class="fas fa-phone me-2 text-danger"></i>MOBILE NO: {{ service.phone }}</div>
-                       
-                        </div>
-                    </div>
-                </div></a>
-                {% empty %}
-                <p>No services found in your history.</p>
-            
-                {% endfor %}
-            </div>
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Provider Name</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">{{ cb.employee.name }}</div>
         </div>
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Scheduled Date</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">{{ cb.service_date|default:"Recently" }}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Service Amount</div>
+          <div style="font-size: 0.85rem; font-weight: 800; color: var(--success);">₹{{ cb.price|floatformat:2 }}</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <form method="POST" action="{% url 'customer_confirm_booking' cb.unique %}" style="display: inline-block;">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary" style="background: var(--success); font-size: 0.85rem; padding: 0.55rem 1.25rem; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;"><i class="fas fa-check-circle"></i> Confirm Completion</button>
+        </form>
+        <form method="POST" action="{% url 'customer_raise_issue' cb.unique %}" style="display: inline-block;">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary" style="background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); font-size: 0.85rem; padding: 0.55rem 1.25rem; border-radius: 8px; font-weight: bold; cursor: pointer;"><i class="fas fa-exclamation-triangle"></i> Report Issue</button>
+        </form>
+      </div>
     </div>
+    {% endfor %}
+  {% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Mobile Menu Handling
-        const menuToggle = document.querySelector('.menu-toggle');
-        const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.querySelector('.sidebar-backdrop');
+  <div class="bookings-container">
+    {% for b in bookings %}
+    <div class="booking-card">
+      <div class="booking-header">
+        <div>
+          <div class="booking-ref">Booking #{{ b.unique }}</div>
+          <div class="booking-date">Created: {{ b.created_at|date:"M d, Y at H:i" }}</div>
+        </div>
+        
+        <span class="status-pill {% if b.status == 'Pending' or b.status == 'Pending Service Provider Acceptance' %}status-pending{% elif b.status == 'Completed' %}status-completed{% elif b.status == 'Declined' or b.status == 'Rejected' %}status-declined{% else %}status-active{% endif %}">
+          {% if b.status == 'Pending' or b.status == 'Pending Service Provider Acceptance' %}
+            <i class="fas fa-clock"></i> Pending Acceptance
+          {% elif b.status == 'Completed' %}
+            <i class="fas fa-check-circle"></i> Job Completed
+          {% elif b.status == 'Declined' or b.status == 'Rejected' %}
+            <i class="fas fa-times-circle"></i> Booking Declined
+          {% elif b.status == 'Accepted' %}
+            <i class="fas fa-check"></i> Request Accepted
+          {% else %}
+            <i class="fas fa-truck-loading"></i> {{ b.status }}
+          {% endif %}
+        </span>
+      </div>
 
-        // Toggle menu
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('active');
-            backdrop.style.display = 'block';
-        });
+      {% if b.employee %}
+      <div class="provider-banner">
+        {% if b.employee.profile_image %}
+          <img src="{{ b.employee.profile_image }}" class="provider-avatar" alt="{{ b.employee.name }}">
+        {% else %}
+          <div class="provider-avatar" style="background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; color: var(--text-muted);">
+            {{ b.employee.name|slice:":1" }}
+          </div>
+        {% endif %}
+        <div>
+          <div class="provider-name">{{ b.employee.name }}</div>
+          <div class="provider-cat">{{ b.employee.service_provided }}</div>
+        </div>
+      </div>
+      {% endif %}
 
-        // Close menu on backdrop click
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            backdrop.style.display = 'none';
-        });
+      <div class="details-grid">
+        <div class="detail-item">
+          <div class="detail-label">Payment Amount</div>
+          <div class="detail-val" style="color: var(--success);">₹{{ b.price|floatformat:2 }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Payment Method</div>
+          <div class="detail-val">{{ b.payment_method }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Transaction ID</div>
+          <div class="detail-val" style="font-family: monospace; font-size: .78rem; font-weight: 700;">{{ b.dummy_txn_id }}</div>
+        </div>
+        {% if b.service_date %}
+        <div class="detail-item">
+          <div class="detail-label">Scheduled Date/Time</div>
+          <div class="detail-val">{{ b.service_date }}</div>
+        </div>
+        {% endif %}
+        {% if b.refund_status and b.refund_status != 'None' %}
+        <div class="detail-item">
+          <div class="detail-label">Refund Status</div>
+          <div class="detail-val" style="color: var(--warning);">{{ b.refund_status }}</div>
+        </div>
+        {% endif %}
+      </div>
 
-        // Close menu on window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                sidebar.classList.remove('active');
-                backdrop.style.display = 'none';
-            }
-        });
+      <div class="action-row">
+        {% if b.status == 'Heading to Location' or b.status == 'Arrived' or b.status == 'In Progress' or b.status == 'Accepted' or b.status == 'Pending' or b.status == 'Pending Service Provider Acceptance' %}
+          <a href="/track/{{ b.unique }}/" class="btn btn-track"><i class="fas fa-map-marker-alt"></i> Track Provider Live</a>
+        {% endif %}
+        
+        {% if b.status == 'Completed' and b.refund_status == 'None' or b.status == 'Completed' and not b.refund_status %}
+          <button type="button" class="btn btn-refund" onclick="openRefundModal('{{ b.unique }}')">
+            <i class="fas fa-undo"></i> Request Refund
+          </button>
+        {% endif %}
+        
+        <a href="/raiseticket/" class="btn btn-ticket"><i class="fas fa-ticket-alt"></i> Raise Dispute/Issue</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fas fa-calendar-times"></i></div>
+      <h3>No Bookings History</h3>
+      <p style="margin-top: .4rem; font-size: .88rem; color: var(--text-muted);">You haven't scheduled any services yet on our platform.</p>
+      <a href="/bookservice/" class="btn btn-track" style="display:inline-flex; margin-top:1.25rem; padding:.5rem 1.5rem; text-decoration:none;">Book Your First Service</a>
+    </div>
+    {% endfor %}
+  </div>
+</main>
 
-        // Active link handling
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href').endsWith(currentPage)) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
+<!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav">
+  <a href="/bookservice/" class="mobile-nav-item">
+    <i class="fas fa-search"></i>
+    <span>Find</span>
+  </a>
+  <a href="/servicehistory/" class="mobile-nav-item active">
+    <i class="fas fa-history"></i>
+    <span>Bookings</span>
+  </a>
+  <a href="/favorites/" class="mobile-nav-item">
+    <i class="fas fa-heart"></i>
+    <span>Favorites</span>
+  </a>
+  <a href="/profile/" class="mobile-nav-item">
+    <i class="fas fa-user-circle"></i>
+    <span>Profile</span>
+  </a>
+</div>
+
+<!-- Refund Request Modal -->
+<div id="refundModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+  <div style="background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 20px; width: 90%; max-width: 480px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.25); animation: zoomIn 0.3s ease; position: relative; margin-top: -50px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fas fa-undo"></i> Claim Refund Request
+      </h3>
+      <button type="button" onclick="closeRefundModal()" style="background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 1.25rem;"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <form id="refundForm" method="POST" action="" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <!-- Bank details -->
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.3rem;">Bank Account Number</label>
+        <input type="text" name="bank_account_num" value="{{ user.bank_account_num|default:'' }}" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-tertiary); color:var(--text-primary);">
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.3rem;">Bank IFSC Code</label>
+        <input type="text" name="bank_ifsc" value="{{ user.bank_ifsc|default:'' }}" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-tertiary); color:var(--text-primary);">
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.3rem;">UPI ID</label>
+        <input type="text" name="upi_id" value="{{ user.upi_id|default:'' }}" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-tertiary); color:var(--text-primary);">
+      </div>
+
+      <!-- Refund Reason -->
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.3rem;">Reason for Refund <span style="color:var(--danger);">*</span></label>
+        <textarea name="refund_reason" required rows="3" placeholder="Please explain in detail why you are requesting a refund for this service..." style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-tertiary); color:var(--text-primary); resize:vertical;"></textarea>
+      </div>
+
+      <!-- Proof photo upload -->
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.3rem;">Upload Evidence Photo of Work <span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">(Optional)</span></label>
+        <input type="file" name="refund_proof_pic" accept="image/*" style="width:100%; padding:0.4rem; border-radius:8px; border:1px dashed var(--border-medium); background:var(--bg-tertiary); color:var(--text-primary); cursor:pointer;">
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button type="button" onclick="closeRefundModal()" style="background:var(--bg-primary); border:1px solid var(--border-medium); color:var(--text-primary); padding:0.5rem 1.25rem; border-radius:8px; font-weight:bold; cursor:pointer;">Cancel</button>
+        <button type="submit" class="btn btn-refund" style="padding:0.5rem 1.25rem; font-weight:bold; border:none; cursor:pointer;"><i class="fas fa-check"></i> Submit Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openRefundModal(bookingId) {
+      document.getElementById('refundForm').action = '/request_refund/' + bookingId + '/';
+      document.getElementById('refundModal').style.display = 'flex';
+  }
+  
+  function closeRefundModal() {
+      document.getElementById('refundModal').style.display = 'none';
+  }
+</script>
+
+<style>
+  @keyframes zoomIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+</style>
+
 </body>
 </html>

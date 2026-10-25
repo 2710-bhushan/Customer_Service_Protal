@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Tracking – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .15rem;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .logout-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* SPLIT VIEW */
+  .main-split {
+    margin-left: 260px;
+    flex: 1;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .tracking-info-panel {
+    width: 380px;
+    border-right: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .map-pane {
+    flex: 1;
+    position: relative;
+    height: 100%;
+  }
+  #map {
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+
+  /* TRACKING COMPONENTS */
+  .status-badge-card {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .eta-indicator {
+    background: rgba(255, 255, 255, 0.2);
+    padding: .35rem .75rem;
+    border-radius: 50px;
+    font-size: .8rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: .75rem;
+  }
+  .status-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: .25rem;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 2.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: var(--border-medium);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-badge {
+    position: absolute;
+    left: -32px;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2.5px solid var(--border-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .65rem;
+    color: var(--text-light);
+    z-index: 2;
+    transition: var(--transition);
+  }
+  .timeline-content h4 {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .timeline-content p {
+    font-size: .75rem;
+    color: var(--text-muted);
+    margin-top: .15rem;
+  }
+
+  /* TIMELINE COMPLETED STATE */
+  .timeline-item.completed .timeline-badge {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+  .timeline-item.completed .timeline-content h4 {
+    color: var(--text-primary);
+  }
+  .timeline-item.active .timeline-badge {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 4px var(--primary-light);
+  }
+  .timeline-item.active .timeline-content h4 {
+    color: var(--primary);
+    font-weight: 800;
+  }
+
+  /* CUSTOMER ACTIONS FOR JOB COMPLETION */
+  .completion-action-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--warning);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    animation: pulseBorder 2s infinite alternate;
+  }
+  @keyframes pulseBorder {
+    0% { border-color: var(--warning); }
+    100% { border-color: var(--primary); }
+  }
+  .completion-title {
+    font-size: .95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: .5rem;
+  }
+  .completion-desc {
+    font-size: .78rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+  .completion-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  .btn-completion-confirm {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: .65rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: .82rem;
+    transition: var(--transition);
+  }
+  .btn-completion-confirm:hover {
+    background: var(--success-hover);
+  }
+  .btn-completion-issue {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: .65rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: .82rem;
+    transition: var(--transition);
+  }
+  .btn-completion-issue:hover {
+    background: var(--danger);
+    color: white;
+  }
+
+  /* REVIEW/RATING CARD */
+  .review-card {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .rating-stars-input {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    margin: .75rem 0;
+    font-size: 1.5rem;
+    color: #f59e0b;
+    cursor: pointer;
+  }
+
+  /* PARTNER CARD */
+  .partner-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .partner-top {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+  }
+  .partner-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-medium);
+  }
+  .partner-name {
+    font-weight: 800;
+    font-size: .92rem;
+  }
+  .partner-desc {
+    font-size: .75rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: .1rem;
+  }
+  .partner-actions {
+    display: flex;
+    gap: .5rem;
+  }
+  .btn-action {
+    flex: 1;
+    border: 1px solid var(--border-medium);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: .45rem;
+    border-radius: 8px;
+    text-align: center;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+  }
+  .btn-action:hover {
+    background: var(--border-light);
+  }
+  .btn-action-primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .btn-action-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  /* BILLING BOX */
+  .billing-box {
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.25rem;
+    font-size: .82rem;
+  }
+  .billing-box h4 {
+    font-size: .72rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .75rem;
+  }
+  .billing-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: .45rem;
+  }
+  .billing-label { color: var(--text-muted); }
+  .billing-val { font-weight: 700; }
+
+  /* OVERLAYS */
+  .top-overlay {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 500;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-split { margin-left: 0; flex-direction: column; }
+    .tracking-info-panel { width: 100%; height: auto; order: 2; }
+    .map-pane { height: 350px; order: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">⚡ ServiceHub</div>
+  {% if request.session.user_type == 'employee' %}
+    <div class="nav-section">Dashboard</div>
+    <a href="/employeeservicebooked/" class="nav-link active"><i class="fas fa-list-check"></i> My Bookings</a>
+  {% else %}
+    <div class="nav-section">Dashboard</div>
+    <a href="/bookservice/" class="nav-link"><i class="fas fa-calendar-alt"></i> Book Service</a>
+    <a href="/favorites/" class="nav-link"><i class="fas fa-heart"></i> Favorites</a>
+    <a href="/servicehistory/" class="nav-link active"><i class="fas fa-history"></i> Service History</a>
+    <a href="/raiseticket/" class="nav-link"><i class="fas fa-ticket-alt"></i> Raise Ticket</a>
+  {% endif %}
+  
+  <div class="nav-section">Account</div>
+  {% if request.session.user_type == 'employee' %}
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  {% else %}
+    <a href="/profile/" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  {% endif %}
+</aside>
+
+<!-- MAIN SPLIT WRAPPER -->
+<main class="main-split">
+  
+  <!-- LEFT: Panel containing tracker milestones, customer action trigger, partner, summary -->
+  <div class="tracking-info-panel">
+    
+    <div class="status-badge-card">
+      <div class="eta-indicator"><i class="far fa-clock"></i> <span id="eta-text">Calculating...</span></div>
+      <div class="status-title" id="status-title-text">Service Confirmed</div>
+      <div style="font-size: .8rem; opacity: .9;">Live tracking active for booking #{{ booking.unique }}.</div>
+    </div>
+
+    <!-- EMPLOYEE ACTION CARD (Appears only to the Service Provider) -->
+    {% if request.session.user_type == 'employee' %}
+    <div class="completion-action-card" style="background: var(--bg-tertiary); border: 1px solid var(--border-medium); margin-bottom: 1.5rem; padding: 1.25rem; border-radius: var(--radius-md);">
+      <div class="completion-title" style="color: var(--primary); font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+        <i class="fas fa-user-gear"></i> Provider Controls
+      </div>
+      <div class="completion-desc" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">
+        Update status as you progress. The customer will track these updates in real-time.
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        {% if booking.status == 'Heading to Location' %}
+          <a href="/agent/toggle_booking/{{ booking.unique }}/reached/" class="btn-completion-confirm" style="text-decoration: none; text-align: center; display: block; background: var(--success); border-color: var(--success); font-size: 0.85rem; padding: 0.6rem 1rem;">
+            <i class="fas fa-map-marker-alt"></i> I Have Arrived at Location
+          </a>
+        {% elif booking.status == 'Reached Location' %}
+          <a href="/agent/toggle_booking/{{ booking.unique }}/start/" class="btn-completion-confirm" style="text-decoration: none; text-align: center; display: block; background: var(--primary); border-color: var(--primary); font-size: 0.85rem; padding: 0.6rem 1rem;">
+            <i class="fas fa-play"></i> Start Service Job
+          </a>
+        {% elif booking.status == 'In Progress' %}
+          <a href="/agent/toggle_booking/{{ booking.unique }}/complete/" class="btn-completion-confirm" style="text-decoration: none; text-align: center; display: block; background: var(--warning); border-color: var(--warning); color: white; font-size: 0.85rem; padding: 0.6rem 1rem;">
+            <i class="fas fa-check-double"></i> Mark Job Completed
+          </a>
+        {% elif booking.status == 'Service Completed' %}
+          <div style="text-align: center; font-weight: 700; color: var(--warning); font-size: 0.85rem; padding: 0.6rem; background: var(--warning-light); border-radius: 8px; border: 1px dashed var(--warning);">
+            ⏳ Awaiting Customer Confirmation
+          </div>
+        {% elif booking.status == 'Completed' %}
+          <div style="text-align: center; font-weight: 700; color: var(--success); font-size: 0.85rem; padding: 0.6rem; background: var(--success-light); border-radius: 8px; border: 1px dashed var(--success);">
+            ✅ Job Completed and Verified
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- CUSTOMER CONFIRMATION FLOW (Appears when status == 'Service Completed' and user is customer) -->
+    {% if request.session.user_type == 'user' %}
+    <div class="completion-action-card" id="completion-prompt" style="display: none;">
+      <div class="completion-title"><i class="fas fa-circle-exclamation text-warning"></i> Confirm Completion</div>
+      <div class="completion-desc">The provider has marked this job as completed. Please verify the service and confirm below.</div>
+      <div class="completion-buttons">
+        <form method="POST" action="/booking/confirm/{{ booking.unique }}/">
+          {% csrf_token %}
+          <button type="submit" class="btn-completion-confirm" style="width: 100%"><i class="fas fa-circle-check"></i> Yes, Confirm Completion</button>
+        </form>
+        <form method="POST" action="/booking/raise_issue/{{ booking.unique }}/">
+          {% csrf_token %}
+          <button type="submit" class="btn-completion-issue" style="width: 100%"><i class="fas fa-circle-xmark"></i> Raise Issue / Dispute</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- REVIEW / RATING SYSTEM (Appears when status == 'Completed') -->
+    <div class="review-card" id="review-prompt" style="display: none;">
+      <h4 style="font-size: .88rem; font-weight: 800; color: var(--primary)">Rate Your Experience</h4>
+      <p style="font-size: .75rem; color: var(--text-secondary); margin-top: .15rem">Your feedback helps improve our service hub.</p>
+      <div class="rating-stars-input">
+        <i class="far fa-star" onclick="submitRating(1)"></i>
+        <i class="far fa-star" onclick="submitRating(2)"></i>
+        <i class="far fa-star" onclick="submitRating(3)"></i>
+        <i class="far fa-star" onclick="submitRating(4)"></i>
+        <i class="far fa-star" onclick="submitRating(5)"></i>
+      </div>
+      <div id="rating-success" style="font-size: .75rem; color: var(--success); display: none; font-weight: bold">Thank you for rating!</div>
+    </div>
+
+    <!-- TIMELINE MILESTONES -->
+    <div class="timeline">
+      <div class="timeline-item completed" id="step-placed">
+        <div class="timeline-badge"><i class="fas fa-check"></i></div>
+        <div class="timeline-content">
+          <h4>Booking Requested</h4>
+          <p>Task request submitted and details processed.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item" id="step-assigned">
+        <div class="timeline-badge"><i class="fas fa-check"></i></div>
+        <div class="timeline-content">
+          <h4>Provider Accepted</h4>
+          <p>Service provider has approved and accepted the request.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item" id="step-transit">
+        <div class="timeline-badge"><i class="fas fa-truck"></i></div>
+        <div class="timeline-content">
+          <h4>Heading to Location</h4>
+          <p>Service partner is in transit. Live location updates visible.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item" id="step-progress">
+        <div class="timeline-badge"><i class="fas fa-tools"></i></div>
+        <div class="timeline-content">
+          <h4>Work In Progress</h4>
+          <p>Provider has reached and started the work assignment.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item" id="step-completed">
+        <div class="timeline-badge"><i class="fas fa-check-double"></i></div>
+        <div class="timeline-content">
+          <h4>Job Completed</h4>
+          <p>Service completed. Confirmed by client payout release.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTNER CARD -->
+    {% if employee %}
+    <div class="partner-card">
+      <div class="partner-top">
+        {% if employee.profile_image %}
+          <img src="{{ employee.profile_image }}" class="partner-avatar" alt="{{ employee.name }}">
+        {% else %}
+          <div class="partner-avatar" style="background: var(--bg-tertiary); display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--primary)">
+            {{ employee.name|slice:":1" }}
+          </div>
+        {% endif %}
+        <div>
+          <div class="partner-name">{{ employee.name }}</div>
+          <div class="partner-desc">{{ employee.service_provided }} Specialist</div>
+        </div>
+      </div>
+      <div class="partner-actions">
+        <a href="tel:{{ employee.phone }}" class="btn-action btn-action-primary"><i class="fas fa-phone-alt"></i> Call Partner</a>
+        <a href="/raiseticket/" class="btn-action"><i class="fas fa-headset"></i> Support</a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- BILLING BOX -->
+    <div class="billing-box">
+      <h4>Summary & Payout Info</h4>
+      <div class="billing-row">
+        <div class="billing-label">Customer</div>
+        <div class="billing-val">{{ customer.name }}</div>
+      </div>
+      <div class="billing-row">
+        <div class="billing-label">Destination Address</div>
+        <div class="billing-val" style="max-width: 180px; text-align: right; word-break: break-word;">{{ booking.booking_address }}</div>
+      </div>
+      <div class="billing-row">
+        <div class="billing-label">Total Booking Price</div>
+        <div class="billing-val" style="color: var(--success); font-weight: 800;">₹{{ booking.price|floatformat:2 }}</div>
+      </div>
+      <div class="billing-row">
+        <div class="billing-label">Payment Method</div>
+        <div class="billing-val">{{ booking.payment_method }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Map Pane with live simulation inputs -->
+  <div class="map-pane">
+    <div class="top-overlay">
+      <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+    </div>
+    
+    <div id="map"></div>
+  </div>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var map, userMarker, empMarker, routeLine;
+  const bookingId = "{{ booking.unique }}";
+
+  var userIcon = L.divIcon({
+      className: 'custom-user-marker',
+      html: '<div style="background: #10b981; color: white; border: 2.5px solid white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16,185,129,0.4);"><i class="fas fa-user" style="font-size: 14px;"></i></div>',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -18]
+  });
+
+  var partnerIcon = L.divIcon({
+      className: 'custom-partner-marker',
+      html: '<div style="background: #4f46e5; color: white; border: 2.5px solid white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(79,70,229,0.4);"><i class="fas fa-truck" style="font-size: 14px;"></i></div>',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -18]
+  });
+
+  function initTrackingMap(userLat, userLng, empLat, empLng) {
+      map = L.map('map').setView([empLat, empLng], 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Customer location marker
+      userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+      userMarker.bindPopup("<b>Your Location</b><br>{{ booking.booking_address }}").openPopup();
+
+      // Provider location marker
+      empMarker = L.marker([empLat, empLng], { icon: partnerIcon }).addTo(map);
+      empMarker.bindPopup("<b>{{ employee.name }} (Partner)</b><br>Heading to Location");
+
+      // Dash route tracking line
+      routeLine = L.polyline([
+          [empLat, empLng],
+          [userLat, userLng]
+      ], {
+          color: '#6366f1',
+          weight: 4,
+          opacity: 0.8,
+          dashArray: '8, 8',
+          lineJoin: 'round'
+      }).addTo(map);
+
+      map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+  }
+
+  // Init map with values
+  initTrackingMap({{ booking.user_lat }}, {{ booking.user_lng }}, {{ booking.emp_lat }}, {{ booking.emp_lng }});
+
+  function pollTracking() {
+      fetch('/api/track/' + bookingId + '/')
+          .then(r => r.json())
+          .then(data => {
+              updateTrackingUI(data);
+          })
+          .catch(e => console.error("Poll Coordinate Error:", e));
+  }
+
+  function updateTrackingUI(data) {
+      const status = data.status;
+      const empLat = data.emp_lat;
+      const empLng = data.emp_lng;
+      const userLat = data.user_lat;
+      const userLng = data.user_lng;
+
+      // Real-time map marker movement and route updating
+      if (empMarker) empMarker.setLatLng([empLat, empLng]);
+      if (routeLine) routeLine.setLatLngs([[empLat, empLng], [userLat, userLng]]);
+
+      // Update map bounds dynamically to keep both pins visible
+      if (map && status === "Heading to Location") {
+          map.fitBounds([[empLat, empLng], [userLat, userLng]], { padding: [50, 50] });
+      }
+
+      // Timeline Nodes Elements
+      const placed = document.getElementById('step-placed');
+      const assigned = document.getElementById('step-assigned');
+      const transit = document.getElementById('step-transit');
+      const progress = document.getElementById('step-progress');
+      const completed = document.getElementById('step-completed');
+      
+      const etaText = document.getElementById('eta-text');
+      const statusTitleText = document.getElementById('status-title-text');
+      const completionPrompt = document.getElementById('completion-prompt');
+      const reviewPrompt = document.getElementById('review-prompt');
+
+      // Clear all active classes
+      [placed, assigned, transit, progress, completed].forEach(node => {
+          node.classList.remove('active', 'completed');
+      });
+
+      placed.classList.add('completed');
+
+      if (status === "Pending Service Provider Acceptance" || status === "Pending") {
+          placed.classList.add('active');
+          etaText.innerText = "Awaiting acceptance";
+          statusTitleText.innerText = "Booking Placed";
+          completionPrompt.style.display = "none";
+          reviewPrompt.style.display = "none";
+      }
+      else if (status === "Heading to Location") {
+          assigned.classList.add('completed');
+          transit.classList.add('active');
+
+          // Direct distance calculations
+          const latDiff = userLat - empLat;
+          const lngDiff = userLng - empLng;
+          const dist = Math.sqrt(latDiff*latDiff + lngDiff*lngDiff);
+          const mins = Math.max(2, Math.round(dist * 900));
+
+          etaText.innerText = mins + " mins away";
+          statusTitleText.innerText = "Provider En Route";
+          completionPrompt.style.display = "none";
+          reviewPrompt.style.display = "none";
+      }
+      else if (status === "Reached Location" || status === "Arrived") {
+          assigned.classList.add('completed');
+          transit.classList.add('completed');
+          progress.classList.add('active');
+          etaText.innerText = "Arrived at destination";
+          statusTitleText.innerText = "Provider Arrived";
+          completionPrompt.style.display = "none";
+          reviewPrompt.style.display = "none";
+      }
+      else if (status === "In Progress") {
+          assigned.classList.add('completed');
+          transit.classList.add('completed');
+          progress.classList.add('active');
+          etaText.innerText = "Service in progress";
+          statusTitleText.innerText = "Job Underway";
+          completionPrompt.style.display = "none";
+          reviewPrompt.style.display = "none";
+      }
+      else if (status === "Service Completed") {
+          assigned.classList.add('completed');
+          transit.classList.add('completed');
+          progress.classList.add('completed');
+          etaText.innerText = "Completed by Provider";
+          statusTitleText.innerText = "Awaiting Client Review";
+          
+          // Show Job completion prompt to Customer
+          completionPrompt.style.display = "block";
+          reviewPrompt.style.display = "none";
+      }
+      else if (status === "Completed") {
+          assigned.classList.add('completed');
+          transit.classList.add('completed');
+          progress.classList.add('completed');
+          completed.classList.add('completed');
+          etaText.innerText = "Fully Completed";
+          statusTitleText.innerText = "Service Confirmed Done";
+          
+          // Hide completion prompt, reveal review/rating prompt
+          completionPrompt.style.display = "none";
+          reviewPrompt.style.display = "block";
+          
+          if (routeLine && map) map.removeLayer(routeLine);
+      }
+      else if (status === "Issue Raised") {
+          assigned.classList.add('completed');
+          transit.classList.add('completed');
+          etaText.innerText = "Disputed";
+          statusTitleText.innerText = "Complaint Dispute Raised";
+          completionPrompt.style.display = "none";
+          reviewPrompt.style.display = "none";
+      }
+  }
+
+  function submitRating(stars) {
+      // Toggle filled star icons
+      const starsEls = document.querySelectorAll('.rating-stars-input i');
+      starsEls.forEach((el, idx) => {
+          if (idx < stars) {
+              el.className = 'fas fa-star';
+          } else {
+              el.className = 'far fa-star';
+          }
+      });
+      document.getElementById('rating-success').style.display = 'block';
+  }
+
+  // Customer tracking automatically refreshes every few seconds
+  setInterval(pollTracking, 4000);
+  pollTracking();
+
+  // If the logged-in user is an employee (service provider), track their live location in real-time
+  {% if request.session.user_type == 'employee' %}
+  function startProviderLocationTracking() {
+      if (navigator.geolocation) {
+          console.log("Starting active geolocation watch for provider...");
+          navigator.geolocation.watchPosition(
+              (position) => {
+                  const lat = position.coords.latitude;
+                  const lng = position.coords.longitude;
+                  
+                  // Update local marker
+                  if (empMarker) empMarker.setLatLng([lat, lng]);
+                  if (routeLine && userMarker) {
+                      routeLine.setLatLngs([[lat, lng], userMarker.getLatLng()]);
+                  }
+                  
+                  // Update coordinates on the server
+                  fetch('/api/track/' + bookingId + '/update_location/', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': '{{ csrf_token }}'
+                      },
+                      body: JSON.stringify({ lat: lat, lng: lng })
+                  })
+                  .then(r => r.json())
+                  .then(d => console.log("Live provider location synced:", d))
+                  .catch(e => console.error("Error syncing provider location:", e));
+              },
+              (err) => {
+                  console.warn("Provider Geolocation Watch Error:", err);
+              },
+              {
+                  enableHighAccuracy: true,
+                  timeout: 8000,
+                  maximumAge: 0
+              }
+          );
+      } else {
+          console.error("Browser does not support Geolocation API.");
+      }
+  }
+  startProviderLocationTracking();
+  {% endif %}
+</script>
+
+</body>
+</html>

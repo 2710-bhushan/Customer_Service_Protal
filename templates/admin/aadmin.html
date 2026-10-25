@@ -1,166 +1,758 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f8f9fa;
-            color: #333;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            background: rgba(44, 62, 80, 1);
-            color: white;
-            padding: 20px;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
-        }
-        .sidebar:hover {
-            background: rgba(44, 62, 80, 1);
-        }
-        .sidebar nav a {
-            display: block;
-            color: #bdc3c7;
-            padding: 12px;
-            text-decoration: none;
-            transition: background 0.3s, transform 0.2s;
-            border-radius: 5px;
-        }
-        .sidebar nav a:hover, .sidebar nav a.active {
-            background: #3498db;
-            color: white;
-            transform: scale(1.05);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 20px;
-            min-height: 100vh;
-            border-radius: 10px;
-            color: black;
-        }
-        .info-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
-            transition: transform 0.3s ease-in-out;
-        }
-        .info-container:hover {
-            transform: scale(1.02);
-        }
-        .info-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .info-item label {
-            font-weight: bold;
-            margin-right: 10px;
-            min-width: 120px;
-        }
-        .card {
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .carousel img {
-            width: 100%;
-            height: 425px;
-            border-radius: 10px;
-        }
-    
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-badge {
+    font-size: .72rem;
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    margin-top: .4rem;
+    display: inline-block;
+    font-weight: 700;
+  }
+  .nav-body {
+    padding: 1rem 1rem;
+    flex: 1;
+  }
+  .nav-section {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.25rem 0 .4rem;
+    padding-left: .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .1rem;
+    position: relative;
+  }
+  .nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+    font-size: .9rem;
+  }
+  .badge-count {
+    margin-left: auto;
+    background: var(--danger);
+    color: white;
+    border-radius: 50px;
+    padding: .1rem .5rem;
+    font-size: .68rem;
+    font-weight: 700;
+  }
+  .pending-badge {
+    background: var(--warning);
+  }
+  .sidebar-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .topbar-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .topbar-title p {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-top: .1rem;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    font-weight: 800;
+  }
+  .admin-name {
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  .admin-role {
+    font-size: .72rem;
+    color: var(--text-muted);
+  }
+
+  /* METRICS */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--card-shadow);
+  }
+  .metric-card:hover {
+    transform: translateY(-3px);
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+  .mc-blue::before { background: var(--primary-gradient); }
+  .mc-green::before { background: linear-gradient(90deg, var(--success), var(--success-hover)); }
+  .mc-yellow::before { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+  .mc-red::before { background: linear-gradient(90deg, var(--danger), var(--danger-hover)); }
+  .mc-purple::before { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
+  .mc-cyan::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+  .metric-icon {
+    font-size: 1.6rem;
+    margin-bottom: .875rem;
+    display: block;
+  }
+  .metric-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: .82rem;
+    margin-top: .35rem;
+    font-weight: 600;
+  }
+  .metric-change {
+    font-size: .75rem;
+    margin-top: .5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .btn-sm {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    padding: .4rem .9rem;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+  }
+  .btn-sm:hover {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-danger-sm {
+    background: var(--danger-light);
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .btn-danger-sm:hover {
+    background: var(--danger);
+    color: white;
+  }
+  .btn-success-sm {
+    background: var(--success-light);
+    color: var(--success);
+    border-color: var(--success);
+  }
+  .btn-success-sm:hover {
+    background: var(--success);
+    color: white;
+  }
+  .btn-warning-sm {
+    background: var(--warning-light);
+    color: var(--warning);
+    border-color: var(--warning);
+  }
+
+  /* TABLE */
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    background: var(--bg-tertiary);
+    padding: .875rem 1.25rem;
+    text-align: left;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  td {
+    padding: .875rem 1.25rem;
+    font-size: .85rem;
+    border-top: 1px solid var(--border-light);
+  }
+  tr:hover td {
+    background: var(--bg-tertiary);
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .25rem .7rem;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 700;
+  }
+  .status-pending { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+  .status-active { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+  .status-resolved { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .status-declined { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
+  .status-completed { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .status-inreview { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+
+  /* GRID LAYOUT */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  /* ADS */
+  .ads-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .ad-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+  }
+  .ad-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+  }
+  .ad-card-body {
+    padding: .875rem;
+  }
+  .ad-title {
+    font-weight: 700;
+    font-size: .85rem;
+    margin-bottom: .4rem;
+  }
+  .ad-meta {
+    font-size: .75rem;
+    color: var(--text-muted);
+    margin-bottom: .75rem;
+  }
+
+  @media (max-width: 1100px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .sidebar { width: 220px; }
+    .main { margin-left: 220px; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+</style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo mb-4">
-            <h3 style="font-weight: 400;"> CustomerService</h3>
-        </div>
-        <nav>
-            <a href="/servicebooked"><i class="fas fa-user-plus"></i> Service Booked</a>
-            <a href="/addemp"><i class="fas fa-user-plus"></i> Add Employee</a>
-            <a href="/employeeinfo"><i class="fas fa-user-tie"></i> Employee List</a>
-            <a href="/userinfo"><i class="fas fa-users"></i> Customer List</a>
-            <a href="/ticketraised"><i class="fa fa-ticket"></i> Tickets Raised</a>
-        </nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="admin-badge">🛡️ Admin Control Panel</div>
   </div>
-    <div class="main-content">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Dashboard</h2>
-            <div class="admin-profile">
-                <span class="me-2" style="align-items: center;" >Admin</span>
-                <i class="fas fa-user-circle fa-2x" style="margin-top: 5px;"></i>
-            </div>
-        </header>
-       
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white text-center p-3">
-                    <i class="fas fa-users fa-2x"></i>
-                    <h5>Total Users</h5>
-                    <h2>{{data1}}</h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-white text-center p-3">
-                    <i class="fas fa-user-tie fa-2x"></i>
-                    <h5>Total Employee</h5>
-                    <h2>{{data2}}</h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-info text-white text-center p-3">
-                    <i class="fa fa-wrench fa-2x"></i>
-                    <h5>Services</h5>
-                    <h2>10</h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white text-center p-3">
-                    <i class="fa fa-ticket fa-2x"></i>
-                    <h5>Tickets</h5>
-                    <h2>{{data3}}</h2>
-                </div>
+  <div class="nav-body">
+    <div class="nav-section">Overview</div>
+    <a href="/aadmin/" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+    <div class="nav-section">User Management</div>
+    <a href="/userinfo/" class="nav-link"><i class="fas fa-users"></i> Customers</a>
+    <a href="/employeeinfo/" class="nav-link"><i class="fas fa-user-gear"></i> Providers</a>
+    <a href="/admin/pending-providers/" class="nav-link">
+      <i class="fas fa-user-clock"></i> Pending Verifications
+      {% if pending_providers > 0 %}<span class="badge-count pending-badge">{{ pending_providers }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Operations</div>
+    <a href="/servicebooked/" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+    <a href="/ticketraised/" class="nav-link">
+      <i class="fas fa-ticket-alt"></i> Complaints
+      {% if ticket_count > 0 %}<span class="badge-count">{{ ticket_count }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Content</div>
+    <a href="/admin/manage_ad/" class="nav-link"><i class="fas fa-ad"></i> Advertisements</a>
+    <a href="/admin/manage_offer/" class="nav-link"><i class="fas fa-tags"></i> Offers & Coupons</a>
+    <a href="/addemp/" class="nav-link"><i class="fas fa-user-plus"></i> Add Provider</a>
+    <div class="nav-section">Wallet</div>
+    <a href="/admin/wallet/" class="nav-link"><i class="fas fa-wallet"></i> Earnings & Wallet</a>
+    <div class="nav-section">Settings</div>
+    <a href="/admin/toggle_global_email/" class="nav-link" style="color: {% if global_email_active %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+      <i class="fas fa-envelope"></i> Email: {% if global_email_active %}Active{% else %}Muted{% endif %}
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Admin Dashboard</h1>
+      <p>Welcome back, Administrator! Here's your platform overview.</p>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      <div class="admin-info">
+        <div class="admin-avatar">A</div>
+        <div>
+          <div class="admin-name">System Admin</div>
+          <div class="admin-role">Super Administrator</div>
         </div>
-        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="/static/admin/image1.jpg" class="d-block w-100" alt="Slide 1">
-                </div>
-                <div class="carousel-item">
-                    <img src="/static/admin/image2.jpg" class="d-block w-100" alt="Slide 2">
-                </div>
-                <div class="carousel-item">
-                    <img src="/static/admin/image3.jpg" class="d-block w-100" alt="Slide 3">
-                </div>
-                <div class="carousel-item">
-                    <img src="/static/admin/image4.jpg" class="d-block w-100" alt="Slide 4">
-                </div>
-                <div class="carousel-item">
-                    <img src="/static/admin/image5.jpg" class="d-block w-100" alt="Slide 5">
-                </div>
-            </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRICS GRID -->
+  <div class="metrics">
+    <div class="metric-card mc-blue">
+      <span class="metric-icon">👥</span>
+      <div class="metric-num">{{ customer_count }}</div>
+      <div class="metric-label">Total Customers</div>
+      <div class="metric-change change-up">↑ Active accounts</div>
+    </div>
+    <div class="metric-card mc-green">
+      <span class="metric-icon">🔧</span>
+      <div class="metric-num">{{ employee_count }}</div>
+      <div class="metric-label">Service Providers</div>
+      <div class="metric-change change-up">↑ Verified professionals</div>
+    </div>
+    <div class="metric-card mc-purple">
+      <span class="metric-icon">📋</span>
+      <div class="metric-num">{{ bookings_count }}</div>
+      <div class="metric-label">Total Bookings</div>
+      <div class="metric-change change-up">↑ Platform transactions</div>
+    </div>
+    <div class="metric-card mc-cyan">
+      <span class="metric-icon">⚡</span>
+      <div class="metric-num">{{ active_bookings }}</div>
+      <div class="metric-label">Active Bookings</div>
+      <div class="metric-change">Live right now</div>
+    </div>
+    <div class="metric-card mc-yellow">
+      <span class="metric-icon">🎫</span>
+      <div class="metric-num">{{ ticket_count }}</div>
+      <div class="metric-label">Open Complaints</div>
+      <div class="metric-change change-down">Needs attention</div>
+    </div>
+    <div class="metric-card mc-red">
+      <span class="metric-icon">⏳</span>
+      <div class="metric-num">{{ pending_providers }}</div>
+      <div class="metric-label">Pending Verifications</div>
+      <div class="metric-change change-down">Awaiting review</div>
+    </div>
+  </div>
+
+  <!-- RECENT DATA GRID -->
+  <div class="grid-2">
+    <!-- Recent Bookings -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">📋 Recent Bookings</div>
+        <a href="/servicebooked/" class="btn-sm">View All →</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>#</th><th>Email</th><th>Status</th><th>Amount</th></tr></thead>
+          <tbody>
+            {% for booking in recent_bookings %}
+            <tr>
+              <td>#{{ booking.unique }}</td>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ booking.email }}</td>
+              <td>
+                <span class="status-badge
+                  {% if booking.status == 'Pending' %}status-pending
+                  {% elif booking.status == 'Completed' %}status-completed
+                  {% elif booking.status == 'Declined' %}status-declined
+                  {% elif booking.status == 'In Progress' or booking.status == 'Heading to Location' %}status-active
+                  {% else %}status-inreview{% endif %}">
+                  {{ booking.status }}
+                </span>
+              </td>
+              <td style="color:var(--success);font-weight:700">₹{{ booking.price|floatformat:0 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No bookings yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Tickets -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">🎫 Recent Complaints</div>
+        <a href="/ticketraised/" class="btn-sm">View All →</a>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>#</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for ticket in recent_tickets %}
+            <tr>
+              <td>#{{ ticket.unique }}</td>
+              <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ticket.mail }}</td>
+              <td>
+                <span class="status-badge {% if ticket.status == 'Pending' %}status-pending{% elif ticket.status == 'Resolved' %}status-resolved{% else %}status-inreview{% endif %}">
+                  {{ ticket.status }}
+                </span>
+              </td>
+              <td>
+                {% if ticket.status == 'Pending' %}
+                <a href="/ticketraised/" class="btn-sm">Review</a>
+                {% else %}
+                <span style="color:var(--text-muted);font-size:.78rem;font-weight:600">Done</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No tickets</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADVERTISEMENTS -->
+  {% if ads %}
+  <div class="section-header">
+    <div class="section-title">📢 Active Advertisements</div>
+    <a href="/admin/manage_ad/" class="btn-sm">Manage Ads →</a>
+  </div>
+  <div class="ads-grid" style="margin-bottom:2rem">
+    {% for ad in ads %}
+    <div class="ad-card">
+      {% if ad.image %}<img src="{{ ad.image.url }}" alt="{{ ad.title }}">
+      {% elif ad.image_url %}<img src="{{ ad.image_url }}" alt="{{ ad.title }}">
+      {% else %}<div style="height:120px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:2rem">📢</div>{% endif %}
+      <div class="ad-card-body">
+        <div class="ad-title">{{ ad.title }}</div>
+        <div class="ad-meta">Status: <span style="color:var(--success)">Active</span></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- SYSTEM CONFIGURATION & EMAIL SETTINGS -->
+  <div class="section-header">
+    <div class="section-title"><i class="fas fa-gears text-primary"></i> Global System Settings</div>
+  </div>
+  <div class="table-card" style="cursor: pointer; padding: 1.5rem; margin-bottom: 2rem; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--border-light); box-shadow: var(--card-shadow); transition: transform 0.2s;" onclick="openEmailModal()">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+          ✉️ Global Email Notification Service
+        </h4>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; margin-bottom: 0;">
+          Click to configure global notification limits, or toggle individual email dispatch categories.
+        </p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Click to Customize</span>
+        <button type="button" class="btn-sm {% if global_email_active %}btn-success-sm{% else %}btn-danger-sm{% endif %}" style="pointer-events: none; border: none; padding: 0.6rem 1.25rem; border-radius: 30px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+          {% if global_email_active %}
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></span>
+            Master: Enabled
+          {% else %}
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></span>
+            Master: Muted
+          {% endif %}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Email Settings Modal -->
+  <div id="emailSettingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+    <div style="background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 20px; width: 90%; max-width: 480px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.25); animation: zoomIn 0.3s ease;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+          ✉️ Email Notification Settings
+        </h3>
+        <button onclick="event.stopPropagation(); closeEmailModal();" style="background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 1.25rem;"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <!-- Category 1: Master Switch -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(99,102,241,0.08); padding: 1rem; border-radius: 12px; border: 1px solid rgba(99,102,241,0.2);">
+          <div>
+            <div style="font-weight: bold; font-size: 0.88rem; color: var(--primary);">🔌 Email Master Switch</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Bypasses all mail servers globally</div>
+          </div>
+          <a href="/admin/toggle_global_email/" onclick="event.stopPropagation();" class="btn-sm {% if global_email_active %}btn-success-sm{% else %}btn-danger-sm{% endif %}" style="padding: 0.4rem 0.85rem; border-radius: 30px; font-size: 0.78rem; text-decoration: none; font-weight: bold;">
+            {% if global_email_active %}Active{% else %}Muted{% endif %}
+          </a>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            var myCarousel = new bootstrap.Carousel(document.querySelector('#carouselExample'), {
-                interval: 3000,
-                ride: 'carousel'
-            });
-        </script>
-       
+        
+        <!-- Category 2: Service Providers -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
+          <div>
+            <div style="font-weight: bold; font-size: 0.88rem;">👷 Service Providers</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">OTPs, new booking alerts, and disputes</div>
+          </div>
+          <a href="/admin/toggle_global_email_category/provider/" onclick="event.stopPropagation();" class="btn-sm {% if global_provider_email_active %}btn-success-sm{% else %}btn-danger-sm{% endif %}" style="padding: 0.4rem 0.85rem; border-radius: 30px; font-size: 0.78rem; text-decoration: none; font-weight: bold;">
+            {% if global_provider_email_active %}Active{% else %}Muted{% endif %}
+          </a>
+        </div>
+
+        <!-- Category 3: Customers -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
+          <div>
+            <div style="font-weight: bold; font-size: 0.88rem;">👥 Customers</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">OTPs, receipts, and completion requests</div>
+          </div>
+          <a href="/admin/toggle_global_email_category/customer/" onclick="event.stopPropagation();" class="btn-sm {% if global_customer_email_active %}btn-success-sm{% else %}btn-danger-sm{% endif %}" style="padding: 0.4rem 0.85rem; border-radius: 30px; font-size: 0.78rem; text-decoration: none; font-weight: bold;">
+            {% if global_customer_email_active %}Active{% else %}Muted{% endif %}
+          </a>
+        </div>
+
+        <!-- Category 4: System Admin -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
+          <div>
+            <div style="font-weight: bold; font-size: 0.88rem;">🛡️ Admin Notifications</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Complaint alerts, registrations, etc.</div>
+          </div>
+          <a href="/admin/toggle_global_email_category/admin/" onclick="event.stopPropagation();" class="btn-sm {% if global_admin_email_active %}btn-success-sm{% else %}btn-danger-sm{% endif %}" style="padding: 0.4rem 0.85rem; border-radius: 30px; font-size: 0.78rem; text-decoration: none; font-weight: bold;">
+            {% if global_admin_email_active %}Active{% else %}Muted{% endif %}
+          </a>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button onclick="event.stopPropagation(); closeEmailModal();" class="btn-sm" style="background: var(--bg-primary); border: 1px solid var(--border-medium); color: var(--text-primary); padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: bold; cursor: pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes zoomIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+
+  <script>
+    function openEmailModal() {
+        document.getElementById('emailSettingsModal').style.display = 'flex';
+    }
+    
+    function closeEmailModal() {
+        document.getElementById('emailSettingsModal').style.display = 'none';
+    }
+    
+    // Automatically keep the modal open if we just reloaded from toggling an status
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('email_status_toggled') === 'true') {
+        openEmailModal();
+    }
+  </script>
+
+  <!-- QUICK ACTIONS -->
+  <div class="section-header"><div class="section-title">⚡ Quick Actions</div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem">
+    <a href="/addemp/" class="btn-sm" style="padding:1rem;flex-direction:column;gap:.5rem;border-radius:14px;text-align:center;justify-content:center;font-size:.9rem;height:90px">
+      <span style="font-size:1.5rem">👷</span> Add Provider
+    </a>
+    <a href="/admin/pending-providers/" class="btn-sm btn-warning-sm" style="padding:1rem;flex-direction:column;gap:.5rem;border-radius:14px;text-align:center;justify-content:center;font-size:.9rem;height:90px">
+      <span style="font-size:1.5rem">⏳</span> Review Pending
+    </a>
+    <a href="/admin/manage_ad/" class="btn-sm" style="padding:1rem;flex-direction:column;gap:.5rem;border-radius:14px;text-align:center;justify-content:center;font-size:.9rem;height:90px">
+      <span style="font-size:1.5rem">📢</span> Manage Ads
+    </a>
+    <a href="/admin/manage_offer/" class="btn-sm btn-success-sm" style="padding:1rem;flex-direction:column;gap:.5rem;border-radius:14px;text-align:center;justify-content:center;font-size:.9rem;height:90px">
+      <span style="font-size:1.5rem">🏷️</span> Create Coupon
+    </a>
+    <a href="/ticketraised/" class="btn-sm btn-danger-sm" style="padding:1rem;flex-direction:column;gap:.5rem;border-radius:14px;text-align:center;justify-content:center;font-size:.9rem;height:90px">
+      <span style="font-size:1.5rem">🎫</span> View Complaints
+    </a>
+    <a href="/servicebooked/" class="btn-sm" style="padding:1rem;flex-direction:column;gap:.5rem;border-radius:14px;text-align:center;justify-content:center;font-size:.9rem;height:90px;border-color:var(--primary);color:var(--primary);background:var(--primary-light)">
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+      <span style="font-size:1.5rem">📊</span> All Bookings
+    </a>
+  </div>
+</main>
+
 </body>
 </html>

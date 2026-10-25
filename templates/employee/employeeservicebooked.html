@@ -1,365 +1,1083 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User & Service Details</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f8f9fa;
-            color: #333;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            background: rgba(44, 62, 80, 1);
-            color: white;
-            padding-top: 20px;
-            padding-left: 6px;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .sidebar nav a {
-            display: block;
-            color: #bdc3c7;
-            padding: 12px;
-            text-decoration: none;
-            transition: background 0.3s, transform 0.2s;
-            border-radius: 5px;
-        }
-        .sidebar nav a:hover {
-            background: #3498db;
-            transform: scale(1.05);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
-        .ma {
-            padding: 25px;
-            margin-bottom: 12px;
-            background: #34495e;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            transition: transform 0.3s;
-        }
-        .ma:hover {
-            transform: translateY(-3px);
-        }
-        .profile-image-section {
-            margin-top: 40px;
-            width: 160px;
-            height: 200px;
-            border: 3px solid #3498db;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .info-block {
-            display: flex;
-            gap: 30px;
-            width: 100%;
-            margin-left: 30px;
-        }
-        .user-info, .provider-info {
-            flex: 1;
-        }
-        .section-title {
-            color: #1abc9c;
-            font-weight: 600;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        .detail-item {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        .detail-label {
-            color: #bdc3c7;
-            width: 80px;
-            font-weight: 600;
-        }
-        .detail-labe {
-            color: #bdc3c7;
-            width: 120px;
-            font-weight: 600;
-        }
-        .detail-value {
-            color: white;
-            font-size: 1.1rem;
-            word-break: break-word;
-        }
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        a {
-            text-decoration: none;
-        }
-        .employee-list {
-            padding-top:5px;
-        }
-        /* Header */
-        .header {
-            position: sticky;
-            top: 0;
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1.5rem;
-            z-index: 990;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-             /* Match sidebar width */
-            transition: margin-left 0.3s;
-        }
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Provider Dashboard – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
 
-        /* Mobile Menu Toggle */
-        .mobile-menu-toggle {
-            display: none;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .provider-badge {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .2rem .75rem;
+    border-radius: 50px;
+    display: inline-block;
+    margin-top: .4rem;
+  }
+  .profile-banner {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--bg-primary);
+  }
+  .pav {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-medium);
+  }
+  .nav-body {
+    padding: 1rem;
+    flex: 1;
+  }
+  .nav-section {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.25rem 0 .4rem;
+    padding-left: .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .1rem;
+    position: relative;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    font-weight: 700;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+    font-size: .9rem;
+  }
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
 
-        /* Responsive Layout */
-        @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .header {
-                margin-left: 0;
-                padding: 0 1rem;
-            }
-            .mobile-menu-toggle {
-                display: inline-block;
-            }
-            .header h3 {
-                font-size: 1.25rem;
-                display: flex;
-                align-items: center;
-            }
-        }
+  /* MAIN */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .topbar-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .topbar-title p {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-top: .1rem;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
 
-        @media (max-width: 768px) {
-            .ma {
-                flex-direction: column;
-                align-items: center;
-            }
-            .profile-image-section {
-                margin-top: 20px;
-                margin-bottom: 20px;
-                width: 140px;
-                height: 180px;
-            }
-            .info-block {
-                flex-direction: column;
-                margin-left: 0;
-                gap: 10px;
-            }
-            .section-title {
-                font-size: 1.3rem;
-            }
-            .detail-label {
-                margin-bottom: 5px;
-            }
-            #commoni{
-                visibility: hidden;
-                display: none;
-            }
-            #abc{
-                visibility: hidden;
-                display: none;
-            }
-        }
+  /* METRICS */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--card-shadow);
+  }
+  .metric-card:hover {
+    transform: translateY(-3px);
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .mc-blue::before { background: var(--primary-gradient); }
+  .mc-yellow::before { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+  .mc-green::before { background: linear-gradient(90deg, var(--success), var(--success-hover)); }
+  .mc-cyan::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+  .metric-icon {
+    font-size: 1.6rem;
+    margin-bottom: .875rem;
+    display: block;
+  }
+  .metric-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: .82rem;
+    margin-top: .35rem;
+    font-weight: 600;
+  }
 
-        @media (max-width: 576px) {
-            .profile-card img {
-                width: 150px;
-                height: 150px;
-            }
-            .ma {
-                padding: 6px;
-            }
-            .section-title {
-                font-size: 1.2rem;
-            }
-            .detail-value {
-                font-size: 1rem;
-            }
-            .header {
-                padding: 0 0.5rem;
-            }
-            .header h3 {
-                font-size: 1.1rem;
-            }
-            .dropdown .btn {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
+  /* SECTION HEADER */
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  /* BOOKINGS */
+  .bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .booking-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+  .booking-card:hover {
+    border-color: var(--primary-light);
+  }
+  .bcard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+  .booking-id {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .booking-date {
+    font-size: .78rem;
+    color: var(--text-light);
+    margin-top: .15rem;
+  }
+  .status-pill {
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .25rem .75rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .sp-pending { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+  .sp-accepted { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+  .sp-progress { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+  .sp-completed { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .sp-declined { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
+
+  .bcard-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.25rem;
+  }
+  .binfo-label {
+    font-size: .75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .25rem;
+  }
+  .customer-name {
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .customer-email {
+    font-size: .78rem;
+    color: var(--text-secondary);
+    margin-top: .15rem;
+  }
+  .binfo-val {
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: .88rem;
+    line-height: 1.5;
+  }
+
+  .bcard-actions {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: .55rem 1.25rem;
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    text-decoration: none;
+  }
+  .btn-accept {
+    background: var(--success);
+    color: white;
+    border: none;
+  }
+  .btn-accept:hover {
+    background: var(--success-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+  .btn-decline {
+    background: var(--danger-light);
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .btn-decline:hover {
+    background: var(--danger);
+    color: white;
+  }
+  .btn-track {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+  }
+  .btn-track:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
+
+  /* OFFERS */
+  .offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .offer-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+  .offer-card:hover {
+    border-color: var(--primary-light);
+  }
+  .offer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: .75rem;
+  }
+  .offer-code {
+    font-family: monospace;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
+  }
+  .offer-pct {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--success);
+  }
+  .offer-desc {
+    font-size: .82rem;
+    color: var(--text-secondary);
+    margin-bottom: .75rem;
+  }
+  .offer-status {
+    font-size: .75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+  }
+
+  .add-offer-form {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-top: 1.5rem;
+  }
+  .form-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
+    gap: 1.25rem;
+    align-items: flex-end;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+  }
+  .form-group label {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .form-input {
+    padding: .6rem .875rem;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: .88rem;
+    transition: var(--transition);
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+  .btn-add {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .65rem 1.5rem;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+  }
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+  }
+
+  @media (max-width: 1100px) {
+    .sidebar { width: 220px; }
+    .main { margin-left: 220px; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* WALLET & BANK DETAILS STYLE additions */
+  .wallet-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    margin-top: 1rem;
+  }
+  @media (max-width: 900px) {
+    .wallet-grid { grid-template-columns: 1fr; }
+  }
+  .wallet-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 1.75rem;
+    box-shadow: var(--card-shadow);
+  }
+  .balance-title {
+    font-size: .82rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .balance-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--success);
+    margin: .5rem 0 1.25rem;
+  }
+  .wallet-actions {
+    display: flex;
+    gap: .75rem;
+  }
+  .btn-withdraw {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: .65rem 1.5rem;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .btn-withdraw:hover {
+    background: var(--success-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+  .btn-withdraw:disabled {
+    background: var(--border-medium);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .bank-badge {
+    display: inline-block;
+    padding: .25rem .75rem;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 700;
+    margin-top: .4rem;
+  }
+  .bb-unverified { background: var(--border-light); color: var(--text-secondary); border: 1px solid var(--border-medium); }
+  .bb-pending { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+  .bb-approved { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .bb-rejected { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
+  
+  .details-table {
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+  }
+  .details-table td {
+    padding: .65rem 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: .88rem;
+  }
+  .details-table td:first-child {
+    font-weight: 600;
+    color: var(--text-muted);
+    width: 160px;
+  }
+  .details-table td:last-child {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  
+  .wallet-history-section {
+    margin-top: 2rem;
+  }
+  .txn-status {
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .15rem .5rem;
+    border-radius: 4px;
+  }
+  .alert {
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    font-size: .88rem;
+    font-weight: 600;
+  }
+  .alert-success { background: var(--success-light); border: 1px solid var(--success); color: var(--success); }
+  .alert-error { background: var(--danger-light); border: 1px solid var(--danger); color: var(--danger); }
+</style>
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <div class="logo mb-4">
-           
-        </div>
-        <div class="profile-card mb-4 text-center">
-            
-            <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
-                 class="rounded-circle mb-3" style="width: 200px; height: 275px;object-fit: cover;" alt="User_Photo">
-            <h5 class="mb-1">
-                {% if request.COOKIES.user_name %}
-                    {{ request.COOKIES.user_name }}
-                {% else %}
-                    John Doe
-                {% endif %}
-            </h5>
-            <h8 class="text-muted mb-0">
-                {% if request.COOKIES.user_email %}
-                    <p style="color:rgb(25, 219, 229);">{{ request.COOKIES.user_email }}</p>
-                {% else %}
-                    john@example.com
-                {% endif %}
-            </h8>
-        </div>
-    </div>
 
-    <div class="main-content">
-        <div class="header">
-            <h3 style="font-weight: 400;" class="fw-bold text-primary mb-0">
-                <button class="mobile-menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                CustomerService
-            </h3>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="provider-badge">🔧 Provider Hub</div>
+  </div>
+
+  <div class="profile-banner">
+    {% if employee.profile_image %}
+      <img src="{{ employee.profile_image }}" class="pav" alt="{{ employee.name }}">
+    {% else %}
+      <div class="pav" style="background: var(--bg-tertiary); display:flex; align-items:center; justify-content:center; font-weight:800;">
+        {{ employee.name|slice:":1" }}
+      </div>
+    {% endif %}
+    <div>
+      <div style="font-weight: 800; font-size: .92rem;">{{ employee.name }}</div>
+      <div style="font-size: .75rem; color: var(--primary); font-weight: 600;">✓ {{ employee.service_provided }}</div>
+      <div style="font-size: .72rem; color: var(--text-muted); margin-top: .1rem;">★ {{ employee.rating|floatformat:1 }} Avg</div>
+    </div>
+  </div>
+
+  <div class="nav-body">
+    <div class="nav-section">Operations</div>
+    <a href="/employeeservicebooked/" class="nav-link active"><i class="fas fa-list-check"></i> My Bookings</a>
+    <a href="/agent/refund_complaints/" class="nav-link"><i class="fas fa-gavel"></i> Refund Complaints
+      {% if under_investigation_count > 0 %}<span class="badge-count" style="background: var(--danger); color: white; margin-left: auto; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem;">{{ under_investigation_count }}</span>{% endif %}
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Provider Dashboard</h1>
+      <p>Configure discount coupon promo codes and fulfill assigned service bookings.</p>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+    </div>
+  </div>
+
+  <!-- METRICS GRID -->
+  <div class="metrics">
+    <div class="metric-card mc-blue">
+      <span class="metric-icon">📋</span>
+      <div class="metric-num">{{ combined_list|length }}</div>
+      <div class="metric-label">Total Jobs</div>
+    </div>
+    <div class="metric-card mc-yellow">
+      <span class="metric-icon">⏳</span>
+      <div class="metric-num" id="pending-jobs-count">{{ pending_count }}</div>
+      <div class="metric-label">Pending Requests</div>
+    </div>
+    <div class="metric-card mc-green">
+      <span class="metric-icon">✅</span>
+      <div class="metric-num">{{ employee.no_of_service_provided }}</div>
+      <div class="metric-label">Completed Jobs</div>
+    </div>
+    <div class="metric-card mc-cyan">
+      <span class="metric-icon">⭐</span>
+      <div class="metric-num">{{ employee.rating|floatformat:1 }}</div>
+      <div class="metric-label" style="font-weight: 700;">Average Rating</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top: 1.5rem;"><i class="fas fa-wallet text-primary"></i> Financial & Payout Summary</div>
+  <div class="metrics" style="margin-bottom: 2.5rem;">
+    <div class="metric-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none;">
+      <span class="metric-icon">💰</span>
+      <div class="metric-num" style="color: white;">₹{{ wallet_balance|floatformat:0 }}</div>
+      <div class="metric-label" style="color: rgba(255,255,255,0.9)">Wallet Balance</div>
+    </div>
+    <div class="metric-card mc-blue">
+      <span class="metric-icon">📅</span>
+      <div class="metric-num">₹{{ today_earnings|floatformat:0 }}</div>
+      <div class="metric-label">Today's Earnings</div>
+    </div>
+    <div class="metric-card mc-yellow">
+      <span class="metric-icon">📆</span>
+      <div class="metric-num">₹{{ weekly_earnings|floatformat:0 }}</div>
+      <div class="metric-label">Weekly Earnings</div>
+    </div>
+    <div class="metric-card mc-green">
+      <span class="metric-icon">📊</span>
+      <div class="metric-num">₹{{ monthly_earnings|floatformat:0 }}</div>
+      <div class="metric-label">Monthly Earnings</div>
+    </div>
+    <div class="metric-card" style="background: linear-gradient(135deg, #6c63ff, #3b82f6); color: white; border: none;">
+      <span class="metric-icon">📈</span>
+      <div class="metric-num" style="color: white;">₹{{ total_earnings|floatformat:0 }}</div>
+      <div class="metric-label" style="color: rgba(255,255,255,0.9)">Lifetime Earnings</div>
+    </div>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div class="section-title"><i class="fas fa-calendar-check text-primary"></i> Incoming Job Requests</div>
+  <div class="bookings-list">
+    {% for item in combined_list %}
+    <div class="booking-card" data-status="{{ item.booking.status }}">
+      <div class="bcard-header">
+        <div>
+          <div class="booking-id">Booking #{{ item.booking.unique }}</div>
+          <div class="booking-date">Received: {{ item.booking.created_at|date:"M d, Y at H:i" }}</div>
+        </div>
+        <span class="status-pill
+          {% if item.booking.status == 'Pending' or item.booking.status == 'Pending Service Provider Acceptance' %}sp-pending
+          {% elif item.booking.status == 'Heading to Location' or item.booking.status == 'Arrived' %}sp-accepted
+          {% elif item.booking.status == 'In Progress' %}sp-progress
+          {% elif item.booking.status == 'Completed' %}sp-completed
+          {% elif item.booking.status == 'Declined' or item.booking.status == 'Rejected' %}sp-declined
+          {% else %}sp-pending{% endif %}">
+          {{ item.booking.status }}
+        </span>
+      </div>
+
+      <div class="bcard-body">
+        <div class="binfo">
+          <div class="binfo-label">Customer</div>
+          <div class="customer-name">{{ item.user.name|default:"Unnamed Customer" }}</div>
+          <div class="customer-email">{{ item.user.mail }}</div>
+          <div style="font-size: .78rem; color: var(--text-muted); margin-top: .15rem;"><i class="fas fa-phone"></i> +91 {{ item.user.phone|default:"N/A" }}</div>
+        </div>
+        <div class="binfo">
+          <div class="binfo-label">Service Address</div>
+          <div class="binfo-val">{{ item.booking.booking_address|default:"Location coordinates only" }}</div>
+        </div>
+        <div class="binfo">
+          <div class="binfo-label">Payout Amount</div>
+          <div class="binfo-val" style="color: var(--success); font-size: 1.05rem;">₹{{ item.booking.price|floatformat:2 }}</div>
+          <div style="font-size: .75rem; color: var(--text-muted);">Method: {{ item.booking.payment_method }}</div>
+        </div>
+        <div class="binfo">
+          <div class="binfo-label">Scheduled Date/Time</div>
+          <div class="binfo-val">
+            {{ item.booking.service_date|default:"ASAP" }}
+            {% if item.booking.service_time %} at {{ item.booking.service_time|time:"H:i" }}{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="bcard-actions">
+        {% if item.booking.status == 'Pending' or item.booking.status == 'Pending Service Provider Acceptance' %}
+          <a href="/agent/toggle_booking/{{ item.booking.unique }}/accept/" class="btn btn-accept"><i class="fas fa-check"></i> Accept Job</a>
+          <a href="/agent/toggle_booking/{{ item.booking.unique }}/decline/" class="btn btn-decline"><i class="fas fa-times"></i> Decline Job</a>
+        {% elif item.booking.status == 'Heading to Location' or item.booking.status == 'Arrived' or item.booking.status == 'In Progress' %}
+          <a href="/track/{{ item.booking.unique }}/" class="btn btn-track"><i class="fas fa-map-marker-alt"></i> Navigate & Track Live</a>
+        {% elif item.booking.status == 'Completed' %}
+          <span style="color: var(--success); font-weight: 700; font-size: .88rem;"><i class="fas fa-check-circle"></i> Completed and Dispatched</span>
+        {% elif item.booking.status == 'Declined' or item.booking.status == 'Rejected' %}
+          <span style="color: var(--danger); font-weight: 700; font-size: .88rem;"><i class="fas fa-times-circle"></i> Declined</span>
+        {% elif item.booking.status == 'Under Investigation' %}
+          <div style="background: rgba(245,158,11,0.06); padding: 1rem; border-radius: 12px; border: 1px solid rgba(245,158,11,0.2); width: 100%; margin-top: 0.5rem; text-align: left;">
+            <div style="font-weight: 700; color: #d97706; font-size: 0.9rem; margin-bottom: 0.5rem;">
+              ⚠️ Refund Claim Under Investigation
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              <strong>Customer claim reason:</strong> "{{ item.booking.refund_reason }}"
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <form action="/agent/dispute_refund/{{ item.booking.unique }}/concede/" method="POST" style="display: inline;" onsubmit="return confirm('Concede the refund? The payout amount of ₹{{ item.booking.price }} will be deducted from your earnings.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-accept" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: var(--success); color: white;"><i class="fas fa-check"></i> Accept Refund</button>
+              </form>
+              <button type="button" class="btn btn-decline" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: var(--danger); color: white;" onclick="openDisputeForm('{{ item.booking.unique }}')"><i class="fas fa-gavel"></i> Dispute Claim</button>
+            </div>
+            
+            <!-- Inline Dispute Form -->
+            <div id="disputeForm-{{ item.booking.unique }}" style="display: none; margin-top: 1rem; border-top: 1px solid var(--border-light); padding-top: 1rem;">
+              <form action="/agent/dispute_refund/{{ item.booking.unique }}/dispute/" method="POST">
+                {% csrf_token %}
+                <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.4rem;">Provide your dispute statement / explanation:</label>
+                <textarea name="provider_dispute_reason" required rows="3" placeholder="Provide proof or explain why the refund request is invalid..." style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 0.5rem;"></textarea>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                  <button type="button" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="closeDisputeForm('{{ item.booking.unique }}')">Cancel</button>
+                  <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: var(--primary); color: white;">Submit Dispute</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        {% elif item.booking.status == 'Provider Disputed' %}
+          <div style="background: rgba(239,68,68,0.06); padding: 1rem; border-radius: 12px; border: 1px solid rgba(239,68,68,0.2); width: 100%; text-align: left;">
+            <div style="font-weight: 700; color: var(--danger); font-size: 0.88rem; margin-bottom: 0.3rem;">⚖️ Claim Disputed</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              You disputed this claim. Response: <em>"{{ item.booking.provider_dispute_reason }}"</em>. Admin decision is pending.
+            </div>
+          </div>
+        {% elif item.booking.status == 'Provider Conceded' %}
+          <div style="background: rgba(16,185,129,0.06); padding: 1rem; border-radius: 12px; border: 1px solid rgba(16,185,129,0.2); width: 100%; text-align: left;">
+            <div style="font-weight: 700; color: var(--success); font-size: 0.88rem; margin-bottom: 0.3rem;">✅ Refund Accepted</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              You accepted the refund request. Admin is finalizing the payout processing.
+            </div>
+          </div>
+        {% elif item.booking.status == 'Refunded' %}
+          <div style="background: rgba(16,185,129,0.06); padding: 1rem; border-radius: 12px; border: 1px solid rgba(16,185,129,0.2); width: 100%; text-align: left;">
+            <div style="font-weight: 700; color: var(--success); font-size: 0.88rem; margin-bottom: 0.3rem;">💸 Refunded</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Refund payout confirmed. Payout deducted from wallet records.
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fas fa-calendar-times"></i></div>
+      <h3>No Job Requests Allocated</h3>
+      <p style="margin-top: .4rem; font-size: .88rem; color: var(--text-muted);">Incoming service requests from customers will appear here in real-time.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- OFFERS -->
+  <div class="section-title"><i class="fas fa-tags text-primary"></i> My Promo Coupons</div>
+  
+  {% if agent_offers %}
+  <div class="offers-grid">
+    {% for offer in agent_offers %}
+    <div class="offer-card">
+      <div class="offer-top">
+        <span class="offer-code">{{ offer.code }}</span>
+        <span class="offer-pct">{{ offer.discount_percent }}% OFF</span>
+      </div>
+      <div class="offer-desc">{{ offer.description|default:"Discount valid on bookings" }}</div>
+      <div class="offer-status">
+        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:{% if offer.is_active %}var(--success){% else %}var(--danger){% endif %};"></span>
+        <span style="color:{% if offer.is_active %}var(--success){% else %}var(--danger){% endif %};">{% if offer.is_active %}Active{% else %}Inactive{% endif %}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="color: var(--text-muted); font-size: .88rem; margin-bottom: 1.5rem; font-style: italic;">No promotional coupon codes created yet.</p>
+  {% endif %}
+
+  </div>
+
+  <!-- WALLET & PAYOUT SECTION -->
+  <div class="section-title" style="margin-top: 3rem;"><i class="fas fa-wallet text-primary"></i> My Earnings Wallet</div>
+  
+  {% if request.GET.withdraw_status == 'requested' %}
+    <div class="alert alert-success">✓ Payout request submitted! Admin will confirm the transfer soon.</div>
+  {% elif request.GET.withdraw_status == 'failed' %}
+    <div class="alert alert-error">✗ Payout request failed! Ensure you have positive balance and approved bank details.</div>
+  {% elif request.GET.bank_status == 'submitted' %}
+    <div class="alert alert-success">✓ Bank account details submitted for verification! Pending admin approval.</div>
+  {% endif %}
+
+  <div class="wallet-grid">
+    <!-- Wallet Card -->
+    <div class="wallet-card">
+      <div class="balance-title">Available Payout Balance</div>
+      <div class="balance-value">₹{{ wallet_balance|floatformat:2 }}</div>
+      
+      <div class="wallet-actions">
+        <form method="POST" action="/agent/request_withdrawal/">
+          {% csrf_token %}
+          <button type="submit" class="btn-withdraw" {% if wallet_balance <= 0 or employee.bank_verification_status != 'Approved' %}disabled{% endif %}>
+            <i class="fas fa-money-bill-wave"></i> Request Withdrawal Payout
+          </button>
+        </form>
+      </div>
+      
+      {% if employee.bank_verification_status != 'Approved' %}
+        <p style="color: var(--danger); font-size: .8rem; font-weight: 600; margin-top: .75rem;">
+          ⚠️ Payout is locked. You must submit and get your bank details approved by the admin below.
+        </p>
+      {% endif %}
+
+      <!-- Wallet history -->
+      <div class="wallet-history-section">
+        <div style="font-weight: 800; font-size: .95rem; margin-bottom: .75rem;">Recent Payout Activity</div>
         
-            <div class="dropdown">
-                <button class="btn btn-portal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-user me-2"></i>Profile
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                </ul>
-            </div>
+        <div style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; background: var(--bg-primary);">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: var(--bg-tertiary);">
+                <th style="padding: .6rem; font-size: .75rem;">Tx ID</th>
+                <th style="padding: .6rem; font-size: .75rem;">Type</th>
+                <th style="padding: .6rem; font-size: .75rem;">Amount</th>
+                <th style="padding: .6rem; font-size: .75rem;">Status</th>
+                <th style="padding: .6rem; font-size: .75rem;">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tx in wallet_transactions %}
+              <tr style="border-top: 1px solid var(--border-light);">
+                <td style="padding: .6rem; font-family: monospace; font-size: .8rem; font-weight: 700;">#TX{{ tx.unique }}</td>
+                <td style="padding: .6rem; font-size: .8rem;">
+                  {% if tx.transaction_type == 'Collection' %}
+                    <span style="color: var(--success); font-weight: 600;">Collection</span>
+                  {% else %}
+                    <span style="color: var(--primary); font-weight: 600;">Withdrawal</span>
+                  {% endif %}
+                </td>
+                <td style="padding: .6rem; font-size: .8rem; font-weight: 700;">₹{{ tx.amount|floatformat:2 }}</td>
+                <td style="padding: .6rem; font-size: .8rem;">
+                  {% if tx.status == 'Pending' %}
+                    <span class="txn-status" style="background: var(--warning-light); color: var(--warning);">Pending</span>
+                  {% elif tx.status == 'Completed' %}
+                    <span class="txn-status" style="background: var(--success-light); color: var(--success);">Completed</span>
+                  {% else %}
+                    <span class="txn-status" style="background: var(--danger-light); color: var(--danger);">Rejected</span>
+                  {% endif %}
+                </td>
+                <td style="padding: .6rem; font-size: .75rem; color: var(--text-muted);">{{ tx.created_at|date:"M d, Y" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: .8rem;">
+                  No recent financial transactions in wallet.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        <h4 id="abc" style="font-weight:bold;margin-top:10px;">Service Booked Info</h4><br>
-        <div class="employee-list">
-            {% for item in combined_list reversed %}
-            <div class="ma">
-                <div class="profile-image-section">
-                    <img src="{{ item.user.profile_image }}" class="profile-image" alt="User Photo">
-                </div>
-
-                <div class="info-block">
-                    <div class="user-info">
-                        <div class="section-title">User Info</div>
-                        <div class="detail-item">
-                            <span class="detail-labe"> Advance paid :</span><span class="icon">{% if item.advance %}✅{% else %}❌{% endif %}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Name :</span>
-                            <span class="detail-value">{{ item.user.name }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Phone :</span>
-                            <span class="detail-value">{{ item.user.phone }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Email :</span>
-                            <span class="detail-value">{{ item.user.mail }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Gender :</span>
-                            <span class="detail-value">{{ item.user.gender }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Address :</span>
-                            <span class="detail-value">{{ item.user.address }}</span>
-                        </div>
-                    </div>
-
-                    <div class="provider-info">
-                        <div class="section-title">Service Provider</div>
-                        <div class="detail-item" id="commoni">
-                            <span class="detail-label">Name :</span>
-                            <span class="detail-value">{{ item.service.name }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Service :</span>
-                            <span class="detail-value">{{ item.service.service_provided }}</span>
-                        </div>
-                        <div class="detail-item" id="commoni">
-                            <span class="detail-label">Phone :</span>
-                            <span class="detail-value">{{ item.service.phone }}</span>
-                        </div>
-                        <div class="detail-item" id="commoni">
-                            <span class="detail-label">Email :</span>
-                            <span class="detail-value">{{ item.service.email }}</span>
-                        </div>
-                        <div class="detail-item" id="commoni">
-                            <span class="detail-label">Exp :</span>
-                            <span class="detail-value">{{ item.service.experience }} years</span>
-                        </div>
-                        <div class="detail-item" id="commoni">
-                            <span class="detail-label">Speci :</span>
-                            <span class="detail-value">{{ item.service.specialization }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Mobile menu toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-            });
-            
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(event) {
-                if (window.innerWidth <= 992 && 
-                    !sidebar.contains(event.target) && 
-                    event.target !== menuToggle) {
-                    sidebar.classList.remove('active');
-                }
-            });
-        });
-    </script>
+
+    <!-- Bank Details Card -->
+    <div class="wallet-card" style="display: flex; flex-direction: column; justify-content: flex-start;">
+      <div style="font-weight: 800; font-size: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: .5rem; margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem;">
+        <i class="fas fa-university text-primary"></i> Banking Payout Profile
+      </div>
+      
+      <div>
+        <span class="bank-badge {% if employee.bank_verification_status == 'Approved' %}bb-approved{% elif employee.bank_verification_status == 'Pending' %}bb-pending{% elif employee.bank_verification_status == 'Rejected' %}bb-rejected{% else %}bb-unverified{% endif %}">
+          Verification: {{ employee.bank_verification_status }}
+        </span>
+      </div>
+
+      <table class="details-table">
+        <tr>
+          <td>Bank Name</td>
+          <td>{{ employee.bank_name|default:"Not Submitted" }}</td>
+        </tr>
+        <tr>
+          <td>Account Number</td>
+          <td>
+            {% if employee.bank_account_num %}
+              XXXX XXXX {{ employee.bank_account_num|slice:"-4:" }}
+            {% else %}
+              Not Submitted
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td>IFSC Code</td>
+          <td>
+            {% if employee.bank_ifsc %}
+              {{ employee.bank_ifsc|slice:":4" }}****
+            {% else %}
+              Not Submitted
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+
+      {% if employee.bank_verification_status == 'Pending' %}
+        <p style="font-size: .8rem; color: var(--warning); margin-top: 1rem; font-weight: 600;">
+          ⏳ An update verification request is currently pending. Admin will review the uploaded check/passbook image soon.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- BANK DETAILS SUBMISSION FORM -->
+  {% if employee.bank_verification_status == 'Approved' %}
+  <div style="margin-top: 2rem; margin-bottom: 3rem; background: var(--success-light); border: 1px solid var(--success); color: var(--success); border-radius: 18px; padding: 2rem; text-align: center; box-shadow: var(--card-shadow);">
+    <i class="fas fa-lock" style="font-size: 2.5rem; margin-bottom: 1rem; display: block;"></i>
+    <h3 style="font-weight: 800; margin-bottom: .25rem; font-size: 1.2rem;">🏦 Bank Details Verification Locked</h3>
+    <p style="font-size: .85rem; opacity: 0.95;">Your payout banking profile has been verified and approved by the Super Administrator. Payout withdrawals are now fully active.</p>
+  </div>
+  {% else %}
+  <div class="add-offer-form" style="margin-top: 2rem; margin-bottom: 3rem; background: var(--card-bg); border-radius: 18px; padding: 1.75rem; border: 1px solid var(--border-light); box-shadow: var(--card-shadow);">
+    <div class="form-title" style="margin-bottom: 1.25rem; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: .5rem;">
+      <i class="fas fa-file-invoice text-primary"></i> 
+      Submit / Update Bank Verification Details
+    </div>
+    
+    <p style="font-size: .82rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+      Please submit your billing bank account details below along with clear photos of your bank passbook front page and a cancelled cheque for authentication.
+    </p>
+
+    <form method="POST" action="/agent/update_bank/" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">Account Holder Name</label>
+          <input type="text" name="account_holder_name" class="form-input" placeholder="Name as in Bank Account" required>
+        </div>
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">Bank Name</label>
+          <input type="text" name="bank_name" class="form-input" placeholder="e.g. State Bank of India" required>
+        </div>
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">Branch Name</label>
+          <input type="text" name="branch_name" class="form-input" placeholder="e.g. Jalgaon Main Branch" required>
+        </div>
+      </div>
+
+      <div class="form-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">Bank Account Number</label>
+          <input type="text" name="bank_account_num" class="form-input" placeholder="11 to 16 digit account number" required>
+        </div>
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">IFSC Code</label>
+          <input type="text" name="bank_ifsc" class="form-input" placeholder="e.g. SBIN0001234" required>
+        </div>
+      </div>
+      
+      <div class="form-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">Upload Passbook Image</label>
+          <input type="file" name="passbook_photo" class="form-input" accept="image/*" style="padding-top: .5rem;" required>
+        </div>
+        <div class="form-group" style="display: flex; flex-direction: column; gap: .4rem;">
+          <label style="font-size: .8rem; font-weight: 700; color: var(--text-secondary);">Upload Cancelled Cheque Image</label>
+          <input type="file" name="cheque_photo" class="form-input" accept="image/*" style="padding-top: .5rem;" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-add" style="width: auto; padding: .65rem 2rem;"><i class="fas fa-upload"></i> Send Verification Request</button>
+    </form>
+  </div>
+  {% endif %}
+</main>
+
+<script>
+  // Simple calculation of pending requests dynamically in client-side
+  document.addEventListener('DOMContentLoaded', function() {
+      const pendingCards = document.querySelectorAll('.booking-card[data-status="Pending"]');
+      const countLabel = document.getElementById('pending-jobs-count');
+      if (countLabel) {
+          countLabel.innerText = pendingCards.length;
+      }
+  });
+
+  function openDisputeForm(bookingId) {
+      document.getElementById('disputeForm-' + bookingId).style.display = 'block';
+  }
+  function closeDisputeForm(bookingId) {
+      document.getElementById('disputeForm-' + bookingId).style.display = 'none';
+  }
+</script>
+
+<!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav">
+  <a href="/employeeservicebooked/" class="mobile-nav-item active">
+    <i class="fas fa-list-check"></i>
+    <span>My Bookings</span>
+  </a>
+  <a href="/agent/refund_complaints/" class="mobile-nav-item">
+    <i class="fas fa-gavel"></i>
+    <span>Complaints</span>
+  </a>
+  <a href="/logout/" class="mobile-nav-item" style="color: var(--danger);">
+    <i class="fas fa-sign-out-alt"></i>
+    <span>Sign Out</span>
+  </a>
+</div>
+
 </body>
 </html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Details – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-badge {
+    font-size: .72rem;
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    margin-top: .4rem;
+    display: inline-block;
+    font-weight: 700;
+  }
+  .nav-body {
+    padding: 1rem 1rem;
+    flex: 1;
+  }
+  .nav-section {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.25rem 0 .4rem;
+    padding-left: .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .1rem;
+    position: relative;
+  }
+  .nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+    font-size: .9rem;
+  }
+  .sidebar-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .topbar-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .topbar-title p {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-top: .1rem;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  }
+  .admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    font-weight: 800;
+  }
+  .admin-name {
+    font-size: .85rem;
+    font-weight: 700;
+  }
+
+  /* DETAILS CARD */
+  .details-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2.5rem;
+  }
+  .avatar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .customer-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-medium);
+  }
+  .info-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .badge-category {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    font-size: .8rem;
+    padding: .35rem 1rem;
+    border-radius: 50px;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: .5rem;
+    margin-bottom: 1.25rem;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.5rem;
+  }
+  .meta-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+  }
+  .meta-label {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .25rem;
+  }
+  .meta-val {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    padding: .6rem 1.25rem;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .btn-secondary:hover {
+    background: var(--border-light);
+    transform: translateY(-2px);
+  }
+  .address-box {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .address-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+
+  @media (max-width: 1100px) {
+    .sidebar { width: 220px; }
+    .main { margin-left: 220px; }
+  }
+  @media (max-width: 900px) {
+    .grid-layout { grid-template-columns: 1fr; }
+    .customer-img { height: 260px; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="admin-badge">🛡️ Admin Control Panel</div>
+  </div>
+  <div class="nav-body">
+    <div class="nav-section">Overview</div>
+    <a href="/aadmin/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+    <div class="nav-section">User Management</div>
+    <a href="/userinfo/" class="nav-link active"><i class="fas fa-users"></i> Customers</a>
+    <a href="/employeeinfo/" class="nav-link"><i class="fas fa-user-gear"></i> Providers</a>
+    <a href="/admin/pending-providers/" class="nav-link">
+      <i class="fas fa-user-clock"></i> Pending Verifications
+    </a>
+
+    <div class="nav-section">Operations</div>
+    <a href="/servicebooked/" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+    <a href="/ticketraised/" class="nav-link"><i class="fas fa-ticket-alt"></i> Complaints</a>
+
+    <div class="nav-section">Finance</div>
+    <a href="/admin/wallet/" class="nav-link"><i class="fas fa-wallet"></i> Earnings & Wallet</a>
+
+    <div class="nav-section">Settings</div>
+    <a href="/admin/toggle_global_email/" class="nav-link" style="color: {% if global_email_active %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+      <i class="fas fa-envelope"></i> Email: {% if global_email_active %}Active{% else %}Muted{% endif %}
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Customer Profile Details</h1>
+      <p>System review for registered client {{ customer.name }}.</p>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      <a href="/userinfo/" class="btn-secondary"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
+  </div>
+
+  <div class="details-card">
+    <div class="grid-layout">
+      <!-- Left side: Avatar & Actions -->
+      <div class="avatar-container">
+        {% if customer.profile_image %}
+          <img src="{{ customer.profile_image }}" class="customer-img" alt="{{ customer.name }}">
+        {% else %}
+          <div class="customer-img" style="background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 5rem; font-weight: 800; color: var(--text-light);">
+            {{ customer.name|slice:":1"|default:"U" }}
+          </div>
+        {% endif %}
+        
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+          <a href="/admin/toggle_customer_email/{{ customer.unique }}/" class="btn-secondary" style="justify-content: center; text-align: center; {% if customer.allow_email_notifications %}background: rgba(245,158,11,0.08); color: #d97706; border-color: #f59e0b;{% endif %}" onclick="return confirm('Mute or unmute emails for this customer?')">
+            {% if customer.allow_email_notifications %}
+              <i class="fas fa-bell-slash"></i> Mute Customer Emails
+            {% else %}
+              <i class="fas fa-bell"></i> Allow Customer Emails
+            {% endif %}
+          </a>
+          <a href="/suspend_user/{{ customer.unique }}/" class="btn-secondary" style="justify-content: center; text-align: center; {% if customer.is_suspended %}background: var(--success-light); color: var(--success); border-color: var(--success);{% else %}background: var(--danger-light); color: var(--danger); border-color: var(--danger);{% endif %}" onclick="return confirm('Are you sure you want to toggle account suspension status?')">
+            {% if customer.is_suspended %}
+              <i class="fas fa-check-circle"></i> Reactivate Account
+            {% else %}
+              <i class="fas fa-user-slash"></i> Suspend Account
+            {% endif %}
+          </a>
+        </div>
+      </div>
+
+      <!-- Right side: Customer Information -->
+      <div>
+        <h2 class="info-title">{{ customer.name|default:"Unnamed User" }}</h2>
+        <span class="badge-category" style="background: var(--success-light); color: var(--success); border-color: var(--success);">Customer Account</span>
+
+        <!-- Meta Grid -->
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">Customer ID</div>
+            <div class="meta-val">UID #{{ customer.unique }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Gender</div>
+            <div class="meta-val">{{ customer.gender|default:"Not Specified"|title }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Email Address</div>
+            <div class="meta-val" style="word-break: break-all;">{{ customer.mail }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Phone Number</div>
+            <div class="meta-val">{% if customer.phone %}+91 {{ customer.phone }}{% else %}Not Registered{% endif %}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Account Status</div>
+            <div class="meta-val">
+              <span class="status-badge {% if customer.is_suspended %}sb-suspended{% elif customer.is_verified %}sb-verified{% else %}sb-active{% endif %}" style="display:inline-flex; align-items:center; gap:0.25rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.72rem; font-weight: bold;">
+                {% if customer.is_suspended %}Suspended{% else %}Active{% endif %}
+              </span>
+            </div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Member Since</div>
+            <div class="meta-val">{{ customer.created_at|date:"M d, Y" }}</div>
+          </div>
+          <div class="meta-item" style="border: 1px solid var(--success);">
+            <div class="meta-label" style="color: var(--success);">Wallet Balance</div>
+            <div class="meta-val" style="color: var(--success); font-size: 1.05rem; font-weight: 800;">₹{{ customer.wallet_balance|floatformat:2 }}</div>
+          </div>
+        </div>
+
+        <!-- Saved Addresses -->
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-top: 2.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-map-location-dot text-primary"></i> Saved Addresses
+        </h3>
+        {% if customer.addresses %}
+          {% for addr in customer.addresses %}
+            <div class="address-box">
+              <div class="address-header">
+                <span style="color: var(--primary);">
+                  {% if addr.label == 'Home' %}🏠 Home{% elif addr.label == 'Office' %}🏢 Office{% else %}📍 {{ addr.label }}{% endif %}
+                </span>
+                {% if addr.is_default %}
+                  <span style="background: var(--success-light); color: var(--success); font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Default</span>
+                {% endif %}
+              </div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">
+                {% if addr.address_line1 %}{{ addr.address_line1 }}, {% endif %}
+                {% if addr.address_line2 %}{{ addr.address_line2 }}, {% endif %}
+                {% if addr.area %}{{ addr.area }}, {% endif %}
+                {% if addr.city %}{{ addr.city }}{% endif %}
+                {% if addr.pincode %} – {{ addr.pincode }}{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No saved addresses registered for this customer.</p>
+        {% endif %}
+
+        <!-- Payout/Bank Information -->
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-top: 2.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-wallet text-primary"></i> Payout & Bank Information
+        </h3>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">Bank Name</div>
+            <div class="meta-val">Not Specified</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Account Number (Masked)</div>
+            <div class="meta-val" style="font-family: monospace;">{{ masked_acc }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Bank IFSC (Masked)</div>
+            <div class="meta-val" style="font-family: monospace;">{{ masked_ifsc }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">UPI ID (Masked)</div>
+            <div class="meta-val" style="font-family: monospace;">{{ masked_upi }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

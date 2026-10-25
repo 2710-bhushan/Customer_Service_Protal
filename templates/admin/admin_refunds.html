@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refunds & Complaints Panel – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .sidebar-header {
+    margin-bottom: 2rem;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-badge {
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-top: .25rem;
+  }
+  .nav-body {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .badge-count {
+    margin-left: auto;
+    background: var(--primary);
+    color: white;
+    font-size: .7rem;
+    padding: .15rem .45rem;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .pending-badge {
+    background: var(--danger);
+  }
+  .sidebar-footer {
+    margin-top: auto;
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 2.5rem;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+  }
+  .sub {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin-top: .25rem;
+  }
+
+  /* TABLE LAYOUT */
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    box-shadow: var(--card-shadow);
+    overflow-x: auto; /* Enable X scrollbar */
+    margin-bottom: 2rem;
+  }
+  table {
+    width: 100%;
+    min-width: 1100px; /* Force scrollbar */
+    border-collapse: collapse;
+  }
+  th {
+    background: var(--bg-secondary);
+    padding: 1rem 1.25rem;
+    font-size: .82rem;
+    font-weight: 750;
+    color: var(--text-secondary);
+    text-align: left;
+    border-bottom: 2px solid var(--border-light);
+  }
+  td {
+    padding: 1.1rem 1.25rem;
+    font-size: .85rem;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+  tr:hover td {
+    background: rgba(79, 70, 229, 0.02);
+  }
+
+  /* STATUS PILLS */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .35rem .7rem;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+  .sb-requested {
+    background: rgba(245, 158, 11, 0.08);
+    color: #d97706;
+    border-color: rgba(245, 158, 11, 0.2);
+  }
+  .sb-investigating {
+    background: rgba(59, 130, 246, 0.08);
+    color: #2563eb;
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+  .sb-disputed {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.2);
+  }
+  .sb-conceded {
+    background: rgba(16, 185, 129, 0.08);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+  .sb-processed {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  .sb-declined {
+    background: rgba(107, 114, 128, 0.08);
+    color: #4b5563;
+    border-color: rgba(107, 114, 128, 0.2);
+  }
+
+  /* DETAILED DIALOG MODAL */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.active {
+    opacity: 1; pointer-events: auto;
+  }
+  .modal-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 2rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.25s ease;
+  }
+  .modal-overlay.active .modal-card {
+    transform: scale(1);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 850;
+    color: var(--primary);
+  }
+  .close-btn {
+    background: none; border: none;
+    font-size: 1.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .meta-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+  .meta-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .meta-val {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-top: 0.15rem;
+  }
+
+  .evidence-image {
+    max-width: 100%;
+    max-height: 240px;
+    border-radius: 8px;
+    border: 1px solid var(--border-medium);
+    margin-top: 0.5rem;
+    object-fit: contain;
+    background: #000;
+  }
+
+  .action-btn-styled {
+    padding: 0.65rem 1.25rem;
+    font-weight: 700;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: white;
+    transition: transform 0.2s;
+  }
+  .action-btn-styled:hover {
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="admin-badge">🛡️ Admin Control Panel</div>
+  </div>
+  <div class="nav-body">
+    <div class="nav-section">Overview</div>
+    <a href="/aadmin/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+    <div class="nav-section">User Management</div>
+    <a href="/userinfo/" class="nav-link"><i class="fas fa-users"></i> Customers</a>
+    <a href="/employeeinfo/" class="nav-link"><i class="fas fa-user-gear"></i> Providers</a>
+    <a href="/admin/pending-providers/" class="nav-link">
+      <i class="fas fa-user-clock"></i> Pending Verifications
+      {% if pending_providers > 0 %}<span class="badge-count pending-badge">{{ pending_providers }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Operations</div>
+    <a href="/servicebooked/" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="/admin/refunds/" class="nav-link active"><i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+    <a href="/ticketraised/" class="nav-link">
+      <i class="fas fa-ticket-alt"></i> Complaints
+      {% if ticket_count > 0 %}<span class="badge-count">{{ ticket_count }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Content</div>
+    <a href="/admin/manage_ad/" class="nav-link"><i class="fas fa-ad"></i> Advertisements</a>
+    <a href="/admin/manage_offer/" class="nav-link"><i class="fas fa-tags"></i> Offers & Coupons</a>
+    <a href="/addemp/" class="nav-link"><i class="fas fa-user-plus"></i> Add Provider</a>
+    <div class="nav-section">Wallet</div>
+    <a href="/admin/wallet/" class="nav-link"><i class="fas fa-wallet"></i> Earnings & Wallet</a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="header-row">
+    <div>
+      <h1>Refunds & Dispute Resolution</h1>
+      <p class="sub">Investigate customer complaints, review proof photos, and settle transaction reversals</p>
+    </div>
+    <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+  </div>
+
+  {% if request.GET.refund == 'investigating' %}
+    <div class="alert-success" style="background: rgba(59,130,246,0.1); color: #2563eb; border-color: rgba(59,130,246,0.2); margin-bottom: 1.5rem; padding: 1rem; border-radius: 10px;">
+      <i class="fas fa-search-plus"></i> Claim marked under investigation. Assigned service provider has been alerted.
+    </div>
+  {% elif request.GET.refund == 'confirmed' %}
+    <div class="alert-success" style="background: rgba(16,185,129,0.1); color: #059669; border-color: rgba(16,185,129,0.2); margin-bottom: 1.5rem; padding: 1rem; border-radius: 10px;">
+      <i class="fas fa-check-circle"></i> Refund confirmed! Funds successfully returned to the customer's wallet.
+    </div>
+  {% elif request.GET.refund == 'declined' %}
+    <div class="alert-success" style="background: rgba(239,68,68,0.1); color: #dc2626; border-color: rgba(239,68,68,0.2); margin-bottom: 1.5rem; padding: 1rem; border-radius: 10px;">
+      <i class="fas fa-times-circle"></i> Refund request declined. Notice sent to the customer.
+    </div>
+  {% endif %}
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Ref ID</th>
+          <th>Customer Details</th>
+          <th>Service Provider</th>
+          <th>Price</th>
+          <th>Refund Status</th>
+          <th>Claim Reason</th>
+          <th style="text-align: right; padding-right: 1.5rem;">Investigation Settle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in combined %}
+        <tr>
+          <td>
+            <span style="font-weight: 800; font-family: monospace;">#{{ b.booking.unique }}</span>
+          </td>
+          <td>
+            <div style="font-weight: 700;">{{ b.user.name|default:"Unnamed User" }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ b.booking.email }}</div>
+          </td>
+          <td>
+            <div style="font-weight: 700;">{{ b.provider.name }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ b.booking.uniqueservice }} | {{ b.provider.service_provided }}</div>
+          </td>
+          <td>
+            <span style="font-weight: 700; color: var(--success);">₹{{ b.booking.price|floatformat:0 }}</span>
+          </td>
+          <td>
+            <span class="status-badge 
+              {% if b.booking.refund_status == 'Requested' %}sb-requested
+              {% elif b.booking.refund_status == 'Under Investigation' %}sb-investigating
+              {% elif b.booking.refund_status == 'Provider Disputed' %}sb-disputed
+              {% elif b.booking.refund_status == 'Provider Conceded' %}sb-conceded
+              {% elif b.booking.refund_status == 'Processed' %}sb-processed
+              {% else %}sb-declined{% endif %}">
+              {% if b.booking.refund_status == 'Requested' %}Claim Requested
+              {% elif b.booking.refund_status == 'Under Investigation' %}Investigating
+              {% elif b.booking.refund_status == 'Provider Disputed' %}Disputed by Agent
+              {% elif b.booking.refund_status == 'Provider Conceded' %}Agent Accepted
+              {% elif b.booking.refund_status == 'Processed' %}Refunded
+              {% else %}{{ b.booking.refund_status }}{% endif %}
+            </span>
+          </td>
+          <td>
+            <span style="font-style: italic; color: var(--text-secondary);">"{{ b.booking.refund_reason|truncatechars:50 }}"</span>
+          </td>
+          <td style="text-align: right; padding-right: 1.5rem;">
+            <button type="button" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 700;"
+                    onclick="openInvestigationModal(
+                      '{{ b.booking.unique }}',
+                      '{{ b.user.name|escapejs }}',
+                      '{{ b.booking.email|escapejs }}',
+                      '{{ b.provider.name|escapejs }}',
+                      '{{ b.booking.price|escapejs }}',
+                      '{{ b.booking.refund_status|escapejs }}',
+                      '{{ b.booking.refund_reason|escapejs }}',
+                      '{% if b.booking.refund_proof_pic %}{{ b.booking.refund_proof_pic.url }}{% endif %}',
+                      '{{ b.booking.provider_dispute_reason|escapejs }}'
+                    )">
+              <i class="fas fa-search-plus"></i> Settle Review
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 5rem; color: var(--text-muted);">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;">⚖️</div>
+            <p style="font-weight: 800; font-size: 1.2rem; color: var(--text-primary);">No Complaints or Refund Claims</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">All booking transactions are settled. No refunds are currently pending.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- INVESTIGATION DIALOG OVERLAY -->
+<div class="modal-overlay" id="investigationModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-balance-scale"></i> Refund Case Investigation Details</div>
+      <button type="button" class="close-btn" onclick="closeInvestigationModal()">&times;</button>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="meta-label">Booking Reference</div>
+        <div class="meta-val" id="case_booking_id">#00</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Dispute Value</div>
+        <div class="meta-val" style="color: var(--success);" id="case_price">₹0.00</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Customer Info</div>
+        <div class="meta-val" id="case_customer">Customer Name</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Assigned Service Provider</div>
+        <div class="meta-val" id="case_provider">Provider Name</div>
+      </div>
+    </div>
+
+    <!-- Claim Statement -->
+    <div style="background: var(--bg-tertiary); border-left: 4px solid var(--primary); padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+      <h4 style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.4rem;">Customer Claim Statement:</h4>
+      <p style="font-size: 0.9rem; color: var(--text-primary); font-style: italic;" id="case_reason">"Refund Reason Statement"</p>
+    </div>
+
+    <!-- Customer Proof Pic -->
+    <div style="margin-bottom: 1.5rem;">
+      <h4 style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.4rem;">Evidence Photo Uploaded by Customer:</h4>
+      <div id="case_proof_container" style="text-align: center; background: var(--bg-tertiary); border: 1px dashed var(--border-medium); padding: 1rem; border-radius: 8px;">
+        <img src="" id="case_proof_img" class="evidence-image" alt="Evidence Photo">
+        <span id="case_no_proof" style="color: var(--text-light); font-size: 0.85rem; font-style: italic;">No work photo evidence uploaded by customer.</span>
+      </div>
+    </div>
+
+    <!-- Provider Rebuttal -->
+    <div id="case_rebuttal_container" style="background: rgba(239,68,68,0.03); border: 1px solid rgba(239,68,68,0.15); border-left: 4px solid var(--danger); padding: 1.25rem; border-radius: 8px; margin-bottom: 2rem;">
+      <h4 style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--danger); margin-bottom: 0.4rem;">⚖️ Provider Dispute Statement / Rebuttal:</h4>
+      <p style="font-size: 0.9rem; color: var(--text-primary); font-style: italic;" id="case_rebuttal">"No rebuttal submitted yet."</p>
+    </div>
+
+    <!-- Case Status Indicator -->
+    <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.9rem;">
+      <span>Case Status:</span>
+      <span id="case_status_pill" class="status-badge">Requested</span>
+    </div>
+
+    <!-- Settlement Actions Form Block -->
+    <div style="display: flex; gap: 1rem; justify-content: flex-end; flex-wrap: wrap; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
+      
+      <!-- Forward / Investigate -->
+      <form id="form_investigate" action="" method="POST" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="action-btn-styled" style="background: #f59e0b;" id="btn_investigate">
+          <i class="fas fa-search-plus"></i> Forward to Provider (Investigate)
+        </button>
+      </form>
+
+      <!-- Decline Refund -->
+      <form id="form_decline" action="" method="POST" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="action-btn-styled" style="background: var(--text-light);" id="btn_decline" onclick="return confirm('Decline this refund claim?');">
+          <i class="fas fa-times"></i> Decline Refund
+        </button>
+      </form>
+
+      <!-- Approve/Confirm Refund -->
+      <form id="form_confirm" action="" method="POST" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="action-btn-styled" style="background: var(--success);" id="btn_confirm" onclick="return confirm('Confirm and process payout to customer wallet?');">
+          <i class="fas fa-check-double"></i> Settle & Confirm Refund
+        </button>
+      </form>
+      
+      <button type="button" class="action-btn-styled" style="background: var(--bg-tertiary); border: 1px solid var(--border-medium); color: var(--text-primary);" onclick="closeInvestigationModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openInvestigationModal(bookingId, customerName, customerEmail, providerName, price, status, reason, proofUrl, rebuttal) {
+      document.getElementById('case_booking_id').textContent = '#' + bookingId;
+      document.getElementById('case_price').textContent = '₹' + parseFloat(price).toFixed(2);
+      document.getElementById('case_customer').innerHTML = `<strong>${customerName}</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">${customerEmail}</span>`;
+      document.getElementById('case_provider').textContent = providerName;
+      document.getElementById('case_reason').textContent = `"${reason}"`;
+      
+      // Proof Image Handler
+      const img = document.getElementById('case_proof_img');
+      const label = document.getElementById('case_no_proof');
+      if (proofUrl && proofUrl !== 'None' && proofUrl !== '') {
+          img.src = proofUrl;
+          img.style.display = 'inline-block';
+          label.style.display = 'none';
+      } else {
+          img.src = '';
+          img.style.display = 'none';
+          label.style.display = 'block';
+      }
+
+      // Rebuttal Handler
+      const rebuttalCont = document.getElementById('case_rebuttal_container');
+      const rebuttalVal = document.getElementById('case_rebuttal');
+      if (rebuttal && rebuttal !== 'None' && rebuttal !== '') {
+          rebuttalVal.textContent = `"${rebuttal}"`;
+          rebuttalCont.style.display = 'block';
+      } else {
+          rebuttalVal.textContent = 'No rebuttal submitted yet.';
+          if (status === 'Requested') {
+              rebuttalCont.style.display = 'none';
+          } else {
+              rebuttalCont.style.display = 'block';
+          }
+      }
+
+      // Status Pill Handler
+      const pill = document.getElementById('case_status_pill');
+      pill.textContent = status;
+      pill.className = 'status-badge ';
+      if (status === 'Requested') pill.classList.add('sb-requested');
+      else if (status === 'Under Investigation') pill.classList.add('sb-investigating');
+      else if (status === 'Provider Disputed') pill.classList.add('sb-disputed');
+      else if (status === 'Provider Conceded') pill.classList.add('sb-conceded');
+      else if (status === 'Processed') pill.classList.add('sb-processed');
+      else pill.classList.add('sb-declined');
+
+      // Actions Form Setup
+      document.getElementById('form_investigate').action = '/admin/investigate_refund/' + bookingId + '/';
+      document.getElementById('form_confirm').action = '/admin/confirm_refund/' + bookingId + '/';
+      document.getElementById('form_decline').action = '/admin/decline_refund/' + bookingId + '/';
+
+      // Control Action Buttons visibility based on status
+      const btnInvestigate = document.getElementById('btn_investigate');
+      const btnConfirm = document.getElementById('btn_confirm');
+      const btnDecline = document.getElementById('btn_decline');
+
+      if (status === 'Processed' || status === 'Refunded' || status === 'Refund Declined' || status === 'Declined') {
+          btnInvestigate.style.display = 'none';
+          btnConfirm.style.display = 'none';
+          btnDecline.style.display = 'none';
+      } else {
+          btnConfirm.style.display = 'inline-flex';
+          btnDecline.style.display = 'inline-flex';
+          
+          if (status === 'Requested') {
+              btnInvestigate.style.display = 'inline-flex';
+          } else {
+              btnInvestigate.style.display = 'none';
+          }
+      }
+
+      document.getElementById('investigationModal').classList.add('active');
+  }
+
+  function closeInvestigationModal() {
+      document.getElementById('investigationModal').classList.remove('active');
+  }
+</script>
+
+</body>
+</html>

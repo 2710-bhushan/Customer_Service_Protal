@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify OTP – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow-x: hidden;
+    padding: 2rem 1rem;
+    transition: var(--transition);
+  }
+  .header-actions {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 10;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+  }
+  .icon-ring {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-light);
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: var(--primary);
+  }
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: .5rem;
+    color: var(--text-primary);
+  }
+  .email-badge {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    border-radius: 50px;
+    padding: .4rem 1.2rem;
+    font-size: .85rem;
+    color: var(--primary);
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-weight: 600;
+  }
+  .error-box {
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: .75rem 1rem;
+    color: var(--danger);
+    font-size: .9rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    text-align: left;
+  }
+  .success-box {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-sm);
+    padding: .75rem 1rem;
+    color: var(--success);
+    font-size: .9rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .otp-inputs {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .otp-inputs input {
+    width: 50px;
+    height: 58px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    font-family: var(--font-family);
+    transition: var(--transition);
+  }
+  .otp-inputs input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--bg-secondary);
+  }
+  .btn-verify {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+  }
+  .btn-verify:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.35);
+  }
+  .resend-box {
+    font-size: .9rem;
+    color: var(--text-muted);
+    margin-top: .5rem;
+  }
+  .resend-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .timer {
+    font-weight: 700;
+    color: var(--primary);
+  }
+</style>
+</head>
+<body>
+
+<div class="header-actions">
+  <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+</div>
+
+<div class="card">
+  <div class="icon-ring">📧</div>
+  <h1>Verify Your Email</h1>
+  <p style="color: var(--text-secondary); margin-bottom: 1rem">We sent a 6-digit OTP to</p>
+  <span class="email-badge">{{ email }}</span>
+
+  {% if error %}
+  <div class="error-box"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+  {% endif %}
+  {% if request.GET.resent %}
+  <div class="success-box"><i class="fas fa-check-circle"></i> OTP resent successfully!</div>
+  {% endif %}
+
+  <form method="POST" action="/verify-otp/" id="otpForm">
+    {% csrf_token %}
+    <div class="otp-inputs">
+      <input type="text" class="otp-box" maxlength="1" id="otp1" inputmode="numeric">
+      <input type="text" class="otp-box" maxlength="1" id="otp2" inputmode="numeric">
+      <input type="text" class="otp-box" maxlength="1" id="otp3" inputmode="numeric">
+      <input type="text" class="otp-box" maxlength="1" id="otp4" inputmode="numeric">
+      <input type="text" class="otp-box" maxlength="1" id="otp5" inputmode="numeric">
+      <input type="text" class="otp-box" maxlength="1" id="otp6" inputmode="numeric">
+    </div>
+    <input type="hidden" name="otp" id="otpHidden">
+    <button type="submit" class="btn-verify" id="verifyBtn" disabled>
+      <i class="fas fa-shield-alt"></i> Verify OTP
+    </button>
+  </form>
+
+  <div class="resend-box">
+    Didn't receive it?
+    <span id="timerSpan"> Resend in <span class="timer" id="countdown">60</span>s</span>
+    <span id="resendSpan" style="display:none">
+      <a href="/resend-otp/" class="resend-link">Resend OTP</a>
+    </span>
+  </div>
+</div>
+
+<script>
+  const boxes = document.querySelectorAll('.otp-box');
+  boxes.forEach((box, i) => {
+    box.addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/\D/,'');
+      if (e.target.value && i < boxes.length - 1) boxes[i+1].focus();
+      updateHidden();
+    });
+    box.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i-1].focus();
+    });
+    box.addEventListener('paste', e => {
+      const paste = e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);
+      if (paste.length === 6) {
+        boxes.forEach((b, idx) => { b.value = paste[idx] || ''; });
+        updateHidden();
+      }
+      e.preventDefault();
+    });
+  });
+
+  function updateHidden() {
+    const otp = Array.from(boxes).map(b => b.value).join('');
+    document.getElementById('otpHidden').value = otp;
+    document.getElementById('verifyBtn').disabled = otp.length !== 6;
+  }
+
+  let time = 60;
+  const interval = setInterval(() => {
+    time--;
+    document.getElementById('countdown').textContent = time;
+    if (time <= 0) {
+      clearInterval(interval);
+      document.getElementById('timerSpan').style.display = 'none';
+      document.getElementById('resendSpan').style.display = 'inline';
+    }
+  }, 1000);
+</script>
+</body>
+</html>

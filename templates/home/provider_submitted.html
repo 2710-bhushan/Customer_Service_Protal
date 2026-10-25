@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Submitted – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    transition: var(--transition);
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    position: relative;
+  }
+  .theme-toggle-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+  .icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: bounce 0.6s ease;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: .75rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-size: .95rem;
+  }
+  .info-box {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: left;
+  }
+  .info-box h3 {
+    color: var(--success);
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: .75rem;
+  }
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-bottom: .75rem;
+    font-size: .88rem;
+    color: var(--text-secondary);
+  }
+  .step-item:last-child {
+    margin-bottom: 0;
+  }
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    font-weight: 800;
+    font-size: .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    border: 1px solid var(--success);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    background: var(--primary-gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    padding: .85rem 2rem;
+    font-weight: 700;
+    font-size: .9rem;
+    margin: .5rem;
+    transition: var(--transition);
+    border: none;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
+  .btn-signin {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+  }
+  .btn-signin:hover {
+    background: var(--border-light);
+    box-shadow: none;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+  <div class="icon">🎉</div>
+  <h1>Application Received!</h1>
+  <p>Thank you, <strong>{{ name }}</strong>. Your registration details have been submitted and are pending verification by system administrators.</p>
+  
+  <div class="info-box">
+    <h3>What happens next?</h3>
+    <div class="step-item"><div class="step-num">1</div><span>Admin reviews uploads (Aadhaar Card, PAN Card, Business Docs)</span></div>
+    <div class="step-item"><div class="step-num">2</div><span>Background check verification is performed on service addresses</span></div>
+    <div class="step-item"><div class="step-num">3</div><span>Upon approval, system login credentials are sent to your email</span></div>
+    <div class="step-item"><div class="step-num">4</div><span>Your partner account is activated and visible to customers</span></div>
+  </div>
+
+  <p style="font-size: .82rem; color: var(--text-muted);">
+    Verification workflows are processed within <strong style="color: var(--warning);">24 to 48 business hours</strong>.
+  </p>
+
+  <a href="/" class="btn"><i class="fas fa-home"></i> Back to Home</a>
+  <a href="/signin/" class="btn btn-signin"><i class="fas fa-sign-in-alt"></i> Sign In Portal</a>
+</div>
+</body>
+</html>

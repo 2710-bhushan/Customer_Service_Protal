@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Booking - ServiceHub Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-badge {
+    font-size: .72rem;
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    margin-top: .4rem;
+    display: inline-block;
+    font-weight: 700;
+  }
+  .nav-body {
+    padding: 1rem 1rem;
+    flex: 1;
+  }
+  .nav-section {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.25rem 0 .4rem;
+    padding-left: .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .1rem;
+    position: relative;
+  }
+  .nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+    font-size: .9rem;
+  }
+  .sidebar-footer {
+    padding: 1rem 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .topbar-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .topbar-title p {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-top: .1rem;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    font-weight: 800;
+  }
+  .admin-name {
+    font-size: .85rem;
+    font-weight: 700;
+  }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: .4rem;
+  }
+  .req {
+    color: var(--danger);
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap i {
+    position: absolute;
+    left: .875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: .85rem;
+  }
+  input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .7rem 1rem .7rem 2.3rem;
+    color: var(--text-primary);
+    font-size: .9rem;
+    font-family: var(--font-family);
+    transition: var(--transition);
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--bg-secondary);
+  }
+  textarea {
+    resize: vertical;
+    padding-left: 1rem;
+  }
+  .no-icon {
+    padding-left: 1rem!important;
+  }
+  .btn-save {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .75rem 2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: .9rem;
+  }
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  }
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: .75rem 2rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: .9rem;
+    display: inline-block;
+    text-align: center;
+  }
+  .btn-secondary:hover {
+    background: var(--border-light);
+  }
+  .error-box {
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: .75rem 1rem;
+    color: var(--danger);
+    font-size: .88rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="admin-badge">🛡️ Admin Control Panel</div>
+  </div>
+  <div class="nav-body">
+    <div class="nav-section">Overview</div>
+    <a href="/aadmin/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+    <div class="nav-section">User Management</div>
+    <a href="/userinfo/" class="nav-link"><i class="fas fa-users"></i> Customers</a>
+    <a href="/employeeinfo/" class="nav-link"><i class="fas fa-user-gear"></i> Providers</a>
+    <a href="/admin/pending-providers/" class="nav-link">
+      <i class="fas fa-user-clock"></i> Pending Verifications
+    </a>
+
+    <div class="nav-section">Operations</div>
+    <a href="/servicebooked/" class="nav-link active"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+    <a href="/ticketraised/" class="nav-link"><i class="fas fa-ticket-alt"></i> Complaints</a>
+
+    <div class="nav-section">Finance</div>
+    <a href="/admin/wallet/" class="nav-link"><i class="fas fa-wallet"></i> Earnings & Wallet</a>
+
+    <div class="nav-section">Settings</div>
+    <a href="/admin/toggle_global_email/" class="nav-link" style="color: {% if global_email_active %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+      <i class="fas fa-envelope"></i> Email: {% if global_email_active %}Active{% else %}Muted{% endif %}
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Manually Create Booking</h1>
+      <p>Schedule a new service request on behalf of a registered customer.</p>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      <div class="admin-info">
+        <div class="admin-avatar">A</div>
+        <div class="admin-name">System Admin</div>
+      </div>
+    </div>
+  </div>
+
+  {% if request.GET.error == 'failed' %}
+  <div class="error-box">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Error creating booking. Please review inputs and try again.</span>
+  </div>
+  {% endif %}
+
+  <div class="form-card">
+    <form method="POST" action="/admin/create-booking/">
+      {% csrf_token %}
+
+      <div class="grid-2">
+        <!-- CUSTOMER SELECTION -->
+        <div class="form-group">
+          <label>Select Customer <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <select name="customer" id="customerSelect" required onchange="updateCustomerDetails()">
+              <option value="" disabled selected>-- Choose Customer --</option>
+              {% for cust in customers %}
+                <option value="{{ cust.unique }}" data-address="{{ cust.live_address|default:'' }}">
+                  {{ cust.name }} ({{ cust.mail }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- PROVIDER SELECTION -->
+        <div class="form-group">
+          <label>Select Service Provider <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-user-gear"></i>
+            <select name="employee" id="providerSelect" required onchange="updateProviderDetails()">
+              <option value="" disabled selected>-- Choose Service Provider --</option>
+              {% for emp in employees %}
+                <option value="{{ emp.unique }}" data-price="{{ emp.starting_price }}" data-area="{{ emp.service_area }}">
+                  {{ emp.name }} - {{ emp.service_provided }} (₹{{ emp.starting_price|floatformat:0 }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- DATE -->
+        <div class="form-group">
+          <label>Scheduled Date <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-calendar"></i>
+            <input type="date" name="service_date" required>
+          </div>
+        </div>
+
+        <!-- TIME -->
+        <div class="form-group">
+          <label>Scheduled Time <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-clock"></i>
+            <input type="time" name="service_time" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- PRICE -->
+        <div class="form-group">
+          <label>Service Price (₹) <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-indian-rupee-sign"></i>
+            <input type="number" name="price" id="bookingPrice" min="0" step="1" placeholder="299" required>
+          </div>
+        </div>
+
+        <!-- PAYMENT METHOD -->
+        <div class="form-group">
+          <label>Payment Method <span class="req">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-credit-card"></i>
+            <select name="payment_method" required>
+              <option value="UPI" selected>UPI Payment</option>
+              <option value="Cash On Delivery">Cash On Delivery (COD)</option>
+              <option value="Pay After Service">Pay After Service</option>
+              <option value="Card">Credit/Debit Card</option>
+              <option value="Net Banking">Net Banking</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKING ADDRESS -->
+      <div class="form-group">
+        <label>Service Destination Address <span class="req">*</span></label>
+        <textarea name="booking_address" id="bookingAddress" rows="3" placeholder="Enter full service delivery address..." required></textarea>
+      </div>
+
+      <!-- FORM ACTIONS -->
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+        <a href="/servicebooked/" class="btn-secondary">Cancel</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+        <button type="submit" class="btn-save"><i class="fas fa-check"></i> Create Booking Order</button>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<script>
+  function updateCustomerDetails() {
+      const select = document.getElementById('customerSelect');
+      const selectedOpt = select.options[select.selectedIndex];
+      const address = selectedOpt.getAttribute('data-address');
+      
+      if (address) {
+          document.getElementById('bookingAddress').value = address;
+      } else {
+          document.getElementById('bookingAddress').value = '';
+      }
+  }
+
+  function updateProviderDetails() {
+      const select = document.getElementById('providerSelect');
+      const selectedOpt = select.options[select.selectedIndex];
+      const price = selectedOpt.getAttribute('data-price');
+      
+      if (price) {
+          document.getElementById('bookingPrice').value = Math.round(parseFloat(price));
+      }
+  }
+</script>
+
+</body>
+</html>

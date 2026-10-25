@@ -1,323 +1,397 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Favorites - Customer Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { 
-            --primary-color: #4a90e2; 
-            --secondary-color: #6c5ce7; 
-            --accent-color: #00b894; 
-        }
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Favorites – ServiceHub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
 
-        body { 
-            background: #f8f9fa; 
-            min-height: 100vh; 
-            margin: 0;
-        }
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+  }
+  .nav-section {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 1.5rem 0 .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .15rem;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+  }
+  .logout-btn {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
 
-        /* Mobile Menu Toggle */
-        .menu-toggle {
-            position: fixed;
-            top: 10px;
-            left: 15px;
-            z-index: 1001;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 2.5rem;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+  }
+  .header-left h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+  }
+  .header-left p {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin-top: .15rem;
+  }
 
-        .menu-toggle i {
-            font-size: 1.5rem;
-            vertical-align: middle;
-        }
+  /* CARDS GRID */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .agent-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .agent-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-light);
+  }
+  .agent-img-wrap {
+    position: relative;
+    height: 180px;
+    width: 100%;
+    background: var(--bg-tertiary);
+  }
+  .agent-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .agent-fav {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-light);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: var(--danger);
+    font-size: 1rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  .agent-fav:hover {
+    transform: scale(1.1);
+    background: var(--danger-light);
+  }
+  
+  .agent-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+  }
+  .agent-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .5rem;
+    margin-bottom: .4rem;
+  }
+  .agent-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .rating-badge {
+    background: var(--warning-light);
+    color: var(--warning);
+    padding: .15rem .5rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    border: 1px solid var(--warning);
+  }
+  .badge-category {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: .2rem .65rem;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 1rem;
+    align-self: flex-start;
+  }
+  .agent-meta {
+    font-size: .82rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    margin-bottom: 1.25rem;
+  }
+  .agent-meta div {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .agent-meta i {
+    width: 14px;
+    color: var(--text-light);
+  }
+  .btn-book {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .65rem;
+    font-size: .85rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
 
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1rem;
-            position: fixed;
-            top: 0;
-            left: -100%;
-            height: 100vh;
-            width: 280px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            overflow-y: auto;
-        }
+  .empty-state {
+    text-align: center;
+    padding: 6rem 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+  }
+  .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-light);
+  }
 
-        .sidebar.active {
-            left: 0;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
-        }
-
-        /* Backdrop */
-        .sidebar-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-            z-index: 990;
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 1rem;
-            padding-top: 80px;
-        }
-
-        /* Responsive Layout */
-        @media (min-width: 768px) {
-            .sidebar {
-                left: 0;
-            }
-            
-            .header {
-                left: 280px;
-            }
-            
-            .main-content {
-                margin-left: 280px;
-            }
-            
-            .menu-toggle {
-                display: none;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .header {
-                padding-left: 70px;
-            }
-            
-            .sidebar.active + .sidebar-backdrop {
-                display: block;
-            }
-        }
-
-        .portal-card { 
-            background: #DBF3FA; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 1rem 0;
-            padding: 1.5rem;
-        }
-
-        .service-card { 
-            background-color: white; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            transition: all 0.3s; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            position: relative; 
-            margin-bottom: 1rem;
-        }
-
-        .service-image { 
-            width: 100%;
-            height: 300px;
-        }
-
-        .service-details { 
-            padding: 1rem; 
-            background: white; 
-        }
-
-        .favorite-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ff0000;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .search-container {
-            max-width: 100%;
-            margin: 1rem 0;
-        }
-
-        .btn-portal { 
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); 
-            color: white; 
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .service-image {
-                height: 325px;
-            }
-        }
-    </style>
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+</style>
 </head>
 <body>
-    <!-- Backdrop -->
-    <div class="sidebar-backdrop"></div>
 
-    <!-- Mobile Menu Toggle -->
-    <button class="menu-toggle d-md-none">
-        <i class="fas fa-bars"></i>
-    </button>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">⚡ ServiceHub</div>
+  <div class="nav-section">Dashboard</div>
+  <a href="/bookservice/" class="nav-link"><i class="fas fa-calendar-alt"></i> Book Service</a>
+  <a href="/favorites/" class="nav-link active"><i class="fas fa-heart"></i> Favorites</a>
+  <a href="/servicehistory/" class="nav-link"><i class="fas fa-history"></i> Service History</a>
+  <a href="/raiseticket/" class="nav-link"><i class="fas fa-ticket-alt"></i> Raise Ticket</a>
+  
+  <div class="nav-section">Account</div>
+  <a href="/profile/" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+  <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</aside>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="profile-card mb-4 text-center">
-            <img src="{% if request.COOKIES.user_image %}{{ request.COOKIES.user_image }}{% else %}https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg{% endif %}" 
-            class="rounded-circle mb-3" style="width: 225px; height: 275px;object-fit: cover;" alt="User_Photo">
-            <h5 class="mb-1">
-                {% if request.COOKIES.user_name %}
-                    {{ request.COOKIES.user_name }}
-                {% else %}
-                    John Doe
-                {% endif %}
-            </h5>
-            <p class="text-muted mb-0">
-                {% if request.COOKIES.user_email %}
-                    {{ request.COOKIES.user_email }}
-                {% else %}
-                    john@example.com
-                {% endif %}
-            </p>
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link text-white" href="/bookservice"><i class="fas fa-calendar-check me-2"></i>Book Service</a>
-            <a class="nav-link text-white active" href="/favorites"><i class="fas fa-heart me-2"></i>Favorites</a>
-            <a class="nav-link text-white" href="/servicehistory"><i class="fas fa-history me-2"></i>Service History</a>
-            <a class="nav-link text-white" href="/raiseticket"><i class="fas fa-ticket-alt me-2"></i>Raise Ticket</a>
-        </nav>
+<!-- MAIN -->
+<main class="main">
+  <div class="header-row">
+    <div class="header-left">
+      <h1>My Favorites</h1>
+      <p>Your preferred verified service providers at a quick glance.</p>
     </div>
+    <button class="theme-toggle-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+  </div>
 
-    <!-- Header -->
-    <div class="header">
-        <h4 class="fw-bold text-primary mb-0">CustomerService</h4>
-        <div class="dropdown">
-            <button class="btn btn-portal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user me-2"></i>Profile
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
+  <div class="agents-grid">
+    {% for agent in data %}
+    <div class="agent-card" id="card-{{ agent.unique }}">
+      <div class="agent-fav" data-employee-id="{{ agent.unique }}" onclick="removeFav(this)" title="Remove from Favorites">
+        <i class="fas fa-heart"></i>
+      </div>
+      <div class="agent-img-wrap">
+        {% if agent.profile_image %}
+          <img src="{{ agent.profile_image }}" class="agent-img" alt="{{ agent.name }}">
+        {% else %}
+          <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--bg-tertiary); font-size:3.5rem; font-weight:800; color:var(--text-light);">
+            {{ agent.name|slice:":1" }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="agent-body">
+        <div>
+          <div class="agent-title-row">
+            <h3 class="agent-name">{{ agent.name }}</h3>
+            <span class="rating-badge"><i class="fas fa-star"></i> {{ agent.rating|default:"4.8" }}</span>
+          </div>
+          <span class="badge-category">{{ agent.service_provided }}</span>
+          
+          <div class="agent-meta">
+            <div><i class="fas fa-envelope"></i> {{ agent.email }}</div>
+            <div><i class="fas fa-phone"></i> +91 {{ agent.phone }}</div>
+            <div><i class="fas fa-briefcase"></i> {{ agent.experience }} years experience</div>
+          </div>
         </div>
+        <a href="{% url 'usercommon' agent.unique %}" class="btn-book">View Profile & Book</a>
+      </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="portal-card">
-            <h3 class="mb-4"><i class="fas fa-heart me-2 text-danger"></i>Favorite Saved Services</h3>
-            
-            <!-- Search -->
-            <div class="mb-4">
-                <form method="GET" action="{% url 'favorites' %}" class="input-group search-container">
-                    <input type="text" name="q" class="form-control" 
-                           placeholder="Search services..." 
-                           value="{{ search_query }}">
-                    <button class="btn btn-portal" type="submit">
-                        <i class="fas fa-search me-2"></i> Search
-                    </button>
-                </form>
-            </div>
-
-            <div class="row g-4">
-                {% for i in data reversed %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="service-card">
-                        <a href="{% url 'usercommon' i.unique %}" class="stretched-link text-decoration-none text-dark">
-                            <div class="favorite-btn" data-employee-id="{{ i.unique }}">
-                                <i class="{% if i.is_favorite %}fas{% else %}far{% endif %} fa-heart text-danger"></i>
-                            </div>
-                            <img src="{{i.profile_image}}" class="service-image" alt="Service Image">
-                            <div class="service-details">
-                                <h5 class="fw-bold mb-2">{{i.service_provided}}</h5>
-                                <div class="mb-2">
-                                    <i class="fas fa-user me-2 text-primary"></i>
-                                    <span>{{i.name}}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <i class="fas fa-envelope me-2 text-success"></i>
-                                    <span>{{i.email}}</span>
-                                </div>
-                                <div class="mb-2">
-                                    <i class="fas fa-phone me-2 text-danger"></i>
-                                    <span>{{i.phone}}</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="far fa-heart"></i></div>
+      <h3>No Favorite Providers Yet</h3>
+      <p style="margin-top: .4rem; font-size: .88rem; color: var(--text-muted);">Save profiles of agents you like to find them quickly here next time.</p>
+      <a href="/bookservice/" class="btn-book" style="display:inline-block; margin-top:1.25rem; padding:.5rem 1.5rem;">Browse Services</a>
     </div>
+    {% endfor %}
+  </div>
+</main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Mobile Menu Handling
-        const menuToggle = document.querySelector('.menu-toggle');
-        const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.querySelector('.sidebar-backdrop');
+<script>
+  function removeFav(btn) {
+      const id = btn.dataset.employeeId;
+      const csrfToken = '{{ csrf_token }}';
 
-        // Toggle menu
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('active');
-            backdrop.style.display = 'block';
-        });
+      fetch(`/toggle_favorite/${id}/`, {
+          method: 'POST',
+          headers: {
+              'X-CSRFToken': csrfToken,
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'same-origin'
+      })
+      .then(res => res.json())
+      .then(data => {
+          if (data.status === 'success') {
+              const card = document.getElementById(`card-${id}`);
+              if (card) {
+                  card.style.opacity = '0';
+                  card.style.transform = 'scale(0.9)';
+                  setTimeout(() => {
+                      card.remove();
+                      // If no cards left, reload or show empty state
+                      const remainingCards = document.querySelectorAll('.agent-card');
+                      if (remainingCards.length === 0) {
+                          location.reload();
+                      }
+                  }, 300);
+              }
+          }
+      })
+      .catch(err => console.error("Fav toggle error:", err));
+  }
+</script>
 
-        // Close menu on backdrop click
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            backdrop.style.display = 'none';
-        });
+<!-- Mobile Bottom Navigation Bar -->
+<div class="mobile-bottom-nav">
+  <a href="/bookservice/" class="mobile-nav-item">
+    <i class="fas fa-search"></i>
+    <span>Find</span>
+  </a>
+  <a href="/servicehistory/" class="mobile-nav-item">
+    <i class="fas fa-history"></i>
+    <span>Bookings</span>
+  </a>
+  <a href="/favorites/" class="mobile-nav-item active">
+    <i class="fas fa-heart"></i>
+    <span>Favorites</span>
+  </a>
+  <a href="/profile/" class="mobile-nav-item">
+    <i class="fas fa-user-circle"></i>
+    <span>Profile</span>
+  </a>
+</div>
 
-        // Close menu on window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                sidebar.classList.remove('active');
-                backdrop.style.display = 'none';
-            }
-        });
-
-        // Active link handling
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href').endsWith(currentPage)) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

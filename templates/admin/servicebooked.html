@@ -1,204 +1,1002 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User & Service Details</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f8f9fa;
-            color: #333;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            background: rgba(44, 62, 80, 1);
-            color: white;
-            padding: 20px;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
-        }
-        .sidebar nav a {
-            display: block;
-            color: #bdc3c7;
-            padding: 12px;
-            text-decoration: none;
-            transition: background 0.3s, transform 0.2s;
-            border-radius: 5px;
-        }
-        .sidebar nav a:hover {
-            background: #3498db;
-            transform: scale(1.05);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 30px;
-        }
-        .ma {
-            padding: 25px;
-            margin-bottom: 20px;
-            background: #34495e;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            transition: transform 0.3s;
-        }
-        .ma:hover {
-            transform: translateY(-3px);
-        }
-        .profile-image-section {
-            margin-top: 40px;
-            width: 160px;
-            height: 200px;
-            border: 3px solid #3498db;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .info-block {
-            display: flex;
-            gap: 30px;
-            width: 100%;
-            margin-left: 30px;
-        }
-        .user-info, .provider-info {
-            flex: 1;
-        }
-        .section-title {
-            color: #1abc9c;
-            font-weight: 600;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        .detail-item {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        .detail-label {
-            color: #bdc3c7;
-            width: 130px;
-            font-weight: 600;
-        }
-        .detail-value {
-            color: white;
-            font-size: 1.1rem;
-        }
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        a {
-            text-decoration: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booked Services Ledger – ServiceHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/theme.css">
+<script src="/static/js/theme.js"></script>
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border-light: #e2e8f0;
+    --border-medium: #cbd5e1;
+    --sidebar-bg: #ffffff;
+    --primary: #4f46e5;
+    --primary-light: #eeebff;
+    --primary-gradient: linear-gradient(135deg, #4f46e5, #6366f1);
+    --success: #10b981;
+    --success-light: #ecfdf5;
+    --warning: #f59e0b;
+    --warning-light: #fffbeb;
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --card-bg: #ffffff;
+    --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -1px rgba(0, 0, 0, 0.03);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html[data-theme="dark"] {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-light: #6b7280;
+    --border-light: #1f2937;
+    --border-medium: #374151;
+    --sidebar-bg: #111827;
+    --primary: #6366f1;
+    --primary-light: rgba(99, 102, 241, 0.15);
+    --success: #34d399;
+    --success-light: rgba(52, 211, 153, 0.1);
+    --warning: #fbbf24;
+    --warning-light: rgba(251, 191, 36, 0.1);
+    --danger: #f87171;
+    --danger-light: rgba(248, 113, 113, 0.1);
+    --card-bg: #111827;
+    --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    min-height: 100vh;
+    transition: var(--transition);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+    transition: var(--transition);
+  }
+  .sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-badge {
+    font-size: .72rem;
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 50px;
+    padding: .2rem .75rem;
+    margin-top: .4rem;
+    display: inline-block;
+    font-weight: 700;
+    width: fit-content;
+  }
+  .nav-body {
+    padding: 1rem;
+    flex: 1;
+  }
+  .nav-section {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 1.25rem 0 .4rem;
+    padding-left: .5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    margin-bottom: .1rem;
+    position: relative;
+  }
+  .nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-link.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-link i {
+    width: 18px;
+    text-align: center;
+    font-size: .9rem;
+  }
+  .badge-count {
+    margin-left: auto;
+    background: var(--danger);
+    color: white;
+    border-radius: 50px;
+    padding: .1rem .5rem;
+    font-size: .68rem;
+    font-weight: 700;
+  }
+  .pending-badge {
+    background: var(--warning);
+  }
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .875rem;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  .logout-btn:hover {
+    background: var(--danger-light);
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 2rem;
+    min-height: 100vh;
+    width: calc(100% - 270px);
+    transition: var(--transition);
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .topbar-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .topbar-title p {
+    color: var(--text-muted);
+    font-size: .88rem;
+    margin-top: .1rem;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    box-shadow: var(--card-shadow);
+  }
+  .admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    font-weight: 800;
+  }
+  .admin-name {
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  .admin-role {
+    font-size: .72rem;
+    color: var(--text-muted);
+  }
+
+  /* MAP */
+  #admin-map {
+    height: 400px;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    z-index: 10;
+  }
+
+  /* Dark filter for map under dark theme */
+  html[data-theme="dark"] #admin-map {
+    filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
+  }
+
+  /* Map Popups styling */
+  .leaflet-popup-content-wrapper {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--card-shadow) !important;
+    font-family: var(--font-family) !important;
+  }
+  .leaflet-popup-tip {
+    background: var(--card-bg) !important;
+  }
+
+  /* TABLES & CARD */
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+  .table-title {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    min-width: 1200px;
+    border-collapse: collapse;
+  }
+  th {
+    background: var(--bg-tertiary);
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  td {
+    padding: 1rem 1.25rem;
+    font-size: .85rem;
+    border-top: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+  tr:hover td {
+    background: var(--bg-tertiary);
+  }
+
+  /* BADGES & ACTIONS */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .3rem .75rem;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .status-pending { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+  .status-active { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+  .status-resolved { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .status-declined { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
+  .status-completed { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .status-inreview { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+
+  .refund-badge {
+    font-size: .75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .refund-none { color: var(--text-muted); }
+  .refund-requested { color: var(--warning); background: var(--warning-light); padding: .25rem .5rem; border-radius: 6px; border: 1px solid var(--warning); }
+  .refund-processed { color: var(--success); background: var(--success-light); padding: .25rem .5rem; border-radius: 6px; border: 1px solid var(--success); }
+
+  /* BUTTONS & ALERTS */
+  .mobile-toggle-btn, .sidebar-close-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.35rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .mobile-toggle-btn:hover, .sidebar-close-btn:hover {
+    color: var(--primary);
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 0.85rem;
+    transition: var(--transition);
+  }
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  .btn-complete { background: var(--success); }
+  .btn-complete:hover { background: #059669; }
+  .btn-cancel { background: var(--warning); }
+  .btn-cancel:hover { background: #d97706; }
+  .btn-refund { background: #8b5cf6; }
+  .btn-refund:hover { background: #7c3aed; }
+  .btn-delete { background: var(--danger); }
+  .btn-delete:hover { background: #dc2626; }
+
+  .alert-banner {
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* MEDIA RESPONSIVENESS */
+  @media (max-width: 1100px) {
+    .sidebar { width: 240px; }
+    .main { margin-left: 240px; width: calc(100% - 240px); }
+  }
+
+  @media (max-width: 768px) {
+    .mobile-toggle-btn {
+      display: inline-block;
+    }
+    .sidebar-close-btn {
+      display: inline-block;
+      position: absolute;
+      right: 1.25rem;
+      top: 1.5rem;
+    }
+    .sidebar {
+      position: fixed;
+      left: -280px;
+      width: 270px;
+      height: 100vh;
+      z-index: 1000;
+      box-shadow: 0 0 24px rgba(0,0,0,0.15);
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .main {
+      margin-left: 0;
+      width: 100%;
+      padding: 1.25rem;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Cards transformation of table on mobile */
+    .table-card table, 
+    .table-card thead, 
+    .table-card tbody, 
+    .table-card th, 
+    .table-card td, 
+    .table-card tr {
+      display: block;
+    }
+    
+    .table-card thead {
+      display: none; /* Hide desktop headers */
+    }
+    
+    .table-card tbody {
+      padding: 0.75rem;
+    }
+    
+    .table-card tr {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      position: relative;
+    }
+    
+    .table-card td {
+      border-top: none;
+      padding: 0.65rem 0;
+      text-align: right;
+      font-size: 0.85rem;
+      position: relative;
+      padding-left: 45%;
+      border-bottom: 1px dashed var(--border-light);
+    }
+    
+    .table-card td:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    /* Input Header Labels */
+    .table-card td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      width: 40%;
+      text-align: left;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .table-card td.actions-cell {
+      text-align: center;
+      padding-left: 0;
+      margin-top: 0.75rem;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.5rem;
+    }
+    
+    .table-card td.actions-cell::before {
+      display: none;
+    }
+    
+    .empty-row td {
+      padding-left: 0 !important;
+      text-align: center !important;
+    }
+    .empty-row td::before {
+      display: none !important;
+    }
+  }
+</style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo mb-4">
-            <h3 style="font-weight: 400;">CustomerService</h3>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⚡ ServiceHub</div>
+    <div class="admin-badge">🛡️ Admin Control Panel</div>
+    <button class="sidebar-close-btn" id="sidebar-close" style="background:none; border:none; cursor:pointer;" title="Close Sidebar">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="nav-body">
+    <div class="nav-section">Overview</div>
+    <a href="/aadmin/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+    <div class="nav-section">User Management</div>
+    <a href="/userinfo/" class="nav-link"><i class="fas fa-users"></i> Customers</a>
+    <a href="/employeeinfo/" class="nav-link"><i class="fas fa-user-gear"></i> Providers</a>
+    <a href="/admin/pending-providers/" class="nav-link">
+      <i class="fas fa-user-clock"></i> Pending Verifications
+      {% if pending_providers > 0 %}<span class="badge-count pending-badge">{{ pending_providers }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Operations</div>
+    <a href="/servicebooked/" class="nav-link active"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="/admin/refunds/" class="nav-link {% if request.path == '/admin/refunds/' %}active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Refunds & Complaints
+      {% if pending_refunds_count > 0 %}<span class="badge-count" style="background: var(--warning); color: black;">{{ pending_refunds_count }}</span>{% endif %}
+    </a>
+    <a href="/ticketraised/" class="nav-link">
+      <i class="fas fa-ticket-alt"></i> Complaints
+      {% if ticket_count > 0 %}<span class="badge-count">{{ ticket_count }}</span>{% endif %}
+    </a>
+
+    <div class="nav-section">Content</div>
+    <a href="/admin/manage_ad/" class="nav-link"><i class="fas fa-ad"></i> Advertisements</a>
+    <a href="/admin/manage_offer/" class="nav-link"><i class="fas fa-tags"></i> Offers & Coupons</a>
+    <a href="/addemp/" class="nav-link"><i class="fas fa-user-plus"></i> Add Provider</a>
+    
+    <div class="nav-section">Finance</div>
+    <a href="/admin/wallet/" class="nav-link"><i class="fas fa-wallet"></i> Earnings & Wallet</a>
+    <div class="nav-section">Settings</div>
+    <a href="/admin/toggle_global_email/" class="nav-link" style="color: {% if global_email_active %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+      <i class="fas fa-envelope"></i> Email: {% if global_email_active %}Active{% else %}Muted{% endif %}
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <!-- Alerts Section -->
+  {% if request.GET.action or request.GET.refund %}
+  <div class="alert-banner" id="status-alert" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <i class="fas fa-check-circle" style="font-size: 1.25rem;"></i>
+      <span style="font-weight: 600;">
+        {% if request.GET.action == 'cancelled' %}
+          Booking cancelled successfully.
+        {% elif request.GET.action == 'completed' %}
+          Booking marked as completed.
+        {% elif request.GET.action == 'deleted' %}
+          Booking record deleted permanently.
+        {% elif request.GET.refund == 'processed' %}
+          Refund processed successfully.
+        {% else %}
+          Operation completed successfully.
+        {% endif %}
+      </span>
+    </div>
+    <button onclick="document.getElementById('status-alert').style.display='none'" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; padding: 0.25rem;"><i class="fas fa-times"></i></button>
+  </div>
+  {% endif %}
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle-btn" id="mobile-toggle" title="Open Sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="topbar-title">
+        <h1>Booked Services</h1>
+        <p>Monitor real-time operations, tracking routes, and billing logs.</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a href="{% url 'admin_create_booking' %}" class="btn-primary" style="margin-right: 0.75rem; text-decoration: none; padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+        <i class="fas fa-plus"></i> Create Booking
+      </a>
+      <button class="theme-toggle-btn" id="theme-toggle" style="margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+      <div class="admin-info">
+        <div class="admin-avatar">A</div>
+        <div>
+          <div class="admin-name">System Admin</div>
+          <div class="admin-role">Super Administrator</div>
         </div>
-        <nav>
-            <a href="/aadmin"><i class="fa fa-home"></i> Home</a>
-            <a href="/addemp"><i class="fas fa-user-plus"></i> Add Employee</a>
-            <a href="/userinfo"><i class="fas fa-users"></i> Customer List</a>
-            <a href="/ticketraised"><i class="fa fa-ticket"></i> Tickets Raised</a>
-        </nav>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem;">
+    <i class="fas fa-map-marked-alt text-primary"></i> Global Bookings Live Map
+  </h3>
+  
+  <!-- Map container -->
+  <div id="admin-map"></div>
+
+  <!-- Map Legend -->
+  <div class="map-legend" style="display: flex; gap: 1.5rem; margin-top: -1.5rem; margin-bottom: 2rem; flex-wrap: wrap; background: var(--bg-secondary); padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid var(--border-light); font-size: 0.8rem; font-weight: 600; box-shadow: var(--card-shadow);">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+      <span>Customer Location</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #4f46e5; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+      <span>Provider Location</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span style="display: inline-block; border-bottom: 2px dashed #6366f1; width: 24px; height: 0; vertical-align: middle;"></span>
+      <span>Active Route Link</span>
+    </div>
+  </div>
+
+  <!-- TABLE CARD -->
+  <div class="table-card">
+    <div class="table-title">
+      <i class="fas fa-receipt text-primary"></i> System Transaction Ledger
     </div>
 
-    <div class="main-content">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Service Booked</h2>
-            <div class="admin-profile">
-                <span>Admin</span>
-                <i class="fas fa-user-circle fa-2x"></i>
-            </div>
-        </header>
-
-        <div class="employee-list">
-            {% for item in combined_list reversed %}
-            <div class="ma">
-                <!-- User Profile Image -->
-                <div class="profile-image-section">
-                    <img src="{{ item.user.profile_image }}" class="profile-image" alt="User Photo">
-                </div>
-
-                <!-- User & Service Provider Info -->
-                <div class="info-block">
-
-                    <!-- Left: User Info -->
-                    <div class="user-info">
-                        <div class="section-title">User Info</div>
-                        <div class="detail-item">
-                            <span class="detail-label">
-                                <span class="icon" style="display: inline;">{% if item.advance %}✅{% else %}❌{% endif %}</span> Advance paid
-                            </span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Name:</span>
-                            <span class="detail-value">{{ item.user.name }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Phone:</span>
-                            <span class="detail-value">{{ item.user.phone }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value">{{ item.user.mail }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Gender:</span>
-                            <span class="detail-value">{{ item.user.gender }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Address:</span>
-                            <span class="detail-value">{{ item.user.address }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Right: Service Provider Info -->
-                    <div class="provider-info">
-                        <div class="section-title">Service Provider</div>
-                        <div class="detail-item">
-                            <span class="detail-label">Name:</span>
-                            <span class="detail-value">{{ item.service.name }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Service:</span>
-                            <span class="detail-value">{{ item.service.service_provided }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Phone:</span>
-                            <span class="detail-value">{{ item.service.phone }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value">{{ item.service.email }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Experience:</span>
-                            <span class="detail-value">{{ item.service.experience }} years</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Specialization:</span>
-                            <span class="detail-value">{{ item.service.specialization }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+    <!-- Inline Filter/Search Bar -->
+    <div style="padding: 1rem 1.5rem; display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-light);">
+      <div style="position: relative; flex: 1; max-width: 400px; width: 100%;">
+        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><i class="fas fa-search"></i></span>
+        <input type="text" id="booking-search" placeholder="Search by ID, customer, provider or status..." style="width: 100%; padding: 0.6rem 0.6rem 0.6rem 36px; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.85rem; outline: none; transition: border-color 0.2s;">
+      </div>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button class="filter-btn active" data-filter="all" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s;">All</button>
+        <button class="filter-btn" data-filter="Pending" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s;">Pending</button>
+        <button class="filter-btn" data-filter="Accepted" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s;">Accepted</button>
+        <button class="filter-btn" data-filter="Completed" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s;">Completed</button>
+        <button class="filter-btn" data-filter="Refund" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s;">Refund Req.</button>
+      </div>
     </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Ref ID</th>
+            <th>Customer Details</th>
+            <th>Service Provider</th>
+            <th>Date & Time</th>
+            <th>Payment</th>
+            <th>Final Amount</th>
+            <th>Booking Status</th>
+            <th style="text-align: center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in combined %}
+          <tr class="booking-row" data-status="{{ b.booking.status }}" data-refund="{{ b.booking.refund_status }}">
+            <td data-label="Ref ID">
+              <span style="font-weight: 800; font-family: monospace; color: var(--text-primary);">#{{ b.booking.unique }}</span>
+              {% if b.booking.advance %}
+                <div style="font-size: 0.68rem; background: var(--primary-light); color: var(--primary); padding: 0.1rem 0.4rem; border-radius: 4px; display: inline-block; font-weight: 700; margin-top: 0.25rem;">ADVANCE</div>
+              {% endif %}
+            </td>
+            <td data-label="Customer Details">
+              {% if b.user %}
+                <div style="font-weight: 700; color: var(--text-primary);">{{ b.user.name }}</div>
+                <div style="font-size: .75rem; color: var(--text-muted);"><i class="far fa-envelope"></i> {{ b.user.mail }}</div>
+                <div style="font-size: .75rem; color: var(--text-muted);"><i class="fas fa-phone-alt"></i> {{ b.user.phone }}</div>
+              {% else %}
+                <div style="font-weight: 700; color: var(--danger);">Unregistered Customer</div>
+                <div style="font-size: .75rem; color: var(--text-muted);">UID: {{ b.booking.uniqueuser }}</div>
+              {% endif %}
+              <div style="font-size: .75rem; color: var(--text-muted); margin-top: 0.25rem; max-width: 250px; line-height: 1.3;"><i class="fas fa-map-marker-alt"></i> {{ b.booking.booking_address }}</div>
+              
+              {% if b.booking.refund_reason %}
+                <div style="margin-top: 0.5rem; padding: 0.4rem; background: var(--bg-tertiary); border-radius: 6px; border-left: 3px solid #f59e0b; font-size: 0.75rem;">
+                  <strong style="color: #d97706;">Refund Reason:</strong> {{ b.booking.refund_reason }}
+                </div>
+              {% endif %}
+              {% if b.booking.provider_dispute_reason %}
+                <div style="margin-top: 0.3rem; padding: 0.4rem; background: var(--bg-tertiary); border-radius: 6px; border-left: 3px solid #ef4444; font-size: 0.75rem;">
+                  <strong style="color: #b91c1c;">Provider Rebuttal:</strong> {{ b.booking.provider_dispute_reason }}
+                </div>
+              {% endif %}
+            </td>
+            <td data-label="Service Provider">
+              {% if b.employee %}
+                <div style="font-weight: 700; color: var(--text-primary);">{{ b.employee.name }}</div>
+                <div style="font-size: .75rem; color: var(--primary); font-weight: 600;">{{ b.employee.service_provided }}</div>
+                <div style="font-size: .75rem; color: var(--text-muted);"><i class="fas fa-phone-alt"></i> {{ b.employee.phone }}</div>
+              {% else %}
+                <div style="font-weight: 700; color: var(--text-muted);">Unassigned/Deleted</div>
+                <div style="font-size: .75rem; color: var(--text-light);">EID: {{ b.booking.uniqueservice }}</div>
+              {% endif %}
+            </td>
+            <td data-label="Date & Time">
+              {% if b.booking.service_date %}
+                <div style="font-weight: 600;">{{ b.booking.service_date|date:"d M Y" }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ b.booking.service_time|time:"h:i A" }}</div>
+              {% else %}
+                <span style="color: var(--text-light); font-style: italic;">Not scheduled</span>
+              {% endif %}
+            </td>
+            <td data-label="Payment">
+              <span class="status-badge" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-medium);">
+                {{ b.booking.payment_method }}
+              </span>
+            </td>
+            <td data-label="Final Amount">
+              <span style="font-weight: 800; color: var(--success); font-size: 0.95rem;">₹{{ b.booking.price|floatformat:2 }}</span>
+              {% if b.booking.discount_applied > 0 %}
+                <div style="font-size: .72rem; color: var(--danger); font-weight: 600; margin-top: 0.15rem;">Saved ₹{{ b.booking.discount_applied|floatformat:2 }}</div>
+                <div style="font-size: .65rem; color: var(--text-light);">Code: {{ b.booking.promo_code }}</div>
+              {% endif %}
+            </td>
+            <td data-label="Booking Status">
+              {% if b.booking.status == 'Completed' or b.booking.status == 'Service Completed' %}
+                <span class="status-badge status-completed"><i class="fas fa-check-circle"></i> {{ b.booking.status }}</span>
+              {% elif b.booking.status == 'Declined' or b.booking.status == 'Rejected' or b.booking.status == 'Cancelled' %}
+                <span class="status-badge status-declined"><i class="fas fa-times-circle"></i> {{ b.booking.status }}</span>
+              {% elif b.booking.status == 'Accepted' or b.booking.status == 'Heading to Location' or b.booking.status == 'Reached Location' or b.booking.status == 'In Progress' %}
+                <span class="status-badge status-active"><i class="fas fa-sync-alt fa-spin"></i> {{ b.booking.status }}</span>
+              {% else %}
+                <span class="status-badge status-pending"><i class="fas fa-clock"></i> {{ b.booking.status }}</span>
+              {% endif %}
+            </td>
+            <td data-label="Actions" class="actions-cell">
+              <div class="action-buttons-group" style="display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; white-space: nowrap;">
+                
+                <!-- Complete Action -->
+                {% if b.booking.status != 'Completed' and b.booking.status != 'Service Completed' and b.booking.status != 'Cancelled' and b.booking.status != 'Declined' and b.booking.status != 'Rejected' %}
+                  <form action="/admin/complete_booking/{{ b.booking.unique }}/" method="POST" style="display: inline;" onsubmit="return confirm('Confirm completion of Booking #{{ b.booking.unique }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn btn-complete" style="padding: 0.35rem 0.6rem; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem;" title="Mark Completed">
+                      <i class="fas fa-check"></i> Complete
+                    </button>
+                  </form>
+                {% endif %}
+
+                <!-- Cancel Action -->
+                {% if b.booking.status != 'Completed' and b.booking.status != 'Service Completed' and b.booking.status != 'Cancelled' and b.booking.status != 'Declined' and b.booking.status != 'Rejected' %}
+                  <form action="/admin/cancel_booking/{{ b.booking.unique }}/" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to CANCEL Booking #{{ b.booking.unique }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn btn-cancel" style="padding: 0.35rem 0.6rem; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem;" title="Cancel Booking">
+                      <i class="fas fa-ban"></i> Cancel
+                    </button>
+                  </form>
+                {% endif %}
+
+                <!-- Delete Action -->
+                <form action="/admin/delete_booking/{{ b.booking.unique }}/" method="POST" style="display: inline;" onsubmit="return confirm('CRITICAL WARNING: This will permanently DELETE Booking #{{ b.booking.unique }} from database records. Proceed?');">
+                  {% csrf_token %}
+                  <button type="submit" class="action-btn btn-delete" style="padding: 0.35rem 0.6rem; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem;" title="Delete Booking Record">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr class="empty-row">
+            <td colspan="8" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+              <p style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">No Transaction Ledger Found</p>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">There are no system-wide service bookings or transaction logs registered yet.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Leaflet JS Map Script -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Initialize Map center point (default to Central India coord if empty)
+  var map = L.map('admin-map').setView([21.0076, 75.5626], 8);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Custom marker icons using Leaflet L.divIcon styled directly in CSS
+  var userIcon = L.divIcon({
+      className: 'custom-user-marker',
+      html: '<div style="background: #10b981; color: white; border: 2.5px solid white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(16,185,129,0.4);"><i class="fas fa-user" style="font-size: 13px;"></i></div>',
+      iconSize: [34, 34],
+      iconAnchor: [17, 17],
+      popupAnchor: [0, -17]
+  });
+
+  var partnerIcon = L.divIcon({
+      className: 'custom-partner-marker',
+      html: '<div style="background: #4f46e5; color: white; border: 2.5px solid white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(79,70,229,0.4);"><i class="fas fa-tools" style="font-size: 13px;"></i></div>',
+      iconSize: [34, 34],
+      iconAnchor: [17, 17],
+      popupAnchor: [0, -17]
+  });
+
+  var markersGroup = L.featureGroup().addTo(map);
+
+  function updateAdminMap() {
+      fetch('/api/admin/active_bookings/')
+          .then(r => r.json())
+          .then(data => {
+              // Clear previous markers
+              markersGroup.clearLayers();
+              
+              if (data.bookings && data.bookings.length > 0) {
+                  data.bookings.forEach(b => {
+                      var uLat = parseFloat(b.user_lat);
+                      var uLng = parseFloat(b.user_lng);
+                      var eLat = parseFloat(b.emp_lat);
+                      var eLng = parseFloat(b.emp_lng);
+                      
+                      // Add Customer Location Pin
+                      if (!isNaN(uLat) && !isNaN(uLng) && uLat !== 0.0 && uLng !== 0.0) {
+                          var userMarker = L.marker([uLat, uLng], { icon: userIcon });
+                          userMarker.bindPopup(`<b>Booking ID: #${b.unique}</b><br>Customer: ${b.user_name}<br>Address: ${b.booking_address}`);
+                          markersGroup.addLayer(userMarker);
+                      }
+                      
+                      // Add Service Provider Location Pin
+                      if (!isNaN(eLat) && !isNaN(eLng) && eLat !== 0.0 && eLng !== 0.0) {
+                          var agentMarker = L.marker([eLat, eLng], { icon: partnerIcon });
+                          agentMarker.bindPopup(`<b>Booking ID: #${b.unique}</b><br>Provider: ${b.emp_name}<br>Status: ${b.status}`);
+                          markersGroup.addLayer(agentMarker);
+                      }
+                      
+                      // Add Connecting Polyline
+                      if (!isNaN(uLat) && !isNaN(uLng) && !isNaN(eLat) && !isNaN(eLng) && uLat !== 0.0 && uLng !== 0.0 && eLat !== 0.0 && eLng !== 0.0) {
+                          var path = L.polyline([
+                              [eLat, eLng],
+                              [uLat, uLng]
+                          ], { color: '#6366f1', weight: 3, opacity: 0.7, dashArray: '6, 6' });
+                          markersGroup.addLayer(path);
+                      }
+                  });
+                  
+                  // Adjust map bounds dynamically on initial load
+                  if (!window.mapBoundsSet && markersGroup.getLayers().length > 0) {
+                      map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
+                      window.mapBoundsSet = true;
+                  }
+              }
+          })
+          .catch(err => console.error("Admin map poll error:", err));
+  }
+
+  // Call updateAdminMap immediately to populate, then set interval
+  updateAdminMap();
+  setInterval(updateAdminMap, 5000);
+</script>
+
+<!-- Custom Frontend Mechanics Script -->
+<script>
+  // Mobile Sidebar Drawer Mechanics
+  const mobileToggle = document.getElementById('mobile-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarClose = document.getElementById('sidebar-close');
+  
+  // Create backdrop overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'sidebar-overlay';
+  document.body.appendChild(overlay);
+
+  mobileToggle.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+  });
+
+  const closeSidebar = () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  };
+
+  sidebarClose.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  // Search & Filter Mechanics
+  const searchInput = document.getElementById('booking-search');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const rows = document.querySelectorAll('.booking-row');
+  
+  function performFilter() {
+    const query = searchInput.value.toLowerCase().trim();
+    let activeFilter = 'all';
+    
+    filterBtns.forEach(btn => {
+      if (btn.classList.contains('active')) {
+        activeFilter = btn.getAttribute('data-filter');
+      }
+    });
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const statusText = row.getAttribute('data-status') || '';
+      const refundText = row.getAttribute('data-refund') || '';
+      
+      const matchesSearch = text.includes(query);
+      let matchesFilter = true;
+      
+      if (activeFilter === 'Pending') {
+        matchesFilter = (statusText === 'Pending');
+      } else if (activeFilter === 'Accepted') {
+        matchesFilter = (statusText.includes('Accepted') || statusText.includes('Heading') || statusText.includes('Reached') || statusText.includes('Progress'));
+      } else if (activeFilter === 'Completed') {
+        matchesFilter = (statusText.includes('Completed'));
+      } else if (activeFilter === 'Refund') {
+        matchesFilter = (refundText === 'Requested');
+      }
+      
+      if (matchesSearch && matchesFilter) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  searchInput.addEventListener('input', performFilter);
+  
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      btn.style.background = 'var(--primary)';
+      btn.style.color = 'white';
+      
+      // Reset other buttons style
+      filterBtns.forEach(b => {
+        if (b !== btn) {
+          b.style.background = 'var(--bg-secondary)';
+          b.style.color = 'var(--text-secondary)';
+        }
+      });
+      
+      performFilter();
+    });
+  });
+</script>
+
 </body>
 </html>
