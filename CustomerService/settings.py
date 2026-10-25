@@ -102,9 +102,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'bh.ja.ingale@gmail.com'
-EMAIL_HOST_PASSWORD = 'vctf cvfk dcvu dkso'
-DEFAULT_FROM_EMAIL = 'ServiceHub <bh.ja.ingale@gmail.com>'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'ServiceHub <>'
 
 
 # Login URL
